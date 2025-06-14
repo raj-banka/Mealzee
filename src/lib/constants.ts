@@ -1,0 +1,394 @@
+// App Configuration
+export const APP_CONFIG = {
+  name: 'Mealzee',
+  description: 'Better food for more people',
+  tagline: 'Delicious meals delivered to your doorstep',
+  version: '1.0.0',
+  supportEmail: 'hello@mealzee.in',
+  supportPhone: '+91 XXXXXXXXXX',
+  whatsappNumber: '6299367631',
+  domain: 'Mealzee.in',
+  serviceLocation: 'Sector 4, B.S. City',
+  maxDeliveryRadius: 10, // km
+} as const;
+
+// Social Media Links
+export const SOCIAL_LINKS = {
+  facebook: 'https://facebook.com/mealzee',
+  instagram: 'https://instagram.com/mealzee',
+  twitter: 'https://twitter.com/mealzee',
+  whatsapp: `https://wa.me/${APP_CONFIG.whatsappNumber}`,
+} as const;
+
+// WhatsApp Configuration
+export const WHATSAPP_CONFIG = {
+  phoneNumber: '916299367631',
+  baseUrl: 'https://wa.me/916299367631',
+  messages: {
+    orderNow: 'Hi Mealzee! 🍽️ I would like to place an order. Please share your menu and pricing details.',
+    generalInquiry: 'Hi Mealzee! I have some questions about your food delivery service.',
+    cartOrder: (items: string, total: string) =>
+      `Hi Mealzee! 🍽️ I would like to order:\n\n${items}\n\nTotal: ${total}\n\nPlease confirm my order and delivery details.`,
+    locationOrder: (location: string) =>
+      `Hi Mealzee! 🍽️ I would like to place an order for delivery to: ${location}. Please share your menu and confirm if you deliver to this area.`,
+    menuInquiry: 'Hi Mealzee! 🍽️ Can you please share your complete menu with prices? I am interested in placing an order.',
+    specialOffer: (offerName: string) =>
+      `Hi Mealzee! 🍽️ I saw your "${offerName}" offer. Can you please provide more details and help me place an order?`,
+  }
+} as const;
+
+// Enhanced Color Palette
+export const COLORS = {
+  primary: {
+    orange: '#FF6B35',
+    red: '#E63946',
+    darkOrange: '#FF4500',
+  },
+  neutral: {
+    white: '#F8F9FA',
+    lightGray: '#E9ECEF',
+    gray: '#6C757D',
+    darkGray: '#2D3436',
+    black: '#212529',
+  },
+  accent: {
+    green: '#06D6A0',
+    yellow: '#FFD60A',
+    purple: '#7209B7',
+  }
+} as const;
+
+// Meal Categories for Mealzee
+export const MEAL_CATEGORIES = [
+  {
+    id: 'breakfast',
+    name: 'Breakfast',
+    emoji: '🍳',
+    description: 'Start your day right with fresh morning delights',
+    color: 'from-amber-400 via-orange-400 to-red-400',
+    bgColor: 'bg-gradient-to-br from-amber-50 to-orange-100',
+  },
+  {
+    id: 'lunch',
+    name: 'Lunch',
+    emoji: '🍱',
+    description: 'Wholesome midday meals that satisfy',
+    color: 'from-emerald-400 via-teal-400 to-cyan-400',
+    bgColor: 'bg-gradient-to-br from-emerald-50 to-teal-100',
+  },
+  {
+    id: 'dinner',
+    name: 'Dinner',
+    emoji: '🍽️',
+    description: 'Perfect evening meals for every craving',
+    color: 'from-violet-400 via-purple-400 to-fuchsia-400',
+    bgColor: 'bg-gradient-to-br from-violet-50 to-purple-100',
+  },
+  {
+    id: 'combo',
+    name: 'Combo Meals',
+    emoji: '🥘',
+    description: 'Complete meal combos for great value',
+    color: 'from-rose-400 via-pink-400 to-red-400',
+    bgColor: 'bg-gradient-to-br from-rose-50 to-pink-100',
+  },
+] as const;
+
+// Navigation Links
+export const NAV_LINKS = [
+  { id: 'home', name: 'Home', href: '#home' },
+  { id: 'menu', name: 'Menu', href: '#menu' },
+  { id: 'about', name: 'About', href: '#about' },
+  { id: 'contact', name: 'Contact', href: '#contact' },
+] as const;
+
+// Special Offers
+export const SPECIAL_OFFERS = [
+  {
+    id: 'veg-meals',
+    title: 'Pure Veg Delights',
+    description: 'Farm-fresh vegetarian meals that burst with flavor',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+    color: 'from-emerald-400 to-green-500',
+    discount: '25% OFF',
+  },
+  {
+    id: 'birthday-special',
+    title: 'Birthday Celebrations',
+    description: 'Make every birthday unforgettable with our special treats',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    color: 'from-pink-400 to-rose-500',
+    discount: 'Free Cake',
+  },
+  {
+    id: 'gift-vouchers',
+    title: 'Gift of Good Food',
+    description: 'Share the joy of delicious meals with your loved ones',
+    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+    color: 'from-purple-400 to-indigo-500',
+    discount: 'Up to ₹500',
+  },
+] as const;
+
+// Price Ranges
+export const PRICE_RANGES = [
+  { value: '$', label: '$ - Under $15', min: 0, max: 15 },
+  { value: '$$', label: '$$ - $15-25', min: 15, max: 25 },
+  { value: '$$$', label: '$$$ - $25-35', min: 25, max: 35 },
+  { value: '$$$$', label: '$$$$ - Over $35', min: 35, max: Infinity },
+] as const;
+
+// Delivery Time Options
+export const DELIVERY_TIME_OPTIONS = [
+  { value: 30, label: 'Under 30 min' },
+  { value: 45, label: 'Under 45 min' },
+  { value: 60, label: 'Under 1 hour' },
+  { value: 90, label: 'Under 1.5 hours' },
+] as const;
+
+// Rating Options
+export const RATING_OPTIONS = [
+  { value: 4.5, label: '4.5+ stars' },
+  { value: 4.0, label: '4.0+ stars' },
+  { value: 3.5, label: '3.5+ stars' },
+  { value: 3.0, label: '3.0+ stars' },
+] as const;
+
+// Tiffin Service Features
+export const TIFFIN_FEATURES = [
+  'Home Cooked',
+  'Fresh Daily',
+  'Healthy & Nutritious',
+  'Vegetarian',
+  'Vegan Options',
+  'Gluten-Free Available',
+  'No Preservatives',
+  'Organic Ingredients',
+  'Custom Portions',
+  'Diet Friendly',
+  'Traditional Recipes',
+  'Hygienic Preparation',
+] as const;
+
+// Subscription Plans
+export const SUBSCRIPTION_PLANS = [
+  {
+    id: 'daily',
+    name: 'Daily',
+    description: 'Order day by day',
+    minDays: 1,
+    maxDays: 1,
+    discount: 0,
+  },
+  {
+    id: 'weekly',
+    name: 'Weekly',
+    description: '7 days subscription',
+    minDays: 7,
+    maxDays: 7,
+    discount: 5, // 5% discount
+  },
+  {
+    id: 'monthly',
+    name: 'Monthly',
+    description: '30 days subscription',
+    minDays: 30,
+    maxDays: 30,
+    discount: 15, // 15% discount
+  },
+  {
+    id: 'custom',
+    name: 'Custom',
+    description: 'Choose your own duration',
+    minDays: 3,
+    maxDays: 90,
+    discount: 10, // 10% discount for 3+ days
+  },
+] as const;
+
+// Delivery Time Slots
+export const DELIVERY_SLOTS = [
+  { id: 'breakfast', name: 'Breakfast', time: '8:00 AM - 10:00 AM', mealType: 'Breakfast' },
+  { id: 'lunch', name: 'Lunch', time: '12:00 PM - 2:00 PM', mealType: 'Lunch' },
+  { id: 'evening', name: 'Evening Snacks', time: '4:00 PM - 6:00 PM', mealType: 'Snacks' },
+  { id: 'dinner', name: 'Dinner', time: '7:00 PM - 9:00 PM', mealType: 'Dinner' },
+] as const;
+
+// Sort Options
+export const SORT_OPTIONS = [
+  { value: 'rating', label: 'Highest Rated' },
+  { value: 'delivery_time', label: 'Fastest Delivery' },
+  { value: 'price', label: 'Lowest Delivery Fee' },
+  { value: 'distance', label: 'Nearest' },
+] as const;
+
+// Order Status
+export const ORDER_STATUS_LABELS = {
+  pending: 'Order Pending',
+  confirmed: 'Order Confirmed',
+  preparing: 'Preparing Your Food',
+  ready: 'Ready for Pickup',
+  picked_up: 'Out for Delivery',
+  on_the_way: 'On the Way',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+} as const;
+
+export const ORDER_STATUS_COLORS = {
+  pending: 'text-yellow-600 bg-yellow-100',
+  confirmed: 'text-blue-600 bg-blue-100',
+  preparing: 'text-orange-600 bg-orange-100',
+  ready: 'text-purple-600 bg-purple-100',
+  picked_up: 'text-indigo-600 bg-indigo-100',
+  on_the_way: 'text-green-600 bg-green-100',
+  delivered: 'text-green-700 bg-green-200',
+  cancelled: 'text-red-600 bg-red-100',
+} as const;
+
+// Payment Methods
+export const PAYMENT_METHODS = [
+  { id: 'credit_card', name: 'Credit Card', icon: '💳' },
+  { id: 'debit_card', name: 'Debit Card', icon: '💳' },
+  { id: 'paypal', name: 'PayPal', icon: '🅿️' },
+  { id: 'apple_pay', name: 'Apple Pay', icon: '🍎' },
+  { id: 'google_pay', name: 'Google Pay', icon: '🅖' },
+  { id: 'cash', name: 'Cash on Delivery', icon: '💵' },
+] as const;
+
+// Address Types
+export const ADDRESS_TYPES = [
+  { value: 'home', label: 'Home', icon: '🏠' },
+  { value: 'work', label: 'Work', icon: '🏢' },
+  { value: 'other', label: 'Other', icon: '📍' },
+] as const;
+
+// Animation Variants
+export const ANIMATION_VARIANTS = {
+  fadeIn: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+  slideUp: {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  },
+  slideDown: {
+    initial: { opacity: 0, y: -20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 },
+  },
+  slideLeft: {
+    initial: { opacity: 0, x: 20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -20 },
+  },
+  slideRight: {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
+  },
+  scale: {
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.9 },
+  },
+  bounce: {
+    initial: { opacity: 0, scale: 0.3 },
+    animate: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20
+      }
+    },
+    exit: { opacity: 0, scale: 0.3 },
+  },
+} as const;
+
+// Breakpoints
+export const BREAKPOINTS = {
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
+  '2xl': '1536px',
+} as const;
+
+// Z-Index Layers
+export const Z_INDEX = {
+  dropdown: 1000,
+  sticky: 1020,
+  fixed: 1030,
+  modalBackdrop: 1040,
+  modal: 1050,
+  popover: 1060,
+  tooltip: 1070,
+  toast: 1080,
+} as const;
+
+// API Endpoints (for future backend integration)
+export const API_ENDPOINTS = {
+  auth: {
+    login: '/api/auth/login',
+    register: '/api/auth/register',
+    logout: '/api/auth/logout',
+    profile: '/api/auth/profile',
+  },
+  restaurants: {
+    list: '/api/restaurants',
+    detail: '/api/restaurants/:id',
+    menu: '/api/restaurants/:id/menu',
+    search: '/api/restaurants/search',
+  },
+  orders: {
+    create: '/api/orders',
+    list: '/api/orders',
+    detail: '/api/orders/:id',
+    track: '/api/orders/:id/track',
+  },
+  cart: {
+    get: '/api/cart',
+    add: '/api/cart/add',
+    update: '/api/cart/update',
+    remove: '/api/cart/remove',
+    clear: '/api/cart/clear',
+  },
+  user: {
+    addresses: '/api/user/addresses',
+    paymentMethods: '/api/user/payment-methods',
+    preferences: '/api/user/preferences',
+  },
+} as const;
+
+// Error Messages
+export const ERROR_MESSAGES = {
+  network: 'Network error. Please check your connection.',
+  server: 'Server error. Please try again later.',
+  validation: 'Please check your input and try again.',
+  auth: 'Authentication failed. Please login again.',
+  notFound: 'The requested resource was not found.',
+  permission: 'You do not have permission to perform this action.',
+  generic: 'Something went wrong. Please try again.',
+} as const;
+
+// Success Messages
+export const SUCCESS_MESSAGES = {
+  orderPlaced: 'Your order has been placed successfully!',
+  profileUpdated: 'Your profile has been updated.',
+  addressAdded: 'Address has been added successfully.',
+  paymentAdded: 'Payment method has been added.',
+  reviewSubmitted: 'Thank you for your review!',
+} as const;
+
+// Local Storage Keys
+export const STORAGE_KEYS = {
+  cart: 'foodie_cart',
+  user: 'foodie_user',
+  preferences: 'foodie_preferences',
+  recentSearches: 'foodie_recent_searches',
+  favoriteRestaurants: 'foodie_favorites',
+} as const;
