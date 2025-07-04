@@ -1,30 +1,30 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/layout/Navbar';
 import HeroSection from '@/components/home/HeroSection';
-import MealCategories from '@/components/home/PopularCuisines';
-import MenuSection from '@/components/home/MenuSection';
-import SpecialsSection from '@/components/home/SpecialsSection';
-import HowItWorks from '@/components/home/HowItWorks';
-import AboutSection from '@/components/home/AboutSection';
-import Testimonials from '@/components/home/Testimonials';
-import ContactSection from '@/components/home/ContactSection';
+import MealPlans from '@/components/home/MealPlans';
+import FeaturesSection from '@/components/home/FeaturesSection';
+import ReviewsMarquee from '@/components/home/ReviewsMarquee';
 import Footer from '@/components/layout/Footer';
+import OrderFlowManager from '@/components/order/OrderFlowManager';
+import OrderFlowIndicator from '@/components/ui/OrderFlowIndicator';
 
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <Navbar />
+      {/* Order Flow Indicator */}
+      <OrderFlowIndicator />
+
       <HeroSection />
-      <MealCategories />
-      <MenuSection />
-      <SpecialsSection />
-      <HowItWorks />
-      <AboutSection />
-      <Testimonials />
-      <ContactSection />
+      <div id="meal-plans">
+        <MealPlans />
+      </div>
+      <FeaturesSection />
+      <ReviewsMarquee />
       <Footer />
+
+      {/* Global Order Flow Manager */}
+      <OrderFlowManager />
     </div>
   );
 }

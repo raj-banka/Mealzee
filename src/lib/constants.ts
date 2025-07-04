@@ -6,7 +6,7 @@ export const APP_CONFIG = {
   version: '1.0.0',
   supportEmail: 'hello@mealzee.in',
   supportPhone: '+91 XXXXXXXXXX',
-  whatsappNumber: '6299367631',
+  whatsappNumber: '9608036638',
   domain: 'Mealzee.in',
   serviceLocation: 'Sector 4, B.S. City',
   maxDeliveryRadius: 10, // km
@@ -22,8 +22,8 @@ export const SOCIAL_LINKS = {
 
 // WhatsApp Configuration
 export const WHATSAPP_CONFIG = {
-  phoneNumber: '916299367631',
-  baseUrl: 'https://wa.me/916299367631',
+  phoneNumber: '919608036638',
+  baseUrl: 'https://wa.me/919608036638',
   messages: {
     orderNow: 'Hi Mealzee! 🍽️ I would like to place an order. Please share your menu and pricing details.',
     generalInquiry: 'Hi Mealzee! I have some questions about your food delivery service.',
@@ -107,26 +107,50 @@ export const SPECIAL_OFFERS = [
   {
     id: 'veg-meals',
     title: 'Pure Veg Delights',
-    description: 'Farm-fresh vegetarian meals that burst with flavor',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+    description: 'Farm-fresh vegetarian meals that burst with authentic Indian flavors',
+    image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=400&fit=crop&crop=center',
     color: 'from-emerald-400 to-green-500',
     discount: '25% OFF',
   },
   {
     id: 'birthday-special',
     title: 'Birthday Celebrations',
-    description: 'Make every birthday unforgettable with our special treats',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    description: 'Make every birthday unforgettable with our special celebration meals',
+    image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&h=400&fit=crop&crop=center',
     color: 'from-pink-400 to-rose-500',
-    discount: 'Free Cake',
+    discount: 'Free Dessert',
   },
   {
     id: 'gift-vouchers',
     title: 'Gift of Good Food',
-    description: 'Share the joy of delicious meals with your loved ones',
-    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400',
+    description: 'Share the joy of delicious home-cooked meals with your loved ones',
+    image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=600&h=400&fit=crop&crop=center',
     color: 'from-purple-400 to-indigo-500',
     discount: 'Up to ₹500',
+  },
+  {
+    id: 'family-feast',
+    title: 'Family Feast Special',
+    description: 'Complete family meals with traditional recipes and generous portions',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop&crop=center',
+    color: 'from-orange-400 to-red-500',
+    discount: '30% OFF',
+  },
+  {
+    id: 'healthy-bowls',
+    title: 'Healthy Bowl Collection',
+    description: 'Nutritious and balanced meals perfect for your wellness journey',
+    image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=400&fit=crop&crop=center',
+    color: 'from-teal-400 to-cyan-500',
+    discount: '20% OFF',
+  },
+  {
+    id: 'comfort-classics',
+    title: 'Comfort Food Classics',
+    description: 'Soul-warming traditional dishes that remind you of home',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop&crop=center',
+    color: 'from-amber-400 to-orange-500',
+    discount: '15% OFF',
   },
 ] as const;
 

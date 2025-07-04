@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import { AppProvider } from "@/contexts/AppContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,10 +37,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased bg-white">
-        <div className="min-h-screen">
-          {children}
-        </div>
-        <WhatsAppButton />
+        <AppProvider>
+          <div className="min-h-screen">
+            {children}
+          </div>
+          <WhatsAppButton />
+        </AppProvider>
       </body>
     </html>
   );

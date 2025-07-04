@@ -41,9 +41,13 @@ const Header: React.FC = () => {
           <Link href="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 5 }}
-              className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg"
+              className="w-10 h-10 rounded-xl overflow-hidden shadow-lg"
             >
-              <span className="text-white font-bold text-xl">🍽️</span>
+              <img
+                src="/logo.jpg"
+                alt="Mealzee Logo"
+                className="w-full h-full object-cover"
+              />
             </motion.div>
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-gray-900 tracking-tight">Mealzee</span>

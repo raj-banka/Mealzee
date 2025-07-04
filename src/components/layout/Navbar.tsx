@@ -2,17 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingCart, User, UserPlus } from 'lucide-react';
+import { Menu, X, User, Gift } from 'lucide-react';
 import { NAV_LINKS, APP_CONFIG } from '@/lib/constants';
 import Button from '@/components/ui/Button';
-import { useSimpleCart } from '@/hooks/useSimpleCart';
-import { openWhatsAppForOrder } from '@/utils/whatsapp';
+
+import { useApp } from '@/contexts/AppContext';
+import UserProfileModal from '@/components/user/UserProfileModal';
+import ReferralModal from '@/components/user/ReferralModal';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { getItemCount } = useSimpleCart();
-  const cartItemCount = getItemCount();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
+  const { state, dispatch, isLoggedIn } = useApp();
 
   // Handle scroll effect
   useEffect(() => {
@@ -40,31 +43,27 @@ const Navbar: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/20' 
-          : 'bg-transparent'
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/20 transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo - Left Corner */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-3 flex-shrink-0"
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">🍽️</span>
+            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+              <img
+                src="/logo.jpg"
+                alt="Mealzee Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex flex-col">
-              <span className={`text-2xl font-bold tracking-tight transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
+              <span className="text-2xl font-bold tracking-tight text-gray-900 transition-colors">
                 {APP_CONFIG.name}
               </span>
-              <span className={`text-xs transition-colors ${
-                isScrolled ? 'text-gray-500' : 'text-white/80'
-              }`}>
+              <span className="text-xs text-gray-500 transition-colors">
                 {APP_CONFIG.description}
               </span>
             </div>
@@ -78,9 +77,7 @@ const Navbar: React.FC = () => {
                 onClick={() => scrollToSection(link.href)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`font-medium transition-all duration-300 hover:text-emerald-500 ${
-                  isScrolled ? 'text-gray-700' : 'text-white'
-                }`}
+                className="font-medium transition-all duration-300 hover:text-emerald-500 text-gray-700"
               >
                 {link.name}
               </motion.button>
@@ -89,56 +86,60 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Cart */}
+            {/* Referral Button - Always visible */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative p-2 rounded-lg transition-colors ${
-                isScrolled 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-white hover:bg-white/10'
-              }`}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                // Open referral modal
+                if (isLoggedIn()) {
+                  setIsReferralModalOpen(true);
+                } else {
+                  dispatch({ type: 'OPEN_AUTH_MODAL' });
+                }
+              }}
             >
-              <ShoppingCart className="w-6 h-6" />
-              {cartItemCount > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium"
-                >
-                  {cartItemCount}
-                </motion.span>
-              )}
+              <Gift className="w-4 h-4" />
+              <span className="text-sm font-medium">Refer & Earn</span>
             </motion.button>
 
-            {/* Auth Buttons */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`${
-                isScrolled 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-white hover:bg-white/10'
-              }`}
-            >
-              <User className="w-4 h-4 mr-2" />
-              Sign In
-            </Button>
-
-            <Button
-              variant="primary"
-              size="sm"
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Sign Up
-            </Button>
+            {/* Auth/User Section */}
+            {isLoggedIn() ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+              >
+                <User className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {state.user?.fullName?.split(' ')[0] || 'Profile'}
+                </span>
+              </motion.button>
+            ) : (
+              <Button
+                variant="primary"
+                size="sm"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+                onClick={() => dispatch({ type: 'OPEN_AUTH_MODAL' })}
+              >
+                <User className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            )}
 
             <Button
               variant="primary"
               size="sm"
               className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 shadow-lg"
-              onClick={openWhatsAppForOrder}
+              onClick={() => {
+                // Scroll to meal plans section first
+                const mealPlansSection = document.getElementById('meal-plans');
+                if (mealPlansSection) {
+                  mealPlansSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             >
               Order Now
             </Button>
@@ -149,11 +150,7 @@ const Navbar: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors ${
-              isScrolled 
-                ? 'text-gray-700 hover:bg-gray-100' 
-                : 'text-white hover:bg-white/10'
-            }`}
+            className="md:hidden p-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </motion.button>
@@ -182,39 +179,69 @@ const Navbar: React.FC = () => {
                   </motion.button>
                 ))}
 
-                {/* Mobile Cart */}
+                {/* Mobile Referral Button */}
                 <motion.button
                   whileHover={{ x: 5 }}
-                  className="flex items-center justify-between w-full py-3 px-4 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-all"
+                  className="flex items-center justify-between w-full py-3 px-4 text-gray-700 font-medium hover:bg-purple-50 hover:text-purple-600 rounded-lg transition-all"
+                  onClick={() => {
+                    setIsOpen(false);
+                    if (isLoggedIn()) {
+                      setIsReferralModalOpen(true);
+                    } else {
+                      dispatch({ type: 'OPEN_AUTH_MODAL' });
+                    }
+                  }}
                 >
                   <div className="flex items-center">
-                    <ShoppingCart className="w-5 h-5 mr-3" />
-                    Cart
+                    <Gift className="w-5 h-5 mr-3" />
+                    Refer & Earn
                   </div>
-                  {cartItemCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
                 </motion.button>
 
-                {/* Mobile Auth Buttons */}
-                <div className="flex space-x-3 pt-4 border-t border-gray-200">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <User className="w-4 h-4 mr-2" />
-                    Sign In
-                  </Button>
-                  <Button variant="primary" size="sm" className="flex-1">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Sign Up
-                  </Button>
-                </div>
+                {/* Mobile Auth/User Buttons */}
+                {isLoggedIn() ? (
+                  <motion.button
+                    whileHover={{ x: 5 }}
+                    className="flex items-center justify-between w-full py-3 px-4 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-all"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setIsProfileModalOpen(true);
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <User className="w-5 h-5 mr-3" />
+                      {state.user?.fullName?.split(' ')[0] || 'Profile'}
+                    </div>
+                  </motion.button>
+                ) : (
+                  <div className="pt-4 border-t border-gray-200">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                      onClick={() => {
+                        setIsOpen(false);
+                        dispatch({ type: 'OPEN_AUTH_MODAL' });
+                      }}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      Sign In
+                    </Button>
+                  </div>
+                )}
 
                 <Button
                   variant="primary"
                   size="lg"
                   className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                  onClick={openWhatsAppForOrder}
+                  onClick={() => {
+                    setIsOpen(false);
+                    // Scroll to meal plans section first
+                    const mealPlansSection = document.getElementById('meal-plans');
+                    if (mealPlansSection) {
+                      mealPlansSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
                   Order Now
                 </Button>
@@ -223,6 +250,18 @@ const Navbar: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      {/* Referral Modal */}
+      <ReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+      />
     </motion.nav>
   );
 };
