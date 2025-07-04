@@ -36,9 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased bg-white">
+      <body className="font-sans antialiased bg-olive-50">
         <AppProvider>
-          <div className="min-h-screen">
+          <div className="min-h-screen bg-olive-50">
             {children}
           </div>
           <WhatsAppButton />

@@ -22,7 +22,7 @@ const AboutSection: React.FC = () => {
       icon: Award,
       title: 'Quality Assured',
       description: 'Only the finest ingredients make it to your plate',
-      color: 'from-yellow-400 to-orange-500',
+      color: 'from-olive-400 to-olive-500',
     },
     {
       icon: Clock,
@@ -73,7 +73,7 @@ const AboutSection: React.FC = () => {
   };
 
   return (
-    <section id="about" className="py-20 bg-gradient-to-b from-red-50 to-orange-50">
+    <section id="about" className="py-20 bg-gradient-to-b from-olive-50 to-olive-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -85,7 +85,7 @@ const AboutSection: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             About
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Mealzee</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent">Mealzee</span>
             <span className="inline-block ml-3">🍽️</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -158,7 +158,7 @@ const AboutSection: React.FC = () => {
                 <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">
+                <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-olive-600 transition-colors">
                   {feature.title}
                 </h4>
                 <p className="text-gray-600 leading-relaxed">
@@ -175,7 +175,7 @@ const AboutSection: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-12 text-white"
+          className="bg-gradient-to-r from-olive-500 to-olive-600 rounded-3xl p-12 text-white"
         >
           <div className="text-center mb-12">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">

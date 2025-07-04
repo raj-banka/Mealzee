@@ -56,7 +56,7 @@ const MenuSection: React.FC = () => {
   };
 
   return (
-    <section id="menu" className="py-20 bg-gradient-to-b from-orange-50 to-red-50">
+    <section id="menu" className="py-20 bg-gradient-to-b from-olive-50 to-olive-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -68,7 +68,7 @@ const MenuSection: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             Our Delicious
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent"> Menu</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent"> Menu</span>
             <span className="inline-block ml-3">🍽️</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -92,8 +92,8 @@ const MenuSection: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
                 activeCategory === category.id
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-orange-50 hover:text-orange-600 shadow-md'
+                  ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-lg'
+                  : 'bg-white text-gray-700 hover:bg-olive-50 hover:text-olive-600 shadow-md'
               }`}
             >
               <span className="text-xl">{category.emoji}</span>
@@ -143,14 +143,14 @@ const MenuSection: React.FC = () => {
 
                 {/* Price Badge */}
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-lg font-bold text-orange-600">₹{item.price}</span>
+                  <span className="text-lg font-bold text-olive-600">₹{item.price}</span>
                 </div>
               </div>
 
               {/* Item Details */}
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-olive-600 transition-colors">
                     {item.name}
                   </h3>
                   {item.rating && (
@@ -184,7 +184,7 @@ const MenuSection: React.FC = () => {
                   {item.dietaryTags?.slice(0, 2).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full"
+                      className="px-2 py-1 bg-olive-100 text-olive-700 text-xs rounded-full"
                     >
                       {tag}
                     </span>
@@ -198,7 +198,7 @@ const MenuSection: React.FC = () => {
                 >
                   <Button
                     onClick={() => handleAddToCart(item)}
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 text-white font-semibold py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <Plus className="w-5 h-5" />
                     <span>Add to Cart</span>

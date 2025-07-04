@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Navbar from '@/components/layout/Navbar';
 import HeroSection from '@/components/home/HeroSection';
 import MealPlans from '@/components/home/MealPlans';
 import FeaturesSection from '@/components/home/FeaturesSection';
@@ -12,6 +13,7 @@ import OrderFlowIndicator from '@/components/ui/OrderFlowIndicator';
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <Navbar />
       {/* Order Flow Indicator */}
       <OrderFlowIndicator />
 

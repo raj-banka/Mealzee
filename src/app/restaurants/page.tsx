@@ -95,7 +95,7 @@ const RestaurantsPage: React.FC = () => {
                   placeholder="Search restaurants, cuisines, or dishes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-transparent"
                 />
               </div>
 
@@ -113,7 +113,7 @@ const RestaurantsPage: React.FC = () => {
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-transparent"
               >
                 {SORT_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>
@@ -143,7 +143,7 @@ const RestaurantsPage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-orange-500 hover:text-orange-600"
+                  className="text-sm text-olive-500 hover:text-olive-600"
                 >
                   Clear All
                 </button>
@@ -152,14 +152,14 @@ const RestaurantsPage: React.FC = () => {
               {/* Cuisine Filter */}
               <div className="mb-6">
                 <h4 className="font-medium text-gray-900 mb-3">Cuisine</h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
+                <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
                   {CUISINE_TYPES.slice(0, 10).map(cuisine => (
                     <label key={cuisine} className="flex items-center">
                       <input
                         type="checkbox"
                         checked={filters.cuisine?.includes(cuisine) || false}
                         onChange={() => toggleArrayFilter('cuisine', cuisine)}
-                        className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        className="rounded border-gray-300 text-olive-500 focus:ring-olive-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">{cuisine}</span>
                     </label>
@@ -177,7 +177,7 @@ const RestaurantsPage: React.FC = () => {
                         type="checkbox"
                         checked={filters.priceRange?.includes(range.value) || false}
                         onChange={() => toggleArrayFilter('priceRange', range.value)}
-                        className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                        className="rounded border-gray-300 text-olive-500 focus:ring-olive-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">{range.label}</span>
                     </label>
@@ -196,7 +196,7 @@ const RestaurantsPage: React.FC = () => {
                         name="rating"
                         checked={filters.rating === rating}
                         onChange={() => handleFilterChange('rating', rating)}
-                        className="border-gray-300 text-orange-500 focus:ring-orange-500"
+                        className="border-gray-300 text-olive-500 focus:ring-olive-500"
                       />
                       <span className="ml-2 text-sm text-gray-700 flex items-center">
                         {rating}+ <Star className="w-4 h-4 text-yellow-400 fill-current ml-1" />
@@ -250,7 +250,7 @@ const RestaurantsPage: React.FC = () => {
                     </div>
 
                     {/* Delivery Fee */}
-                    <div className="absolute top-4 right-4 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute top-4 right-4 bg-olive-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                       {restaurant.deliveryFee === 0 ? 'Free' : formatPrice(restaurant.deliveryFee)}
                     </div>
                   </div>
@@ -258,7 +258,7 @@ const RestaurantsPage: React.FC = () => {
                   {/* Restaurant Info */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-500 transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-olive-500 transition-colors">
                         {restaurant.name}
                       </h3>
                       <div className="flex items-center space-x-1">

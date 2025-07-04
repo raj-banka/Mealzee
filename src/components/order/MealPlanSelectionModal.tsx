@@ -85,7 +85,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

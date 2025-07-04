@@ -4,12 +4,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, FileText, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/layout/Navbar';
 
 const TermsPage: React.FC = () => {
   const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
       {/* Header */}
       <div className="bg-green-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -79,11 +81,11 @@ const TermsPage: React.FC = () => {
           {/* User Responsibilities */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-orange-600" />
+              <AlertCircle className="w-6 h-6 text-olive-600" />
               <h2 className="text-2xl font-bold text-gray-800">Your Responsibilities</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-orange-50 rounded-xl p-4">
+              <div className="bg-olive-50 rounded-xl p-4">
                 <h3 className="font-semibold text-gray-800 mb-2">Accurate Information</h3>
                 <p className="text-gray-600">Provide correct delivery address and contact details</p>
               </div>
@@ -121,7 +123,7 @@ const TermsPage: React.FC = () => {
                 <h3 className="font-semibold text-gray-800">Modifications</h3>
                 <p className="text-gray-600">Order changes must be made at least 24 hours in advance</p>
               </div>
-              <div className="border-l-4 border-orange-500 pl-4">
+              <div className="border-l-4 border-olive-500 pl-4">
                 <h3 className="font-semibold text-gray-800">Missed Deliveries</h3>
                 <p className="text-gray-600">Please inform us if you won't be available for delivery</p>
               </div>
@@ -149,7 +151,7 @@ const TermsPage: React.FC = () => {
           {/* Limitation of Liability */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-orange-600" />
+              <AlertCircle className="w-6 h-6 text-olive-600" />
               <h2 className="text-2xl font-bold text-gray-800">Limitation of Liability</h2>
             </div>
             <div className="bg-gray-50 rounded-xl p-6">
@@ -162,6 +164,47 @@ const TermsPage: React.FC = () => {
                 <li>• Suitability for all dietary restrictions or allergies</li>
                 <li>• Liability for damages beyond the cost of the meal</li>
               </ul>
+            </div>
+          </div>
+
+          {/* Referral Program Terms */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-3 mb-4">
+              <CheckCircle className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-800">Referral Program Terms</h2>
+            </div>
+            <div className="bg-purple-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">₹499 Referral Reward Program</h3>
+              <div className="space-y-4 text-gray-700">
+                <div>
+                  <h4 className="font-semibold text-purple-800 mb-2">How it Works:</h4>
+                  <ul className="space-y-2 ml-4">
+                    <li>• Share your unique referral code with friends and family</li>
+                    <li>• When they sign up using your code, you receive ₹499 in pending earnings</li>
+                    <li>• Pending earnings are confirmed only after your referred friend pays their complete first month bill</li>
+                    <li>• Confirmed earnings are automatically deducted from your next month's food bill</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-purple-800 mb-2">Important Conditions:</h4>
+                  <ul className="space-y-2 ml-4">
+                    <li>• Referral rewards are only credited after the referred person completes their full month payment</li>
+                    <li>• Partial payments or cancelled subscriptions do not qualify for referral rewards</li>
+                    <li>• Referral earnings cannot be withdrawn as cash - they are only applicable as bill deductions</li>
+                    <li>• Maximum referral limit may apply per month (subject to program terms)</li>
+                    <li>• Mealzee reserves the right to modify or terminate the referral program at any time</li>
+                    <li>• Fraudulent referrals or gaming the system will result in account suspension</li>
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 border border-purple-200">
+                  <p className="text-sm text-purple-700">
+                    <strong>Note:</strong> Referral earnings are processed within 7 business days after your friend's successful monthly payment.
+                    You will receive a notification when earnings are confirmed and applied to your account.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 

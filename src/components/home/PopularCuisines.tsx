@@ -47,7 +47,7 @@ const MealCategories: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             Meal Categories That
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent"> Delight</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent"> Delight</span>
             <span className="inline-block ml-3">🍽️</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -178,7 +178,7 @@ const MealCategories: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center px-8 py-3 border border-orange-500 text-orange-500 font-medium rounded-lg hover:bg-orange-500 hover:text-white transition-colors duration-300"
+            className="inline-flex items-center px-8 py-3 border border-olive-500 text-olive-500 font-medium rounded-lg hover:bg-olive-500 hover:text-white transition-colors duration-300"
           >
             View Full Menu
           </motion.button>

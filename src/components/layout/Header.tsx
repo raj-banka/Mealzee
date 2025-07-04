@@ -34,19 +34,19 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-40">
+    <header className="bg-olive-50 shadow-lg sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 5 }}
-              className="w-10 h-10 rounded-xl overflow-hidden shadow-lg"
+              className="w-12 h-12 rounded-xl overflow-hidden shadow-lg bg-white p-1"
             >
-              <img
-                src="/logo.jpg"
+                <img
+                src="/logo_resized_for_web-removebg-preview.png"
                 alt="Mealzee Logo"
-                className="w-full h-full object-cover"
+                className="w-30 h-18 object-contain"
               />
             </motion.div>
             <div className="flex flex-col">
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
               onClick={() => setIsLocationModalOpen(true)}
               className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <MapPin className="w-5 h-5 text-orange-500" />
+              <MapPin className="w-5 h-5 text-olive-500" />
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">Deliver to</p>
                 <p className="text-xs text-gray-500 truncate max-w-32">
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search for meals or dishes..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
+                className="text-gray-700 hover:text-olive-500 font-medium transition-colors"
               >
                 {item.name}
               </Link>
@@ -104,14 +104,14 @@ const Header: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative p-2 text-gray-700 hover:text-orange-500 transition-colors"
+                className="relative p-2 text-gray-700 hover:text-olive-500 transition-colors"
               >
                 <ShoppingCart className="w-6 h-6" />
                 {cartItemCount > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium"
+                    className="absolute -top-1 -right-1 bg-olive-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium"
                   >
                     {cartItemCount}
                   </motion.span>
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:text-orange-500 transition-colors"
+              className="md:hidden p-2 text-gray-700 hover:text-olive-500 transition-colors"
             >
               {isMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -157,7 +157,7 @@ const Header: React.FC = () => {
               onClick={() => setIsLocationModalOpen(true)}
               className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <MapPin className="w-5 h-5 text-orange-500" />
+              <MapPin className="w-5 h-5 text-olive-500" />
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">Deliver to</p>
                 <p className="text-xs text-gray-500">
@@ -172,7 +172,7 @@ const Header: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search meals or dishes..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-transparent"
               />
             </div>
 
@@ -182,7 +182,7 @@ const Header: React.FC = () => {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-3 py-2 text-gray-700 hover:text-orange-500 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                  className="block px-3 py-2 text-gray-700 hover:text-olive-500 hover:bg-gray-100 rounded-lg font-medium transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Gift } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import { NAV_LINKS, APP_CONFIG } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 
@@ -16,6 +17,8 @@ const Navbar: React.FC = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   const { state, dispatch, isLoggedIn } = useApp();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Handle scroll effect
   useEffect(() => {
@@ -27,14 +30,9 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Smooth scroll to section
-  const scrollToSection = (href: string) => {
-    if (href.startsWith('#')) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+  // Navigate to page
+  const navigateToPage = (href: string) => {
+    router.push(href);
     setIsOpen(false);
   };
 
@@ -43,7 +41,8 @@ const Navbar: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/20 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 shadow-lg border-b border-green-700/30 transition-all duration-300"
+      style={{ backgroundColor: '#00430D' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -52,21 +51,21 @@ const Navbar: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-3 flex-shrink-0"
           >
-            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+            {/* <div className="w-14 h-14 rounded-xl overflow-hidden shadow-lg bg-white p-1"> */}
               <img
-                src="/logo.jpg"
+                src="/logo_resized_for_web-removebg-preview.png"
                 alt="Mealzee Logo"
-                className="w-full h-full object-cover"
+                className="w-30 h-18 object-contain"
               />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold tracking-tight text-gray-900 transition-colors">
+            {/* </div> */}
+            {/* <div className="flex flex-col">
+              <span className="text-2xl font-bold tracking-tight text-white transition-colors">
                 {APP_CONFIG.name}
               </span>
-              <span className="text-xs text-gray-500 transition-colors">
+              <span className="text-xs text-gray-200 transition-colors">
                 {APP_CONFIG.description}
               </span>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -74,10 +73,12 @@ const Navbar: React.FC = () => {
             {NAV_LINKS.map((link) => (
               <motion.button
                 key={link.id}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => navigateToPage(link.href)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="font-medium transition-all duration-300 hover:text-emerald-500 text-gray-700"
+                className={`font-medium transition-all duration-300 hover:text-emerald-300 ${
+                  pathname === link.href ? 'text-emerald-300' : 'text-white'
+                }`}
               >
                 {link.name}
               </motion.button>
@@ -90,7 +91,7 @@ const Navbar: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20"
               onClick={() => {
                 // Open referral modal
                 if (isLoggedIn()) {
@@ -110,7 +111,7 @@ const Navbar: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20"
               >
                 <User className="w-4 h-4" />
                 <span className="text-sm font-medium">
@@ -121,7 +122,7 @@ const Navbar: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+                className="bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 shadow-lg"
                 onClick={() => dispatch({ type: 'OPEN_AUTH_MODAL' })}
               >
                 <User className="w-4 h-4 mr-2" />
@@ -150,7 +151,7 @@ const Navbar: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-lg transition-colors text-white hover:bg-black/20"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </motion.button>
@@ -164,16 +165,19 @@ const Navbar: React.FC = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden bg-white/95 backdrop-blur-md rounded-b-2xl shadow-lg border-t border-gray-200/20"
+              className="md:hidden overflow-hidden rounded-b-2xl shadow-lg border-t border-green-700/30"
+              style={{ backgroundColor: '#00430D' }}
             >
               <div className="px-4 py-6 space-y-4">
                 {/* Mobile Navigation Links */}
                 {NAV_LINKS.map((link) => (
                   <motion.button
                     key={link.id}
-                    onClick={() => scrollToSection(link.href)}
+                    onClick={() => navigateToPage(link.href)}
                     whileHover={{ x: 5 }}
-                    className="block w-full text-left py-3 px-4 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-all"
+                    className={`block w-full text-left py-3 px-4 font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all ${
+                      pathname === link.href ? 'text-emerald-300 bg-black/20' : 'text-white'
+                    }`}
                   >
                     {link.name}
                   </motion.button>
@@ -182,7 +186,7 @@ const Navbar: React.FC = () => {
                 {/* Mobile Referral Button */}
                 <motion.button
                   whileHover={{ x: 5 }}
-                  className="flex items-center justify-between w-full py-3 px-4 text-gray-700 font-medium hover:bg-purple-50 hover:text-purple-600 rounded-lg transition-all"
+                  className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all"
                   onClick={() => {
                     setIsOpen(false);
                     if (isLoggedIn()) {
@@ -202,7 +206,7 @@ const Navbar: React.FC = () => {
                 {isLoggedIn() ? (
                   <motion.button
                     whileHover={{ x: 5 }}
-                    className="flex items-center justify-between w-full py-3 px-4 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-all"
+                    className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all"
                     onClick={() => {
                       setIsOpen(false);
                       setIsProfileModalOpen(true);
@@ -214,11 +218,11 @@ const Navbar: React.FC = () => {
                     </div>
                   </motion.button>
                 ) : (
-                  <div className="pt-4 border-t border-gray-200">
+                  <div className="pt-4 border-t border-green-700">
                     <Button
                       variant="primary"
                       size="sm"
-                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                      className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700"
                       onClick={() => {
                         setIsOpen(false);
                         dispatch({ type: 'OPEN_AUTH_MODAL' });

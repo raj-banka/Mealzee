@@ -2,6 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { LocationData, Address } from '@/types';
+import {
+  getCurrentLocation as getGeoLocation,
+  reverseGeocode,
+  forwardGeocode,
+  getLocationSuggestions,
+  validateServiceArea
+} from '@/lib/location';
 
 interface UseLocationReturn {
   currentLocation: LocationData | null;
@@ -11,6 +18,8 @@ interface UseLocationReturn {
   getCurrentLocation: () => Promise<void>;
   setSelectedAddress: (address: Address) => void;
   clearLocation: () => void;
+  searchLocations: (query: string) => Promise<LocationData[]>;
+  validateAddress: (address: string) => Promise<{ isValid: boolean; message: string; suggestions?: LocationData[] }>;
 }
 
 export function useLocation(): UseLocationReturn {
@@ -61,61 +70,38 @@ export function useLocation(): UseLocationReturn {
     setError(null);
 
     try {
-      // Check if geolocation is supported
-      if (!navigator.geolocation) {
-        throw new Error('Geolocation is not supported by this browser');
+      // Get current coordinates using browser geolocation
+      const coordinates = await getGeoLocation();
+
+      // Reverse geocode to get detailed address information
+      const locationData = await reverseGeocode(coordinates);
+
+      // Check if location is serviceable
+      if (!locationData.isServiceable) {
+        setError(`Sorry, we don't deliver to this area yet. We currently serve Bokaro Steel City, Jharkhand and surrounding areas within 15km radius.`);
       }
-
-      // Get current position
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000, // 5 minutes
-          }
-        );
-      });
-
-      const { latitude, longitude } = position.coords;
-
-      // Reverse geocoding to get address
-      // In a real app, you'd use a geocoding service like Google Maps API
-      // For now, we'll create a mock location
-      const locationData: LocationData = {
-        address: '123 Main Street, Downtown',
-        coordinates: {
-          lat: latitude,
-          lng: longitude,
-        },
-        city: 'New York',
-        state: 'NY',
-        country: 'USA',
-      };
 
       setCurrentLocation(locationData);
     } catch (error) {
       console.error('Error getting location:', error);
-      
+
       if (error instanceof GeolocationPositionError) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            setError('Location access denied. Please enable location services.');
+            setError('Location access denied. Please enable location services and try again.');
             break;
           case error.POSITION_UNAVAILABLE:
-            setError('Location information is unavailable.');
+            setError('Location information is unavailable. Please enter your address manually.');
             break;
           case error.TIMEOUT:
-            setError('Location request timed out.');
+            setError('Location request timed out. Please try again or enter your address manually.');
             break;
           default:
             setError('An unknown error occurred while retrieving location.');
             break;
         }
       } else {
-        setError('Failed to get current location. Please try again.');
+        setError('Failed to get current location. Please enter your address manually.');
       }
     } finally {
       setIsLoading(false);
@@ -145,6 +131,27 @@ export function useLocation(): UseLocationReturn {
     localStorage.removeItem('foodie_selected_address');
   }, []);
 
+  const searchLocations = useCallback(async (query: string): Promise<LocationData[]> => {
+    try {
+      return await getLocationSuggestions(query);
+    } catch (error) {
+      console.error('Error searching locations:', error);
+      return [];
+    }
+  }, []);
+
+  const validateAddress = useCallback(async (address: string) => {
+    try {
+      return await validateServiceArea(address);
+    } catch (error) {
+      console.error('Error validating address:', error);
+      return {
+        isValid: false,
+        message: 'Unable to validate address. Please try again.'
+      };
+    }
+  }, []);
+
   return {
     currentLocation,
     selectedAddress,
@@ -153,6 +160,8 @@ export function useLocation(): UseLocationReturn {
     getCurrentLocation,
     setSelectedAddress,
     clearLocation,
+    searchLocations,
+    validateAddress,
   };
 }
 

@@ -10,28 +10,28 @@ const HowItWorks: React.FC = () => {
       icon: Search,
       title: 'Browse & Search',
       description: 'Explore our delicious menu and find exactly what you\'re craving for your perfect meal.',
-      color: 'from-orange-400 to-red-500',
+      color: 'from-olive-400 to-olive-500',
       delay: 0.1,
     },
     {
       icon: ShoppingCart,
       title: 'Add to Cart',
       description: 'Select your favorite dishes, customize them to your liking, and add them to your cart.',
-      color: 'from-red-400 to-orange-500',
+      color: 'from-olive-500 to-olive-600',
       delay: 0.2,
     },
     {
       icon: Truck,
       title: 'Fast Delivery',
       description: 'Sit back and relax while we bring your food fresh and hot directly to your doorstep.',
-      color: 'from-orange-500 to-red-600',
+      color: 'from-olive-600 to-olive-700',
       delay: 0.3,
     },
     {
       icon: CheckCircle,
       title: 'Enjoy Your Meal',
       description: 'Receive your order and enjoy delicious, freshly prepared food from the comfort of your home.',
-      color: 'from-red-500 to-orange-600',
+      color: 'from-olive-700 to-olive-800',
       delay: 0.4,
     },
   ];
@@ -69,7 +69,7 @@ const HowItWorks: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             How It
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Works</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent">Works</span>
             <span className="inline-block ml-3">⚡</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -95,7 +95,7 @@ const HowItWorks: React.FC = () => {
                 className="relative text-center group"
               >
                 {/* Step Number */}
-                <div className="absolute -top-4 -left-4 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold z-10">
+                <div className="absolute -top-4 -left-4 w-8 h-8 bg-olive-500 text-white rounded-full flex items-center justify-center text-sm font-bold z-10">
                   {index + 1}
                 </div>
 
@@ -109,7 +109,7 @@ const HowItWorks: React.FC = () => {
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-olive-500 transition-colors">
                   {step.title}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
@@ -136,7 +136,7 @@ const HowItWorks: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-r from-olive-500 to-olive-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">
               Ready to Order?
             </h3>
@@ -146,7 +146,7 @@ const HowItWorks: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-orange-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              className="bg-white text-olive-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Start Ordering Now
             </motion.button>

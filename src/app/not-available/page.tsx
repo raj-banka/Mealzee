@@ -14,7 +14,7 @@ const NotAvailablePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-pink-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-olive-100 via-olive-50 to-olive-200 flex items-center justify-center px-4">
       <div className="max-w-2xl mx-auto text-center">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -28,7 +28,7 @@ const NotAvailablePage: React.FC = () => {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute top-20 left-10 w-16 h-16 bg-orange-300 rounded-full opacity-30 blur-sm"
+            className="absolute top-20 left-10 w-16 h-16 bg-olive-300 rounded-full opacity-30 blur-sm"
           ></motion.div>
           <motion.div
             animate={{
@@ -114,7 +114,7 @@ const NotAvailablePage: React.FC = () => {
             className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
           >
             Oops! We're not cooking
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-olive-500 to-olive-600">
               near you... yet!
             </span>
           </motion.h1>
@@ -139,7 +139,7 @@ const NotAvailablePage: React.FC = () => {
             className="grid md:grid-cols-3 gap-6 mb-12"
           >
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-              <Clock className="w-8 h-8 text-orange-500 mx-auto mb-3" />
+              <Clock className="w-8 h-8 text-olive-500 mx-auto mb-3" />
               <h3 className="font-semibold text-gray-800 mb-2">Coming Soon</h3>
               <p className="text-sm text-gray-600">We're expanding to new areas every month</p>
             </div>
@@ -166,7 +166,7 @@ const NotAvailablePage: React.FC = () => {
               onClick={handleGoBack}
               variant="primary"
               size="lg"
-              className="px-8 py-4 text-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              className="px-8 py-4 text-lg bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Go Back Home
@@ -175,7 +175,7 @@ const NotAvailablePage: React.FC = () => {
             <Button
               variant="outline"
               size="lg"
-              className="px-8 py-4 text-lg border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+              className="px-8 py-4 text-lg border-2 border-olive-500 text-olive-500 hover:bg-olive-500 hover:text-white"
               onClick={() => {
                 // In a real app, this could open a notification signup form
                 alert('We\'ll notify you when Mealzee arrives in your area!');
@@ -192,7 +192,7 @@ const NotAvailablePage: React.FC = () => {
             transition={{ delay: 1.5, duration: 1 }}
             className="mt-12 text-gray-500 text-sm"
           >
-            Currently serving: <span className="font-semibold text-orange-600">Sector 4, B.S. City</span>
+            Currently serving: <span className="font-semibold text-olive-600">Sector 4, B.S. City</span>
           </motion.p>
         </motion.div>
       </div>

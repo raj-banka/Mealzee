@@ -1,8 +1,64 @@
 @import "tailwindcss";
 
+/* Hide scrollbar utility - keeps scroll functionality but hides visual scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+  overflow: -moz-scrollbars-none;  /* Older Firefox */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Hide scrollbar */
+  width: 0 !important;  /* Remove scrollbar space */
+  height: 0 !important;  /* Remove horizontal scrollbar space */
+  background: transparent;  /* Make scrollbar invisible */
+}
+
+/* Additional support for older webkit browsers */
+.scrollbar-hide::-webkit-scrollbar-track {
+  display: none;
+  background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  display: none;
+  background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-corner {
+  display: none;
+  background: transparent;
+}
+
+/* Ensure scrolling still works on touch devices */
+.scrollbar-hide {
+  -webkit-overflow-scrolling: touch;  /* iOS smooth scrolling */
+}
+
 :root {
-  --background: #ffffff;
+  --background: #F7F8F0;
   --foreground: #171717;
+
+  /* Olive Green Color Palette */
+  --primary-olive: #8B9A46;
+  --primary-olive-dark: #6B7A36;
+  --secondary-olive: #9CAF50;
+  --secondary-olive-light: #B8C766;
+  --accent-olive: #D4E157;
+  --accent-olive-light: #E6EE9C;
+
+  /* Olive variations */
+  --olive-50: #F7F8F0;
+  --olive-100: #EDEFD6;
+  --olive-200: #D9DFAD;
+  --olive-300: #C5CF84;
+  --olive-400: #B1BF5B;
+  --olive-500: #8B9A46;
+  --olive-600: #6B7A36;
+  --olive-700: #4B5A26;
+  --olive-800: #2B3A16;
+  --olive-900: #1B2A0B;
 
   /* Fresh Green & Teal Color Palette */
   --primary-emerald: #10B981;
@@ -24,6 +80,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
   --font-inter: var(--font-inter);
+
+  /* Olive Green Color Palette for Tailwind */
+  --color-olive-50: var(--olive-50);
+  --color-olive-100: var(--olive-100);
+  --color-olive-200: var(--olive-200);
+  --color-olive-300: var(--olive-300);
+  --color-olive-400: var(--olive-400);
+  --color-olive-500: var(--olive-500);
+  --color-olive-600: var(--olive-600);
+  --color-olive-700: var(--olive-700);
+  --color-olive-800: var(--olive-800);
+  --color-olive-900: var(--olive-900);
 }
 
 body {
@@ -31,6 +99,11 @@ body {
   color: var(--foreground);
   font-family: 'Poppins', 'Inter', system-ui, sans-serif;
   font-weight: 400;
+}
+
+/* Ensure olive background throughout */
+html, body {
+  background-color: var(--olive-50) !important;
 }
 
 /* Custom scrollbar */
@@ -243,6 +316,44 @@ html {
 
 .will-change-opacity {
   will-change: opacity;
+}
+
+/* Note: Main scrollbar-hide utility is defined above */
+
+/* Auto-scroll container */
+.auto-scroll-container {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth;
+}
+
+/* Full width scrolling container */
+.full-width-scroll {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding-left: 50vw;
+  padding-right: 50vw;
+  transform: translateX(calc(50vw - 50%));
+}
+
+/* Smooth horizontal scroll */
+.scroll-smooth-x {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+/* Swiggy-style card animations */
+.swiggy-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.swiggy-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
 }
 
 /* Reduce motion for accessibility */

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/layout/Navbar';
 
 const ContactPage: React.FC = () => {
   const router = useRouter();
@@ -99,22 +100,22 @@ const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
+      <Navbar />
       {/* Header */}
-      <div className="bg-green-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200 text-gray-900 pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center space-x-4">
-            <motion.button
-              onClick={() => router.back()}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 hover:bg-green-700 rounded-full transition-colors"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </motion.button>
-            <div>
-              <h1 className="text-3xl font-bold">Contact Us</h1>
-              <p className="text-green-100 mt-1">Get in touch with our team</p>
+            <div className="text-center w-full">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                Contact
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-olive-500 to-olive-600">
+                  Mealzee
+                </span>
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Get in touch with our team - we're here to help with your food delivery needs
+              </p>
             </div>
           </div>
         </div>
@@ -135,8 +136,8 @@ const ContactPage: React.FC = () => {
               {/* Contact Methods */}
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-olive-100 rounded-full flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-olive-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Phone</h3>
@@ -146,8 +147,8 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-olive-200 rounded-full flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-olive-700" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">WhatsApp</h3>
@@ -157,8 +158,8 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Mail className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-olive-300 rounded-full flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-olive-800" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Email</h3>
@@ -168,8 +169,8 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-orange-600" />
+                  <div className="w-12 h-12 bg-olive-400 rounded-full flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-olive-900" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Service Area</h3>
@@ -179,8 +180,8 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-yellow-600" />
+                  <div className="w-12 h-12 bg-olive-500 rounded-full flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Business Hours</h3>
@@ -198,14 +199,14 @@ const ContactPage: React.FC = () => {
                     href="https://wa.me/919608036638?text=Hi! I'd like to place an order."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex items-center justify-center px-4 py-3 bg-olive-500 text-white rounded-lg hover:bg-olive-600 transition-colors"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Order Now
                   </a>
                   <a
                     href="tel:+919608036638"
-                    className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center justify-center px-4 py-3 bg-olive-600 text-white rounded-lg hover:bg-olive-700 transition-colors"
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     Call Us
@@ -239,7 +240,7 @@ const ContactPage: React.FC = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-olive-500 transition-colors"
                       placeholder="Your full name"
                     />
                   </div>
@@ -254,7 +255,7 @@ const ContactPage: React.FC = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-olive-500 transition-colors"
                       placeholder="+91 XXXXXXXXXX"
                     />
                   </div>
@@ -270,7 +271,7 @@ const ContactPage: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-olive-500 transition-colors"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -285,7 +286,7 @@ const ContactPage: React.FC = () => {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-olive-500 transition-colors"
                   >
                     <option value="">Select a subject</option>
                     <option value="New Order">New Order</option>
@@ -309,7 +310,7 @@ const ContactPage: React.FC = () => {
                     onChange={handleInputChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-500 focus:border-olive-500 transition-colors resize-none"
                     placeholder="Tell us how we can help you..."
                   />
                 </div>
@@ -318,15 +319,15 @@ const ContactPage: React.FC = () => {
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                  className="w-full bg-olive-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-olive-600 transition-colors flex items-center justify-center space-x-2"
                 >
                   <Send className="w-5 h-5" />
                   <span>Send Message</span>
                 </motion.button>
                   </form>
 
-                  <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                    <p className="text-sm text-green-700">
+                  <div className="mt-6 p-4 bg-olive-50 rounded-lg">
+                    <p className="text-sm text-olive-700">
                       💡 <strong>Tip:</strong> For faster response, contact us directly via WhatsApp at +91 9608036638
                     </p>
                   </div>
@@ -342,13 +343,13 @@ const ContactPage: React.FC = () => {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring" }}
-                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto"
+                    className="w-20 h-20 bg-olive-100 rounded-full flex items-center justify-center mx-auto"
                   >
-                    <Send className="w-10 h-10 text-green-600" />
+                    <Send className="w-10 h-10 text-olive-600" />
                   </motion.div>
 
                   <div>
-                    <h3 className="text-2xl font-bold text-green-600 mb-2">
+                    <h3 className="text-2xl font-bold text-olive-600 mb-2">
                       Message Sent Successfully!
                     </h3>
                     <p className="text-gray-600">
@@ -356,7 +357,7 @@ const ContactPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="bg-green-50 rounded-xl p-6 space-y-3">
+                  <div className="bg-olive-50 rounded-xl p-6 space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Subject:</span>
                       <span className="text-sm text-gray-600">{formData.subject}</span>
@@ -367,34 +368,34 @@ const ContactPage: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Reference ID:</span>
-                      <span className="text-sm font-bold text-green-700">#{messageData?.referenceId}</span>
+                      <span className="text-sm font-bold text-olive-700">#{messageData?.referenceId}</span>
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 rounded-xl p-4">
-                    <h4 className="font-semibold text-blue-800 mb-2">What happens next?</h4>
-                    <div className="space-y-2 text-sm text-blue-700">
+                  <div className="bg-olive-100 rounded-xl p-4">
+                    <h4 className="font-semibold text-olive-800 mb-2">What happens next?</h4>
+                    <div className="space-y-2 text-sm text-olive-700">
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
                         <span>Your message has been forwarded to our team</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
                         <span>Our team will review your message</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
                         <span>You'll receive a response within 24 hours</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
                         <span>Check your email or phone for our reply</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-yellow-50 rounded-xl p-4">
-                    <p className="text-sm text-yellow-700">
+                  <div className="bg-olive-200 rounded-xl p-4">
+                    <p className="text-sm text-olive-800">
                       📞 <strong>Urgent inquiry?</strong> Call us directly at +91 9608036638 for immediate assistance.
                     </p>
                   </div>
@@ -403,7 +404,7 @@ const ContactPage: React.FC = () => {
                     onClick={() => router.back()}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                    className="w-full bg-olive-500 text-white py-4 rounded-xl font-semibold hover:bg-olive-600 transition-colors"
                   >
                     Continue Browsing
                   </motion.button>

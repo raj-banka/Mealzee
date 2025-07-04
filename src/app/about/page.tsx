@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Target, Award, Heart, Truck, Shield, Clock, Star } from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
 
 const AboutPage: React.FC = () => {
   const values = [
@@ -58,8 +59,9 @@ const AboutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navbar />
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+      <section className="relative py-20 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -69,7 +71,7 @@ const AboutPage: React.FC = () => {
           >
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               About
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-olive-500 to-olive-600">
                 FoodieExpress
               </span>
             </h1>
@@ -93,7 +95,7 @@ const AboutPage: React.FC = () => {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center mb-6">
-                <Target className="w-8 h-8 text-orange-500 mr-3" />
+                <Target className="w-8 h-8 text-olive-500 mr-3" />
                 <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
               </div>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
@@ -122,7 +124,7 @@ const AboutPage: React.FC = () => {
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-olive-500 rounded-full flex items-center justify-center">
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -167,7 +169,7 @@ const AboutPage: React.FC = () => {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="text-center group"
                 >
-                  <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 bg-olive-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -211,7 +213,7 @@ const AboutPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-olive-500 mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-600 font-medium">{stat.label}</div>
@@ -258,7 +260,7 @@ const AboutPage: React.FC = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
                   {member.name}
                 </h3>
-                <p className="text-orange-500 font-medium mb-3">{member.role}</p>
+                <p className="text-olive-500 font-medium mb-3">{member.role}</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {member.bio}
                 </p>
@@ -276,7 +278,7 @@ const AboutPage: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-8 md:p-12 text-white"
+            className="bg-gradient-to-r from-olive-500 to-olive-600 rounded-3xl p-8 md:p-12 text-white"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Join Our Journey
@@ -289,14 +291,14 @@ const AboutPage: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-orange-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="bg-white text-olive-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Partner with Us
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-orange-500 transition-colors"
+                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-olive-500 transition-colors"
               >
                 Join Our Team
               </motion.button>

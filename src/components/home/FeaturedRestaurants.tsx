@@ -85,7 +85,7 @@ const FeaturedMeals: React.FC = () => {
                   </motion.button>
 
                   {/* Meal Type Badge */}
-                  <div className="absolute top-4 left-4 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                  <div className="absolute top-4 left-4 bg-olive-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                     {meal.mealType}
                   </div>
 
@@ -107,10 +107,10 @@ const FeaturedMeals: React.FC = () => {
                 {/* Meal Info */}
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-500 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-olive-500 transition-colors">
                       {meal.name}
                     </h3>
-                    <div className="text-lg font-bold text-orange-500">
+                    <div className="text-lg font-bold text-olive-500">
                       {formatPrice(meal.price)}
                     </div>
                   </div>

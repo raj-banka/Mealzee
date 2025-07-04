@@ -23,54 +23,8 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      {/* Top Action Bar */}
-      <div className="bg-green-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            {/* Left: Mealzee Logo */}
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
-                <img
-                  src="/logo.jpg"
-                  alt="Mealzee Logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-3xl font-bold text-yellow-400">
-                Mealzee
-              </div>
-            </div>
-
-            {/* Right: Action Buttons */}
-            <div className="flex items-center space-x-4">
-              {/* User Status Display (if logged in) */}
-              {isLoggedIn() && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-yellow-400 text-green-800 px-4 py-3 rounded-full font-semibold flex items-center space-x-2"
-                >
-                  <User className="w-5 h-5" />
-                  <span>Hi, {state.user?.fullName?.split(' ')[0] || 'User'}</span>
-                </motion.div>
-              )}
-
-              {/* Order Button - Changes based on order state */}
-              <motion.button
-                onClick={handleOrderNow}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-green-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center space-x-2"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <span>{state.selectedMealPlan ? 'edit order' : 'order now'}</span>
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer */}
-      <footer className="bg-gradient-to-r from-yellow-200 to-yellow-300 text-gray-800">
+      <footer className="bg-gradient-to-r from-olive-200 to-olive-300 text-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Company Info */}
@@ -80,18 +34,19 @@ const Footer: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
-                    <img
-                      src="/logo.jpg"
-                      alt="Mealzee Logo"
-                      className="w-full h-full object-cover"
-                    />
+                <div className="flex items-center space-x-3 mb-4 w-30 h-18">
+                  {/* <div className="w-14 h-14 rounded-xl overflow-hidden shadow-lg bg-white p-1"> */}
+                      <img
+                      style={{ backgroundColor: '#00430D' }}
+                src="/logo_resized_for_web-removebg-preview.png"
+                alt="Mealzee Logo"
+                className="w-30 h-18 object-contain p-2 rounded-2xl"
+              />
                   </div>
-                  <div className="text-3xl font-bold text-blue-800">
+                  {/* <div className="text-3xl font-bold text-blue-800">
                     Mealzee
-                  </div>
-                </div>
+                  </div> */}
+                {/* </div> */}
                 <p className="text-gray-700 leading-relaxed">
                   Mealzy is a nutrition and wellness service that offers personalized meals delivered at doorsteps.
                 </p>
@@ -149,7 +104,7 @@ const Footer: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="border-t border-yellow-400 pt-6 mt-8 text-left"
+            className="border-t border-yellow-800 pt-6 mt-8 text-center"
           >
             <p className="text-gray-600">Copyright © Mealzy 2024</p>
           </motion.div>

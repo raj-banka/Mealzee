@@ -71,7 +71,7 @@ const ShippingPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-800">Delivery Times</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-orange-50 rounded-xl p-4">
+              <div className="bg-olive-50 rounded-xl p-4">
                 <h3 className="font-semibold text-gray-800 mb-2">Breakfast</h3>
                 <p className="text-gray-600">7:00 AM - 9:00 AM</p>
               </div>

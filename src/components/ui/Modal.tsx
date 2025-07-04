@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({
               )}
 
               {/* Content */}
-              <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="overflow-y-auto max-h-[calc(90vh-120px)] scrollbar-hide">
                 {children}
               </div>
             </motion.div>

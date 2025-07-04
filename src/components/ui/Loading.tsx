@@ -38,7 +38,7 @@ const Loading: React.FC<LoadingProps> = ({
           repeat: Infinity,
           ease: "linear",
         }}
-        className={`${sizeClasses[size]} text-orange-500`}
+        className={`${sizeClasses[size]} text-olive-500`}
       >
         <svg
           viewBox="0 0 24 24"
@@ -62,7 +62,7 @@ const Loading: React.FC<LoadingProps> = ({
               repeat: Infinity,
               delay: index * 0.1,
             }}
-            className="w-2 h-2 bg-orange-500 rounded-full"
+            className="w-2 h-2 bg-olive-500 rounded-full"
           />
         ))}
       </div>

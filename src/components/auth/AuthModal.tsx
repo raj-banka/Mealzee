@@ -1,34 +1,110 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, Mail, ArrowRight, Check, User, MapPin, Navigation } from 'lucide-react';
+import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { useRouter } from 'next/navigation';
+import LocationInput from '@/components/location/LocationInput';
+import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type AuthStep = 'input' | 'otp' | 'details' | 'success';
+type AuthStep = 'input' | 'otp' | 'location-check' | 'details' | 'success';
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { login, dispatch, state } = useApp();
+  const router = useRouter();
   const [authStep, setAuthStep] = useState<AuthStep>('input');
-  const [contactMethod, setContactMethod] = useState<'email' | 'phone'>('phone');
-  const [contactValue, setContactValue] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [userDetails, setUserDetails] = useState({
     fullName: '',
-    address: ''
+    address: '',
+    dietaryPreference: 'vegetarian' as 'vegetarian' | 'non-vegetarian',
+    dateOfBirth: ''
   });
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLocationLoading, setIsLocationLoading] = useState(false);
+
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Handle location checking after OTP verification
+  useEffect(() => {
+    if (authStep === 'location-check') {
+      handleLocationCheck();
+    }
+  }, [authStep]);
+
+  const handleLocationCheck = async () => {
+    try {
+      console.log('🔍 Checking location serviceability...');
+      const coordinates = await getCurrentLocation();
+      const locationData = await reverseGeocode(coordinates);
+
+      // Store location data for later use
+      setLocationData(locationData);
+
+      if (!locationData.isServiceable) {
+        console.log('❌ Location not serviceable, redirecting to not-available page');
+        // Close modal and redirect to not-available page
+        dispatch({ type: 'CLOSE_AUTH_MODAL' });
+        router.push('/not-available');
+        resetModal();
+        return;
+      }
+
+      console.log('✅ Location is serviceable, proceeding to details');
+      // Pre-fill address if location is serviceable
+      const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
+      setUserDetails(prev => ({ ...prev, address: addressString }));
+
+      setAuthStep('details');
+    } catch (error) {
+      console.error('Location check failed:', error);
+      // If location check fails, continue to details step
+      // User can manually enter address
+      setAuthStep('details');
+    }
+  };
+
+  // Phone number validation
+  const validatePhoneNumber = (phone: string): boolean => {
+    const cleanPhone = phone.replace(/\D/g, ''); // Remove non-digits
+    if (cleanPhone.length !== 10) {
+      setPhoneError('Phone number must be exactly 10 digits');
+      return false;
+    }
+    if (!cleanPhone.match(/^[6-9]/)) {
+      setPhoneError('Phone number must start with 6, 7, 8, or 9');
+      return false;
+    }
+    setPhoneError('');
+    return true;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+    if (value.length <= 10) {
+      setPhoneNumber(value);
+      if (phoneError) {
+        setPhoneError(''); // Clear error when user starts typing
+      }
+    }
+  };
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactValue.trim()) return;
+    if (!phoneNumber.trim()) return;
+
+    // Validate phone number
+    if (!validatePhoneNumber(phoneNumber)) {
+      return;
+    }
 
     setIsLoading(true);
 
@@ -51,20 +127,48 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
+    // If location data is available from OTP step, use it
+    // Otherwise validate the manually entered address
+    let isAddressServiceable = true;
+    if (locationData) {
+      // Location was already checked during OTP verification
+      isAddressServiceable = locationData.isServiceable;
+    } else {
+      // Validate manually entered address
+      try {
+        const validation = await validateServiceArea(userDetails.address);
+        isAddressServiceable = validation.isValid;
+      } catch (error) {
+        console.error('Address validation error:', error);
+        // Assume not serviceable if validation fails
+        isAddressServiceable = false;
+      }
+    }
+
     // Login the user with collected data
     login({
       fullName: userDetails.fullName,
-      email: contactMethod === 'email' ? contactValue : '',
-      phone: contactMethod === 'phone' ? contactValue : '',
+      email: '',
+      phone: phoneNumber,
       address: userDetails.address,
+      dietaryPreference: userDetails.dietaryPreference,
+      dateOfBirth: userDetails.dateOfBirth,
     });
 
     setIsLoading(false);
     setAuthStep('success');
 
-    // Close auth modal and continue order flow
+    // Close auth modal and check location serviceability
     setTimeout(() => {
       dispatch({ type: 'CLOSE_AUTH_MODAL' });
+
+      // Check if location is serviceable
+      if (!isAddressServiceable) {
+        // Redirect to not-available page if location is not serviceable
+        router.push('/not-available');
+        resetModal();
+        return;
+      }
 
       // Continue with the order flow based on current state
       if (state.orderFlow === 'auth') {
@@ -108,7 +212,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Check for demo OTP
     if (otpValue === '123456') {
       console.log('✅ Demo OTP verified successfully');
-      setAuthStep('details');
+      setAuthStep('location-check');
     } else {
       alert('Invalid OTP. Use 123456 for demo mode.');
       // Reset OTP inputs
@@ -147,47 +251,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(false);
   };
 
-  const getCurrentLocation = () => {
-    setIsLocationLoading(true);
 
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
-      setIsLocationLoading(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          // Simulate reverse geocoding
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const mockAddress = 'Sector 4, B.S. City, Delhi - 110001';
-          setUserDetails(prev => ({
-            ...prev,
-            address: mockAddress
-          }));
-        } catch (error) {
-          console.error('Error getting location:', error);
-          alert('Unable to get your location. Please enter manually.');
-        } finally {
-          setIsLocationLoading(false);
-        }
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        alert('Unable to access your location. Please enter your address manually.');
-        setIsLocationLoading(false);
-      }
-    );
-  };
 
   const resetModal = () => {
     setAuthStep('input');
-    setContactValue('');
-    setUserDetails({ fullName: '', address: '' });
+    setPhoneNumber('');
+    setPhoneError('');
+    setUserDetails({ fullName: '', address: '', dietaryPreference: 'vegetarian', dateOfBirth: '' });
     setOtp(['', '', '', '', '', '']);
     setIsLoading(false);
-    setIsLocationLoading(false);
     setResendCooldown(0);
   };
 
@@ -212,20 +284,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+            className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-sm sm:max-w-md w-full shadow-2xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto mx-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                 {authStep === 'input' && 'Welcome to Mealzee'}
                 {authStep === 'otp' && 'Verify OTP'}
+                {authStep === 'location-check' && 'Checking Location'}
                 {authStep === 'details' && 'Complete Your Profile'}
                 {authStep === 'success' && 'Welcome!'}
               </h2>
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -238,59 +311,49 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <p className="text-gray-600 mb-6">
-                  Enter your phone number or email to get started
+                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
+                  Enter your phone number to get started
                 </p>
 
-                {/* Contact Method Toggle */}
-                <div className="flex bg-gray-100 rounded-2xl p-1 mb-6">
-                  <button
-                    onClick={() => setContactMethod('phone')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                      contactMethod === 'phone'
-                        ? 'bg-white text-green-600 shadow-sm'
-                        : 'text-gray-600'
-                    }`}
-                  >
-                    <Phone className="w-4 h-4 inline mr-2" />
-                    Phone
-                  </button>
-                  <button
-                    onClick={() => setContactMethod('email')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                      contactMethod === 'email'
-                        ? 'bg-white text-green-600 shadow-sm'
-                        : 'text-gray-600'
-                    }`}
-                  >
-                    <Mail className="w-4 h-4 inline mr-2" />
-                    Email
-                  </button>
-                </div>
-
                 <form onSubmit={handleContactSubmit}>
-                  <div className="relative mb-6">
+                  <div className="relative mb-2">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
-                      type={contactMethod === 'email' ? 'email' : 'tel'}
-                      placeholder={
-                        contactMethod === 'email'
-                          ? 'Enter your email address'
-                          : 'Enter your phone number'
-                      }
-                      value={contactValue}
-                      onChange={(e) => setContactValue(e.target.value)}
-                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:border-green-500 focus:outline-none transition-colors"
+                      type="tel"
+                      placeholder="Enter your 10-digit phone number"
+                      value={phoneNumber}
+                      onChange={handlePhoneChange}
+                      className={`w-full pl-12 pr-4 py-3 sm:py-4 border-2 rounded-xl sm:rounded-2xl focus:outline-none transition-colors text-sm sm:text-base ${
+                        phoneError
+                          ? 'border-red-500 focus:border-red-500'
+                          : 'border-gray-200 focus:border-green-500'
+                      }`}
                       required
+                      maxLength={10}
                     />
                   </div>
 
+                  {/* Error Message */}
+                  {phoneError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-4 text-red-500 text-sm flex items-center space-x-1"
+                    >
+                      <span>⚠️</span>
+                      <span>{phoneError}</span>
+                    </motion.div>
+                  )}
+
+                  <div className="mb-6"></div>
+
                   <motion.button
                     type="submit"
-                    disabled={!contactValue.trim() || isLoading}
+                    disabled={!phoneNumber.trim() || phoneNumber.length !== 10 || !!phoneError || isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full py-4 rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 ${
-                      contactValue.trim() && !isLoading
+                    className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 text-sm sm:text-base ${
+                      phoneNumber.trim() && phoneNumber.length === 10 && !phoneError && !isLoading
                         ? 'bg-green-600 text-white hover:bg-green-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
@@ -319,13 +382,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                   We've sent a 6-digit code to{' '}
-                  <span className="font-semibold text-green-600">{contactValue}</span>
+                  <span className="font-semibold text-green-600">{phoneNumber}</span>
                 </p>
 
                 <form onSubmit={handleOtpSubmit}>
-                  <div className="flex space-x-3 mb-6">
+                  <div className="flex space-x-2 sm:space-x-3 mb-4 sm:mb-6 justify-center">
                     {otp.map((digit, index) => (
                       <input
                         key={index}
@@ -334,7 +397,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
-                        className="w-12 h-12 text-center text-xl font-bold border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors"
+                        className="w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:outline-none transition-colors"
                       />
                     ))}
                   </div>
@@ -344,7 +407,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     disabled={otp.join('').length !== 6 || isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full py-4 rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 ${
+                    className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 text-sm sm:text-base ${
                       otp.join('').length === 6 && !isLoading
                         ? 'bg-green-600 text-white hover:bg-green-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -387,24 +450,48 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   onClick={() => setAuthStep('input')}
                   className="w-full mt-4 text-green-600 hover:text-green-700 font-medium"
                 >
-                  Back to {contactMethod}
+                  Back to phone number
                 </button>
               </motion.div>
             )}
 
-            {/* Step 3: User Details */}
+            {/* Step 3: Location Check */}
+            {authStep === 'location-check' && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="text-center"
+              >
+                <div className="mb-6">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"
+                  />
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Checking Your Location
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    We're verifying if we deliver to your area...
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: User Details */}
             {authStep === 'details' && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                   Please provide your details to complete registration
                 </p>
 
                 <form onSubmit={handleDetailsSubmit}>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
@@ -412,54 +499,87 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         placeholder="Enter your full name"
                         value={userDetails.fullName}
                         onChange={(e) => setUserDetails(prev => ({ ...prev, fullName: e.target.value }))}
-                        className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:border-green-500 focus:outline-none transition-colors"
+                        className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base"
                         required
                       />
                     </div>
 
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-4 w-5 h-5 text-gray-400" />
-                      <textarea
-                        placeholder="Enter your complete address"
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Dietary Preference
+                      </label>
+                      <div className="flex bg-gray-100 rounded-xl sm:rounded-2xl p-1">
+                        <button
+                          type="button"
+                          onClick={() => setUserDetails(prev => ({ ...prev, dietaryPreference: 'vegetarian' }))}
+                          className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all text-xs sm:text-sm ${
+                            userDetails.dietaryPreference === 'vegetarian'
+                              ? 'bg-white text-green-600 shadow-sm'
+                              : 'text-gray-600'
+                          }`}
+                        >
+                          🥬 Vegetarian
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setUserDetails(prev => ({ ...prev, dietaryPreference: 'non-vegetarian' }))}
+                          className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all text-xs sm:text-sm ${
+                            userDetails.dietaryPreference === 'non-vegetarian'
+                              ? 'bg-white text-green-600 shadow-sm'
+                              : 'text-gray-600'
+                          }`}
+                        >
+                          🍗 Non-Vegetarian
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Date of Birth
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="date"
+                          value={userDetails.dateOfBirth}
+                          onChange={(e) => setUserDetails(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base"
+                          required
+                          max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Delivery Address
+                      </label>
+                      <LocationInput
                         value={userDetails.address}
-                        onChange={(e) => setUserDetails(prev => ({ ...prev, address: e.target.value }))}
-                        className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:border-green-500 focus:outline-none transition-colors resize-none"
-                        rows={3}
-                        required
+                        onChange={(address, locData) => {
+                          setUserDetails(prev => ({ ...prev, address }));
+                          if (locData) {
+                            setLocationData(locData);
+                          }
+                        }}
+                        placeholder="Enter your complete delivery address"
+                        className="border-2 border-gray-200 focus:border-green-500"
+                        showCurrentLocationButton={true}
+                        validateOnChange={true}
                       />
                     </div>
                   </div>
 
-                  {/* Use Current Location Button */}
-                  <motion.button
-                    type="button"
-                    onClick={getCurrentLocation}
-                    disabled={isLocationLoading}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full bg-blue-600 text-white py-3 rounded-2xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 mt-4"
-                  >
-                    {isLocationLoading ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                      />
-                    ) : (
-                      <>
-                        <Navigation className="w-5 h-5" />
-                        <span>Use Current Location</span>
-                      </>
-                    )}
-                  </motion.button>
+
 
                   <motion.button
                     type="submit"
-                    disabled={!userDetails.fullName.trim() || !userDetails.address.trim() || isLoading}
+                    disabled={!userDetails.fullName.trim() || !userDetails.address.trim() || !userDetails.dateOfBirth.trim() || isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full py-4 rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 mt-6 ${
-                      userDetails.fullName.trim() && userDetails.address.trim() && !isLoading
+                    className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 mt-4 sm:mt-6 text-sm sm:text-base ${
+                      userDetails.fullName.trim() && userDetails.address.trim() && userDetails.dateOfBirth.trim() && !isLoading
                         ? 'bg-green-600 text-white hover:bg-green-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
@@ -488,7 +608,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </motion.div>
             )}
 
-            {/* Step 4: Success */}
+            {/* Step 5: Success */}
             {authStep === 'success' && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}

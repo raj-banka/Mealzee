@@ -78,7 +78,7 @@ const PrivacyPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-800">How We Use Your Information</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-orange-50 rounded-xl p-4">
+              <div className="bg-olive-50 rounded-xl p-4">
                 <h3 className="font-semibold text-gray-800 mb-2">Service Delivery</h3>
                 <p className="text-gray-600">To process orders, arrange deliveries, and provide customer support</p>
               </div>
@@ -144,7 +144,7 @@ const PrivacyPage: React.FC = () => {
                 <h3 className="font-semibold text-gray-800">Marketing Opt-out</h3>
                 <p className="text-gray-600">You can unsubscribe from marketing communications at any time</p>
               </div>
-              <div className="border-l-4 border-orange-500 pl-4">
+              <div className="border-l-4 border-olive-500 pl-4">
                 <h3 className="font-semibold text-gray-800">Data Portability</h3>
                 <p className="text-gray-600">You can request a copy of your data in a portable format</p>
               </div>

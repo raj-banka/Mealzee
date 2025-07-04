@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Leaf,
@@ -10,203 +10,357 @@ import {
   Sparkles,
   Star,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface Feature {
   id: string;
   title: string;
+  subtitle: string;
   icon: React.ReactNode;
   bgColor: string;
   iconColor: string;
   description: string;
+  image?: string;
 }
 
 const features: Feature[] = [
   {
-    id: 'veg-nonveg',
-    title: 'Veg & Non-Veg Mode',
+    id: 'healthy-meals',
+    title: 'Healthy & Nutritious',
+    subtitle: 'Fresh Daily',
     icon: (
-      <div className="flex flex-col items-center space-y-2">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-4 bg-green-500 rounded-full flex items-center justify-end pr-1">
-            <div className="w-3 h-3 bg-white rounded-full"></div>
-          </div>
+      <div className="relative">
+        <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <Leaf className="w-10 h-10 text-white" />
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-4 bg-gray-300 rounded-full flex items-center justify-start pl-1">
-            <div className="w-3 h-3 bg-white rounded-full"></div>
-          </div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
+          <Star className="w-4 h-4 text-white" />
         </div>
       </div>
     ),
-    bgColor: 'bg-gradient-to-br from-green-100 to-green-200',
+    bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-50',
     iconColor: 'text-green-600',
-    description: 'Switch between vegetarian and non-vegetarian options easily'
+    description: 'Carefully crafted meals with fresh ingredients and balanced nutrition for your healthy lifestyle'
   },
   {
-    id: 'healthy',
-    title: 'Healthy',
+    id: 'birthday-surprise',
+    title: 'Birthday Surprises',
+    subtitle: 'Special Treats',
     icon: (
       <div className="relative">
-        <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
-          <Leaf className="w-6 h-6 text-green-600" />
+        <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <Cake className="w-10 h-10 text-white" />
         </div>
-        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-          <div className="w-2 h-2 bg-white rounded-full"></div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
+          <Sparkles className="w-4 h-4 text-white" />
         </div>
       </div>
     ),
-    bgColor: 'bg-gradient-to-br from-blue-100 to-blue-200',
-    iconColor: 'text-blue-600',
-    description: 'Nutritious meals prepared with fresh, organic ingredients'
-  },
-  {
-    id: 'birthday',
-    title: 'Birthday Surprise',
-    icon: (
-      <div className="relative">
-        <div className="w-12 h-8 bg-yellow-400 rounded-t-lg"></div>
-        <div className="w-12 h-4 bg-orange-400 rounded-b-lg"></div>
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-          <div className="w-1 h-3 bg-blue-400"></div>
-          <div className="w-1 h-3 bg-blue-400 ml-2"></div>
-          <div className="w-1 h-3 bg-blue-400 ml-4"></div>
-        </div>
-      </div>
-    ),
-    bgColor: 'bg-gradient-to-br from-pink-100 to-pink-200',
+    bgColor: 'bg-gradient-to-br from-pink-50 via-pink-100 to-rose-50',
     iconColor: 'text-pink-600',
-    description: 'Special birthday treats and personalized meals on your special day'
+    description: 'Special birthday treats and personalized surprises to make your day extra memorable'
   },
   {
     id: 'gift-cards',
     title: 'Gift Cards',
-    icon: (
-      <div className="flex space-x-1">
-        <div className="w-8 h-10 bg-yellow-400 rounded-lg relative">
-          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full"></div>
-          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-red-500"></div>
-        </div>
-        <div className="w-6 h-8 bg-blue-400 rounded-lg relative">
-          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-red-500 rounded-full"></div>
-          <div className="absolute top-2.5 left-1/2 transform -translate-x-1/2 w-1 h-3 bg-red-500"></div>
-        </div>
-      </div>
-    ),
-    bgColor: 'bg-gradient-to-br from-yellow-100 to-yellow-200',
-    iconColor: 'text-yellow-600',
-    description: 'Perfect gifts for your loved ones - meal subscriptions they\'ll love'
-  },
-  {
-    id: 'festival',
-    title: 'Festival Special',
+    subtitle: 'Perfect Gifts',
     icon: (
       <div className="relative">
-        <div className="w-10 h-6 bg-yellow-400 rounded-full"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-4 bg-orange-500 rounded-full"></div>
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-          <div className="w-1 h-2 bg-blue-400"></div>
+        <div className="w-20 h-20 bg-gradient-to-br from-olive-400 to-olive-500 rounded-2xl flex items-center justify-center shadow-lg">
+          <Gift className="w-10 h-10 text-white" />
         </div>
-        <div className="absolute -top-1 left-2">
-          <div className="w-1 h-1 bg-yellow-300 rounded-full"></div>
-        </div>
-        <div className="absolute -top-1 right-2">
-          <div className="w-1 h-1 bg-yellow-300 rounded-full"></div>
-        </div>
-        <div className="absolute top-6 left-1">
-          <div className="w-1 h-1 bg-blue-300 rounded-full"></div>
-        </div>
-        <div className="absolute top-6 right-1">
-          <div className="w-1 h-1 bg-blue-300 rounded-full"></div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-md">
+          <Heart className="w-4 h-4 text-white" />
         </div>
       </div>
     ),
-    bgColor: 'bg-gradient-to-br from-purple-100 to-purple-200',
+    bgColor: 'bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200',
+    iconColor: 'text-yellow-600',
+    description: 'Perfect gifts for your loved ones - meal subscriptions they will absolutely love'
+  },
+  {
+    id: 'festival-special',
+    title: 'Festival Specials',
+    subtitle: 'Traditional Flavors',
+    icon: (
+      <div className="relative">
+        <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <Sparkles className="w-10 h-10 text-white" />
+        </div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-olive-400 rounded-full flex items-center justify-center shadow-md">
+          <Star className="w-4 h-4 text-white" />
+        </div>
+      </div>
+    ),
+    bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-indigo-50',
     iconColor: 'text-purple-600',
-    description: 'Celebrate festivals with traditional and special festive meals'
+    description: 'Celebrate festivals with traditional and special festive meals crafted with authentic flavors'
   },
   {
     id: 'joining-gift',
-    title: 'Joining Gift',
+    title: 'Welcome Bonus',
+    subtitle: 'New Member Perks',
     icon: (
       <div className="relative">
-        <div className="w-10 h-8 bg-yellow-400 rounded-lg relative">
-          <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-3 bg-red-500 rounded-full"></div>
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-red-500"></div>
-          <div className="absolute bottom-1 left-1 right-1 h-1 bg-white rounded text-xs flex items-center justify-center">
-            <span className="text-[8px] text-gray-800 font-bold">WELCOME</span>
-          </div>
+        <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <Gift className="w-10 h-10 text-white" />
+        </div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center shadow-md">
+          <Star className="w-4 h-4 text-white" />
         </div>
       </div>
     ),
-    bgColor: 'bg-gradient-to-br from-orange-100 to-orange-200',
-    iconColor: 'text-orange-600',
-    description: 'Welcome bonus and special offers for new Mealzee family members'
+    bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-cyan-50',
+    iconColor: 'text-blue-600',
+    description: 'Welcome bonus and special offers for new Mealzee family members to start your journey'
   }
 ];
 
 const FeaturesSection: React.FC = () => {
   const [vegMode, setVegMode] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Check scroll position for arrow visibility
+  const checkScrollPosition = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(
+        container.scrollLeft < container.scrollWidth - container.clientWidth - 10
+      );
+    }
+  }, []);
+
+  // Manual scroll functions
+  const scrollLeft = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
+
+  // Auto-scroll functionality with left-to-right and right-to-left movement
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let animationId: number;
+    let direction = 1; // 1 for right, -1 for left
+    const scrollSpeed = 1; // pixels per frame
+    const pauseDuration = 2000; // pause for 2 seconds at each end
+
+    const autoScroll = () => {
+      if (!isHovered && container) {
+        const currentScroll = container.scrollLeft;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+
+        // Check if we've reached the end (right side)
+        if (currentScroll >= maxScroll - 5 && direction === 1) {
+          // Pause, then change direction to left
+          setTimeout(() => {
+            direction = -1;
+          }, pauseDuration);
+        }
+        // Check if we've reached the beginning (left side)
+        else if (currentScroll <= 5 && direction === -1) {
+          // Pause, then change direction to right
+          setTimeout(() => {
+            direction = 1;
+          }, pauseDuration);
+        }
+        // Continue scrolling in current direction
+        else {
+          container.scrollLeft = currentScroll + (scrollSpeed * direction);
+        }
+
+        checkScrollPosition();
+      }
+
+      animationId = requestAnimationFrame(autoScroll);
+    };
+
+    // Start auto-scroll after initial delay
+    const timeoutId = setTimeout(() => {
+      animationId = requestAnimationFrame(autoScroll);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [isHovered, checkScrollPosition]);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      checkScrollPosition();
+
+      return () => {
+        container.removeEventListener('scroll', checkScrollPosition);
+      };
+    }
+  }, [checkScrollPosition]);
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+    <section className="py-20 bg-gradient-to-br from-olive-100 to-olive-50 overflow-hidden">
+      {/* Section Header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-green-600 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             What's waiting for
           </h2>
-          <h3 className="text-3xl md:text-4xl font-bold text-green-600 mb-6">
+          <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-olive-600 to-olive-700 bg-clip-text text-transparent mb-6">
             you on mealzee
           </h3>
-          <p className="text-lg text-gray-500 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Get ready for delicious food made by expert chefs — and plenty of extra surprises
           </p>
         </motion.div>
+      </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className={`${feature.bgColor} rounded-3xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer`}
-            >
-              <div className="mb-6">
-                <div className="flex justify-center mb-4">
-                  {feature.icon}
-                </div>
-              </div>
+      {/* Full Width Horizontal Auto-Scrollable Features */}
+      <div className="relative w-full overflow-hidden">
+        {/* Manual Scroll Arrows */}
+        <motion.button
+          onClick={scrollLeft}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+            canScrollLeft ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
+          }`}
+          whileHover={{ scale: canScrollLeft ? 1.1 : 1 }}
+          whileTap={{ scale: canScrollLeft ? 0.95 : 1 }}
+          disabled={!canScrollLeft}
+        >
+          <ChevronLeft className="w-6 h-6 text-olive-600" />
+        </motion.button>
 
-              <h4 className="text-lg font-bold text-gray-800">
-                {feature.title}
-              </h4>
-            </motion.div>
-          ))}
+        <motion.button
+          onClick={scrollRight}
+          className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+            canScrollRight ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
+          }`}
+          whileHover={{ scale: canScrollRight ? 1.1 : 1 }}
+          whileTap={{ scale: canScrollRight ? 0.95 : 1 }}
+          disabled={!canScrollRight}
+        >
+          <ChevronRight className="w-6 h-6 text-olive-600" />
+        </motion.button>
+
+        {/* Auto-Scrollable Container - Full Width */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide auto-scroll-container pb-4"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            scrollBehavior: 'smooth',
+            overflowY: 'hidden',
+            height: 'auto',
+            maxHeight: 'none',
+            paddingLeft: '2rem',
+            paddingRight: '2rem'
+          }}
+        >
+            {/* Duplicate features for seamless loop */}
+            {[...features, ...features].map((feature, index) => (
+              <motion.div
+                key={`${feature.id}-${index}`}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: (index % features.length) * 0.1
+                }}
+                viewport={{ once: true }}
+                whileHover={{
+                  y: -8,
+                  scale: 1.02,
+                  transition: { duration: 0.3, type: "spring", stiffness: 300 }
+                }}
+                className="flex-shrink-0 w-80 group cursor-pointer"
+              >
+                <motion.div
+                  className={`${feature.bgColor} rounded-3xl p-8 h-full shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 relative overflow-hidden`}
+                  whileHover={{
+                    boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                  {/* Icon Section */}
+                  <div className="flex justify-center mb-8">
+                    <motion.div
+                      whileHover={{
+                        scale: 1.1,
+                        transition: { duration: 0.3, type: "spring", stiffness: 400 }
+                      }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      {feature.icon}
+                    </motion.div>
+                  </div>
+
+                  {/* Content Section */}
+                  <div className="text-center">
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">
+                      {feature.title}
+                    </h4>
+                    <p className="text-lg font-medium text-gray-600 mb-4">
+                      {feature.subtitle}
+                    </p>
+                    <p className="text-gray-700 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+
+                  {/* Hover Effect Indicator */}
+                  <div className="mt-6 flex justify-center">
+                    <div className="w-12 h-1 bg-gradient-to-r from-olive-400 to-olive-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom Text */}
+
+      {/* Bottom Call to Action */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true }}
           className="text-center"
         >
-          <p className="text-xl font-semibold text-green-600">
-            ...and a lot more
-          </p>
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-olive-100 to-olive-200 px-6 py-3 rounded-full">
+            <Sparkles className="w-5 h-5 text-olive-600" />
+            <p className="text-lg font-semibold text-olive-700">
+              ...and a lot more surprises waiting for you!
+            </p>
+            <Sparkles className="w-5 h-5 text-olive-600" />
+          </div>
         </motion.div>
       </div>
     </section>

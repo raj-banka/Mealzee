@@ -114,7 +114,7 @@ const RefundPage: React.FC = () => {
           {/* Cancellation Policy */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-4">
-              <AlertTriangle className="w-6 h-6 text-orange-600" />
+              <AlertTriangle className="w-6 h-6 text-olive-600" />
               <h2 className="text-2xl font-bold text-gray-800">Cancellation Policy</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -126,7 +126,7 @@ const RefundPage: React.FC = () => {
                 <h3 className="font-semibold text-gray-800 mb-2">12-24 Hours Notice</h3>
                 <p className="text-gray-600">50% refund available as ingredients may already be purchased</p>
               </div>
-              <div className="bg-orange-50 rounded-xl p-4">
+              <div className="bg-olive-50 rounded-xl p-4">
                 <h3 className="font-semibold text-gray-800 mb-2">Less than 12 Hours</h3>
                 <p className="text-gray-600">No refund available as meal preparation has likely started</p>
               </div>

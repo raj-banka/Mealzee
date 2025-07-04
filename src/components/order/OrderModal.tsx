@@ -15,6 +15,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { getCurrentLocation, reverseGeocode } from '@/lib/location';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -75,39 +76,57 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
     }));
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocationHandler = async () => {
     setIsLoading(true);
 
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
-      setIsLoading(false);
-      return;
-    }
+    try {
+      // Get current coordinates using browser geolocation
+      const coordinates = await getCurrentLocation();
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          // Simulate reverse geocoding
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const mockAddress = 'Sector 4, B.S. City, Delhi - 110001';
-          setDetectedLocation(mockAddress);
-          setOrderDetails(prev => ({
-            ...prev,
-            address: mockAddress
-          }));
-        } catch (error) {
-          console.error('Error getting location:', error);
-          alert('Unable to get your location. Please enter manually.');
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        alert('Unable to access your location. Please enter your address manually.');
+      // Reverse geocode to get detailed address information
+      const locationData = await reverseGeocode(coordinates);
+
+      // Check if location is serviceable
+      if (!locationData.isServiceable) {
+        alert(`Sorry, we don't deliver to this area yet. We currently serve Bokaro Steel City, Jharkhand and surrounding areas within 15km radius.`);
         setIsLoading(false);
+        return;
       }
-    );
+
+      // Set the detected address
+      const formattedAddress = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
+
+      setDetectedLocation(formattedAddress);
+      setOrderDetails(prev => ({
+        ...prev,
+        address: formattedAddress
+      }));
+
+      console.log('📍 Location detected for order:', locationData);
+    } catch (error) {
+      console.error('Error getting location:', error);
+
+      if (error instanceof GeolocationPositionError) {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert('Location access denied. Please enable location services and enter your address manually.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert('Location information is unavailable. Please enter your address manually.');
+            break;
+          case error.TIMEOUT:
+            alert('Location request timed out. Please enter your address manually.');
+            break;
+          default:
+            alert('Unable to get your location. Please enter your address manually.');
+            break;
+        }
+      } else {
+        alert('Unable to get your location. Please enter your address manually.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUpdatePreferences = (e: React.FormEvent) => {
@@ -225,7 +244,7 @@ Thank you! 🙏`;
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

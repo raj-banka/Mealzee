@@ -43,7 +43,7 @@ const SpecialsSection: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-orange-50 to-red-50 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-white via-olive-50 to-olive-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-5">
         <motion.div
@@ -80,7 +80,7 @@ const SpecialsSection: React.FC = () => {
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             Special
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Offers</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent">Offers</span>
             <span className="text-gray-900"> & Deals</span>
             <span className="inline-block ml-3">🎁</span>
           </h2>
@@ -272,7 +272,7 @@ const SpecialsSection: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={showAllOffers}
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-2xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-olive-500 to-olive-600 text-white font-semibold rounded-2xl hover:from-olive-600 hover:to-olive-700 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             <span className="mr-2">View All Offers</span>
             <ArrowRight className="w-5 h-5" />

@@ -36,7 +36,7 @@ const Testimonials: React.FC = () => {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+    <section className="py-16 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -58,8 +58,8 @@ const Testimonials: React.FC = () => {
           {/* Main Testimonial Card */}
           <div className="relative bg-white rounded-3xl shadow-xl p-8 md:p-12 overflow-hidden">
             {/* Background Pattern */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-3xl opacity-30"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full blur-2xl opacity-30"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-olive-200 to-olive-300 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-olive-100 to-olive-200 rounded-full blur-2xl opacity-30"></div>
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -71,7 +71,7 @@ const Testimonials: React.FC = () => {
                 className="relative z-10"
               >
                 {/* Quote Icon */}
-                <Quote className="w-12 h-12 text-orange-500 mb-6" />
+                <Quote className="w-12 h-12 text-olive-500 mb-6" />
 
                 {/* Testimonial Text */}
                 <blockquote className="text-xl md:text-2xl text-gray-800 leading-relaxed mb-8 font-medium">
@@ -109,7 +109,7 @@ const Testimonials: React.FC = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={prevTestimonial}
-                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:text-orange-500 transition-colors pointer-events-auto"
+                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:text-olive-500 transition-colors pointer-events-auto"
               >
                 <ChevronLeft className="w-6 h-6" />
               </motion.button>
@@ -117,7 +117,7 @@ const Testimonials: React.FC = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={nextTestimonial}
-                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:text-orange-500 transition-colors pointer-events-auto"
+                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-600 hover:text-olive-500 transition-colors pointer-events-auto"
               >
                 <ChevronRight className="w-6 h-6" />
               </motion.button>
@@ -132,7 +132,7 @@ const Testimonials: React.FC = () => {
                 onClick={() => setCurrentIndex(index)}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentIndex 
-                    ? 'bg-orange-500 w-8' 
+                    ? 'bg-olive-500 w-8'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
               />

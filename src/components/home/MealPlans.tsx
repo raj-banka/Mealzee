@@ -73,7 +73,7 @@ const MealPlans: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-olive-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -104,11 +104,11 @@ const MealPlans: React.FC = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -5, scale: 1.02 }}
-              className={`bg-gradient-to-br from-green-100 to-green-200 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 ${
+              className={`bg-gradient-to-br from-olive-100 to-olive-200 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 ${
                 state.selectedMealPlan?.id === plan.id
-                  ? 'border-green-500 ring-2 ring-green-200'
+                  ? 'border-olive-500 ring-2 ring-olive-200'
                   : selectedPlan === plan.id
-                    ? 'border-green-300'
+                    ? 'border-olive-300'
                     : 'border-transparent'
               }`}
               onClick={() => setSelectedPlan(plan.id)}
@@ -125,7 +125,7 @@ const MealPlans: React.FC = () => {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center"
                     >
                       <Star className="w-4 h-4 text-white fill-current" />
                     </motion.div>
@@ -141,7 +141,7 @@ const MealPlans: React.FC = () => {
                   <div className="flex items-center space-x-2 mb-2">
                     <Clock className="w-4 h-4 text-gray-600" />
                     <span className="text-sm text-gray-600">{plan.duration}</span>
-                    <div className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
+                    <div className="bg-olive-600 text-white text-xs px-2 py-1 rounded-full">
                       {plan.discount}% off
                     </div>
                   </div>
@@ -167,12 +167,12 @@ const MealPlans: React.FC = () => {
                 }}
                 className={`w-full mt-4 py-3 rounded-2xl font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
                   state.selectedMealPlan?.id === plan.id
-                    ? 'bg-green-700 text-white'
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                    ? 'bg-olive-700 text-white'
+                    : 'bg-olive-600 text-white hover:bg-olive-700'
                 }`}
               >
                 <ShoppingCart className="w-5 h-5" />
-                <span>{state.selectedMealPlan?.id === plan.id ? 'Selected Plan' : 'Order Now'}</span>
+                <span>{state.selectedMealPlan?.id === plan.id ? 'Selected Plan' : 'Subscribe Meal'}</span>
               </motion.button>
             </motion.div>
           ))}
@@ -199,7 +199,7 @@ const MealPlans: React.FC = () => {
               <span>On Time</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Utensils className="w-4 h-4 text-orange-500" />
+              <Utensils className="w-4 h-4 text-olive-500" />
               <span>Healthy</span>
             </div>
           </div>

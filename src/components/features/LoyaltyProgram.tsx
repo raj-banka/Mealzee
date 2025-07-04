@@ -37,8 +37,8 @@ const loyaltyTiers: LoyaltyTier[] = [
     icon: <Award className="w-6 h-6" />,
     minPoints: 0,
     benefits: ['5% cashback on orders', 'Birthday surprise meal', 'Priority customer support'],
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-100'
+    color: 'text-olive-600',
+    bgColor: 'bg-olive-100'
   },
   {
     name: 'Silver',
@@ -301,7 +301,7 @@ const LoyaltyProgram: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
+            <div className="p-2 bg-olive-100 text-olive-600 rounded-lg">
               <Star className="w-5 h-5" />
             </div>
             <div>

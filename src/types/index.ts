@@ -278,7 +278,6 @@ export interface SearchFilters {
 }
 
 export interface SearchResult {
-  restaurants: Restaurant[];
   totalCount: number;
   hasMore: boolean;
 }

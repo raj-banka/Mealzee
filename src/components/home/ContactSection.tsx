@@ -59,7 +59,7 @@ const ContactSection: React.FC = () => {
       icon: Clock,
       title: 'Delivery Hours',
       details: ['Breakfast: 7AM-11AM', 'Lunch: 11AM-4PM', 'Dinner: 6PM-11PM'],
-      color: 'from-orange-400 to-red-500',
+      color: 'from-olive-400 to-olive-500',
     },
   ];
 
@@ -85,7 +85,7 @@ const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-b from-orange-50 to-red-50">
+    <section id="contact" className="py-20 bg-gradient-to-b from-olive-50 to-olive-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -97,7 +97,7 @@ const ContactSection: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight font-poppins">
             Get in
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Touch</span>
+            <span className="bg-gradient-to-r from-olive-500 to-olive-600 bg-clip-text text-transparent">Touch</span>
             <span className="inline-block ml-3">📞</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -166,7 +166,7 @@ const ContactSection: React.FC = () => {
               >
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-semibold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3"
+                  className="w-full border-2 border-olive-500 text-olive-500 hover:bg-olive-500 hover:text-white font-semibold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3"
                 >
                   <Phone className="w-5 h-5" />
                   <span>Call Now</span>
@@ -200,7 +200,7 @@ const ContactSection: React.FC = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-olive-500 focus:border-transparent transition-all duration-300"
                     placeholder="Your name"
                   />
                 </div>
@@ -216,7 +216,7 @@ const ContactSection: React.FC = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-olive-500 focus:border-transparent transition-all duration-300"
                     placeholder="+91 98765 43210"
                   />
                 </div>
@@ -233,7 +233,7 @@ const ContactSection: React.FC = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-olive-500 focus:border-transparent transition-all duration-300"
                   placeholder="your@email.com"
                 />
               </div>
@@ -249,7 +249,7 @@ const ContactSection: React.FC = () => {
                   onChange={handleInputChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-olive-500 focus:border-transparent transition-all duration-300 resize-none"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -261,7 +261,7 @@ const ContactSection: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-3"
+                  className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-3"
                 >
                   {isSubmitting ? (
                     <>

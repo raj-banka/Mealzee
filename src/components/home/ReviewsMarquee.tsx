@@ -119,7 +119,7 @@ const ReviewsMarquee: React.FC = () => {
   const secondRowReviews = reviews.slice(4, 8);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden">
+    <section className="py-16 bg-gradient-to-br from-olive-50 to-olive-100 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -192,7 +192,7 @@ const ReviewsMarquee: React.FC = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => startOrderFlow()}
-          className="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+          className="bg-olive-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-olive-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
         >
           Choose Your Meal Plan
         </motion.button>

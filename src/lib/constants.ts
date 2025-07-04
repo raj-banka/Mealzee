@@ -5,11 +5,44 @@ export const APP_CONFIG = {
   tagline: 'Delicious meals delivered to your doorstep',
   version: '1.0.0',
   supportEmail: 'hello@mealzee.in',
-  supportPhone: '+91 XXXXXXXXXX',
+  supportPhone: '+91 9608036638',
   whatsappNumber: '9608036638',
   domain: 'Mealzee.in',
-  serviceLocation: 'Sector 4, B.S. City',
-  maxDeliveryRadius: 10, // km
+  serviceLocation: 'Sector 4, Bokaro Steel City, Jharkhand',
+  maxDeliveryRadius: 15, // km
+} as const;
+
+// Service Area Configuration - Jharkhand, Bokaro Steel City
+export const SERVICE_AREA = {
+  state: 'Jharkhand',
+  city: 'Bokaro Steel City',
+  district: 'Bokaro',
+  pincode: '827004',
+  coordinates: {
+    lat: 23.6693,
+    lng: 86.1511
+  },
+  sectors: [
+    { name: 'Sector 1', pincode: '827001', coordinates: { lat: 23.6693, lng: 86.1511 } },
+    { name: 'Sector 2', pincode: '827002', coordinates: { lat: 23.6703, lng: 86.1521 } },
+    { name: 'Sector 3', pincode: '827003', coordinates: { lat: 23.6713, lng: 86.1531 } },
+    { name: 'Sector 4', pincode: '827004', coordinates: { lat: 23.6723, lng: 86.1541 } },
+    { name: 'Sector 5', pincode: '827005', coordinates: { lat: 23.6733, lng: 86.1551 } },
+    { name: 'Sector 6', pincode: '827006', coordinates: { lat: 23.6743, lng: 86.1561 } },
+    { name: 'Sector 7', pincode: '827007', coordinates: { lat: 23.6753, lng: 86.1571 } },
+    { name: 'Sector 8', pincode: '827008', coordinates: { lat: 23.6763, lng: 86.1581 } },
+    { name: 'Sector 9', pincode: '827009', coordinates: { lat: 23.6773, lng: 86.1591 } },
+    { name: 'Sector 10', pincode: '827010', coordinates: { lat: 23.6783, lng: 86.1601 } },
+    { name: 'Sector 11', pincode: '827011', coordinates: { lat: 23.6793, lng: 86.1611 } },
+    { name: 'Sector 12', pincode: '827012', coordinates: { lat: 23.6803, lng: 86.1621 } }
+  ],
+  landmarks: [
+    { name: 'Bokaro Steel Plant', coordinates: { lat: 23.6693, lng: 86.1511 } },
+    { name: 'Bokaro Mall', coordinates: { lat: 23.6703, lng: 86.1521 } },
+    { name: 'City Centre', coordinates: { lat: 23.6713, lng: 86.1531 } },
+    { name: 'Bokaro Railway Station', coordinates: { lat: 23.6723, lng: 86.1541 } },
+    { name: 'Jawaharlal Nehru Biological Park', coordinates: { lat: 23.6733, lng: 86.1551 } }
+  ]
 } as const;
 
 // Social Media Links
@@ -40,9 +73,9 @@ export const WHATSAPP_CONFIG = {
 // Enhanced Color Palette
 export const COLORS = {
   primary: {
-    orange: '#FF6B35',
-    red: '#E63946',
-    darkOrange: '#FF4500',
+    olive: '#8B9A46',
+    oliveLight: '#B1BF5B',
+    oliveDark: '#6B7A36',
   },
   neutral: {
     white: '#F8F9FA',
@@ -65,8 +98,8 @@ export const MEAL_CATEGORIES = [
     name: 'Breakfast',
     emoji: '🍳',
     description: 'Start your day right with fresh morning delights',
-    color: 'from-amber-400 via-orange-400 to-red-400',
-    bgColor: 'bg-gradient-to-br from-amber-50 to-orange-100',
+    color: 'from-olive-400 via-olive-500 to-olive-600',
+    bgColor: 'bg-gradient-to-br from-olive-50 to-olive-100',
   },
   {
     id: 'lunch',
@@ -96,10 +129,10 @@ export const MEAL_CATEGORIES = [
 
 // Navigation Links
 export const NAV_LINKS = [
-  { id: 'home', name: 'Home', href: '#home' },
-  { id: 'menu', name: 'Menu', href: '#menu' },
-  { id: 'about', name: 'About', href: '#about' },
-  { id: 'contact', name: 'Contact', href: '#contact' },
+  { id: 'home', name: 'Home', href: '/' },
+  { id: 'menu', name: 'Menu', href: '/menu' },
+  { id: 'about', name: 'About', href: '/about' },
+  { id: 'contact', name: 'Contact', href: '/contact' },
 ] as const;
 
 // Special Offers
@@ -133,7 +166,7 @@ export const SPECIAL_OFFERS = [
     title: 'Family Feast Special',
     description: 'Complete family meals with traditional recipes and generous portions',
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop&crop=center',
-    color: 'from-orange-400 to-red-500',
+    color: 'from-olive-400 to-olive-500',
     discount: '30% OFF',
   },
   {
@@ -149,7 +182,7 @@ export const SPECIAL_OFFERS = [
     title: 'Comfort Food Classics',
     description: 'Soul-warming traditional dishes that remind you of home',
     image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop&crop=center',
-    color: 'from-amber-400 to-orange-500',
+    color: 'from-olive-400 to-olive-500',
     discount: '15% OFF',
   },
 ] as const;
@@ -261,7 +294,7 @@ export const ORDER_STATUS_LABELS = {
 export const ORDER_STATUS_COLORS = {
   pending: 'text-yellow-600 bg-yellow-100',
   confirmed: 'text-blue-600 bg-blue-100',
-  preparing: 'text-orange-600 bg-orange-100',
+  preparing: 'text-olive-600 bg-olive-100',
   ready: 'text-purple-600 bg-purple-100',
   picked_up: 'text-indigo-600 bg-indigo-100',
   on_the_way: 'text-green-600 bg-green-100',
