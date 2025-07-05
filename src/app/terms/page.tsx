@@ -53,7 +53,7 @@ const TermsPage: React.FC = () => {
             </div>
             <div className="bg-blue-50 rounded-xl p-6">
               <p className="text-gray-700">
-                By using Mealzee's services, you agree to be bound by these Terms of Use. 
+                By using Mealzee&apos;s services, you agree to be bound by these Terms of Use.
                 If you do not agree to these terms, please do not use our services.
               </p>
             </div>
@@ -125,7 +125,7 @@ const TermsPage: React.FC = () => {
               </div>
               <div className="border-l-4 border-olive-500 pl-4">
                 <h3 className="font-semibold text-gray-800">Missed Deliveries</h3>
-                <p className="text-gray-600">Please inform us if you won't be available for delivery</p>
+                <p className="text-gray-600">Please inform us if you won&apos;t be available for delivery</p>
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ const TermsPage: React.FC = () => {
                     <li>• Share your unique referral code with friends and family</li>
                     <li>• When they sign up using your code, you receive ₹499 in pending earnings</li>
                     <li>• Pending earnings are confirmed only after your referred friend pays their complete first month bill</li>
-                    <li>• Confirmed earnings are automatically deducted from your next month's food bill</li>
+                    <li>• Confirmed earnings are automatically deducted from your next month&apos;s food bill</li>
                   </ul>
                 </div>
 
@@ -200,7 +200,7 @@ const TermsPage: React.FC = () => {
 
                 <div className="bg-white rounded-lg p-4 border border-purple-200">
                   <p className="text-sm text-purple-700">
-                    <strong>Note:</strong> Referral earnings are processed within 7 business days after your friend's successful monthly payment.
+                    <strong>Note:</strong> Referral earnings are processed within 7 business days after your friend&apos;s successful monthly payment.
                     You will receive a notification when earnings are confirmed and applied to your account.
                   </p>
                 </div>

@@ -125,8 +125,25 @@ const FeaturesSection: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [userInteracting, setUserInteracting] = useState(false);
 
-  // Check scroll position for arrow visibility
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Check scroll position for arrow visibility and current index
   const checkScrollPosition = useCallback(() => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -134,28 +151,97 @@ const FeaturesSection: React.FC = () => {
       setCanScrollRight(
         container.scrollLeft < container.scrollWidth - container.clientWidth - 10
       );
+
+      // Calculate current index for mobile
+      if (isMobile) {
+        const cardWidth = 320; // Width of each card + gap
+        const newIndex = Math.round(container.scrollLeft / cardWidth);
+        setCurrentIndex(newIndex);
+      }
     }
-  }, []);
+  }, [isMobile]);
 
   // Manual scroll functions
   const scrollLeft = () => {
     const container = scrollContainerRef.current;
     if (container) {
-      container.scrollBy({ left: -320, behavior: 'smooth' });
+      if (isMobile) {
+        // Snap to previous card
+        const cardWidth = 320;
+        const newIndex = Math.max(0, currentIndex - 1);
+        container.scrollTo({ left: newIndex * cardWidth, behavior: 'smooth' });
+        setCurrentIndex(newIndex);
+      } else {
+        container.scrollBy({ left: -320, behavior: 'smooth' });
+      }
     }
   };
 
   const scrollRight = () => {
     const container = scrollContainerRef.current;
     if (container) {
-      container.scrollBy({ left: 320, behavior: 'smooth' });
+      if (isMobile) {
+        // Snap to next card
+        const cardWidth = 320;
+        const maxIndex = features.length - 1;
+        const newIndex = Math.min(maxIndex, currentIndex + 1);
+        container.scrollTo({ left: newIndex * cardWidth, behavior: 'smooth' });
+        setCurrentIndex(newIndex);
+      } else {
+        container.scrollBy({ left: 320, behavior: 'smooth' });
+      }
     }
   };
 
-  // Auto-scroll functionality with left-to-right and right-to-left movement
+  // Flick to specific card (for mobile)
+  const scrollToCard = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (container && isMobile) {
+      const cardWidth = 320;
+      container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+      setCurrentIndex(index);
+    }
+  };
+
+  // Touch event handlers for mobile flick
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isMobile) {
+      setTouchStart(e.targetTouches[0].clientX);
+      setUserInteracting(true);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isMobile) {
+      setTouchEnd(e.targetTouches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isMobile || !touchStart || !touchEnd) {
+      setUserInteracting(false);
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentIndex < features.length - 1) {
+      scrollToCard(currentIndex + 1);
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      scrollToCard(currentIndex - 1);
+    }
+
+    // Reset user interaction after a delay
+    setTimeout(() => setUserInteracting(false), 1000);
+  };
+
+  // Auto-scroll functionality for desktop
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || isMobile) return; // Use separate mobile auto-flick
 
     let animationId: number;
     let direction = 1; // 1 for right, -1 for left
@@ -203,7 +289,26 @@ const FeaturesSection: React.FC = () => {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [isHovered, checkScrollPosition]);
+  }, [isHovered, checkScrollPosition, isMobile]);
+
+  // Auto-flick functionality for mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const autoFlickInterval = setInterval(() => {
+      if (!isHovered && !userInteracting) {
+        const nextIndex = currentIndex >= features.length - 1 ? 0 : currentIndex + 1;
+        const container = scrollContainerRef.current;
+        if (container) {
+          const cardWidth = 320;
+          container.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
+          setCurrentIndex(nextIndex);
+        }
+      }
+    }, 3000); // Auto-flick every 3 seconds
+
+    return () => clearInterval(autoFlickInterval);
+  }, [isMobile, currentIndex, isHovered, userInteracting]);
 
   // Add scroll event listener
   useEffect(() => {
@@ -243,48 +348,61 @@ const FeaturesSection: React.FC = () => {
 
       {/* Full Width Horizontal Auto-Scrollable Features */}
       <div className="relative w-full overflow-hidden">
-        {/* Manual Scroll Arrows */}
-        <motion.button
-          onClick={scrollLeft}
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-            canScrollLeft ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
-          }`}
-          whileHover={{ scale: canScrollLeft ? 1.1 : 1 }}
-          whileTap={{ scale: canScrollLeft ? 0.95 : 1 }}
-          disabled={!canScrollLeft}
-        >
-          <ChevronLeft className="w-6 h-6 text-olive-600" />
-        </motion.button>
+        {/* Manual Scroll Arrows - Hidden on Mobile */}
+        {!isMobile && (
+          <>
+            <motion.button
+              onClick={scrollLeft}
+              className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+                canScrollLeft ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
+              }`}
+              whileHover={{ scale: canScrollLeft ? 1.1 : 1 }}
+              whileTap={{ scale: canScrollLeft ? 0.95 : 1 }}
+              disabled={!canScrollLeft}
+            >
+              <ChevronLeft className="w-6 h-6 text-olive-600" />
+            </motion.button>
 
-        <motion.button
-          onClick={scrollRight}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-            canScrollRight ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
-          }`}
-          whileHover={{ scale: canScrollRight ? 1.1 : 1 }}
-          whileTap={{ scale: canScrollRight ? 0.95 : 1 }}
-          disabled={!canScrollRight}
-        >
-          <ChevronRight className="w-6 h-6 text-olive-600" />
-        </motion.button>
+            <motion.button
+              onClick={scrollRight}
+              className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+                canScrollRight ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
+              }`}
+              whileHover={{ scale: canScrollRight ? 1.1 : 1 }}
+              whileTap={{ scale: canScrollRight ? 0.95 : 1 }}
+              disabled={!canScrollRight}
+            >
+              <ChevronRight className="w-6 h-6 text-olive-600" />
+            </motion.button>
+          </>
+        )}
 
         {/* Auto-Scrollable Container - Full Width */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide auto-scroll-container pb-4"
+          className={`flex gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide auto-scroll-container pb-4 ${
+            isMobile ? 'snap-x snap-mandatory' : ''
+          }`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           style={{
             scrollBehavior: 'smooth',
             overflowY: 'hidden',
             height: 'auto',
             maxHeight: 'none',
             paddingLeft: '2rem',
-            paddingRight: '2rem'
+            paddingRight: '2rem',
+            ...(isMobile && {
+              scrollSnapType: 'x mandatory',
+              WebkitOverflowScrolling: 'touch'
+            })
           }}
         >
-            {/* Duplicate features for seamless loop */}
-            {[...features, ...features].map((feature, index) => (
+            {/* Show only single set for mobile, duplicate for desktop */}
+            {(isMobile ? features : [...features, ...features]).map((feature, index) => (
               <motion.div
                 key={`${feature.id}-${index}`}
                 initial={{ opacity: 0, x: 50 }}
@@ -299,7 +417,10 @@ const FeaturesSection: React.FC = () => {
                   scale: 1.02,
                   transition: { duration: 0.3, type: "spring", stiffness: 300 }
                 }}
-                className="flex-shrink-0 w-80 group cursor-pointer"
+                className={`flex-shrink-0 w-80 group cursor-pointer ${
+                  isMobile ? 'snap-center' : ''
+                }`}
+                onClick={() => isMobile && scrollToCard(index)}
               >
                 <motion.div
                   className={`${feature.bgColor} rounded-3xl p-8 h-full shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 relative overflow-hidden`}
@@ -344,6 +465,26 @@ const FeaturesSection: React.FC = () => {
           </div>
         </div>
 
+        {/* Mobile Indicators */}
+        {isMobile && (
+          <div className="flex justify-center mt-6 space-x-2">
+            {features.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  scrollToCard(index);
+                  setUserInteracting(true);
+                  setTimeout(() => setUserInteracting(false), 2000); // Pause auto-flick for 2 seconds
+                }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-olive-500 w-6'
+                    : 'bg-olive-200 hover:bg-olive-300'
+                }`}
+              />
+            ))}
+          </div>
+        )}
 
       {/* Bottom Call to Action */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">

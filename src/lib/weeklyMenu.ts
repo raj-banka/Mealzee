@@ -298,7 +298,7 @@ export function getMenuForDay(day: string): DayMenu | null {
 export function getMenuItemById(id: number): MenuItem | null {
   for (const day of Object.values(WEEKLY_MENU)) {
     for (const mealType of Object.values(day)) {
-      const item = mealType.find(item => item.id === id);
+      const item = mealType.find((item: MenuItem) => item.id === id);
       if (item) return item;
     }
   }
@@ -317,7 +317,7 @@ export function getVegetarianItems(): MenuItem[] {
   const items: MenuItem[] = [];
   for (const day of Object.values(WEEKLY_MENU)) {
     for (const mealType of Object.values(day)) {
-      items.push(...mealType.filter(item => item.isVeg));
+      items.push(...mealType.filter((item: MenuItem) => item.isVeg));
     }
   }
   return items;
@@ -327,7 +327,7 @@ export function getNonVegetarianItems(): MenuItem[] {
   const items: MenuItem[] = [];
   for (const day of Object.values(WEEKLY_MENU)) {
     for (const mealType of Object.values(day)) {
-      items.push(...mealType.filter(item => !item.isVeg));
+      items.push(...mealType.filter((item: MenuItem) => !item.isVeg));
     }
   }
   return items;

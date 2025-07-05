@@ -13,6 +13,14 @@ interface OTPData {
   otp: string;
 }
 
+interface SMSRequestBody extends Record<string, string> {
+  sender_id: string;
+  message: string;
+  language: string;
+  route: string;
+  numbers: string;
+}
+
 // Fast2SMS Configuration
 const FAST2SMS_API_URL = 'https://www.fast2sms.com/dev/bulkV2';
 
@@ -53,7 +61,7 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
     const message = `Your Mealzee OTP: ${otp}. Valid for 5 minutes.`;
 
     // First try: Basic SMS route (route 'v3')
-    let requestBody = {
+    let requestBody: SMSRequestBody = {
       sender_id: 'TXTLCL',
       message: message,
       language: 'english',
@@ -111,6 +119,7 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
       console.log('📤 Trying route q (quick)...');
 
       requestBody = {
+        sender_id: 'FSTSMS',
         message: message,
         language: 'english',
         route: 'q',

@@ -397,8 +397,8 @@ export const tiffinTestimonials = [
     role: 'Working Professional',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     rating: 5,
-    text: 'Mama\'s Kitchen has been a lifesaver! The food tastes just like home-cooked meals. The lunch subscription has saved me so much time and money.',
-    location: 'Downtown',
+    text: 'Mealzee has been a lifesaver! The food tastes just like home-cooked meals. The lunch subscription has saved me so much time and money.',
+    location: 'Sector 4/A',
   },
   {
     id: 2,
@@ -407,7 +407,7 @@ export const tiffinTestimonials = [
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
     rating: 5,
     text: 'As a new mother, having fresh, healthy meals delivered daily has been amazing. The food is always on time and tastes incredible!',
-    location: 'Green Valley',
+    location: 'Sector 4/B',
   },
   {
     id: 3,
@@ -415,7 +415,36 @@ export const tiffinTestimonials = [
     role: 'College Student',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     rating: 5,
-    text: 'The weekly meal plan is perfect for my budget. Chef Priya\'s food reminds me of my mom\'s cooking. Highly recommend to all students!',
-    location: 'Riverside',
+    text: 'The weekly meal plan is perfect for my budget. Mealzee\'s food reminds me of my mom\'s cooking. Highly recommend to all students!',
+    location: 'Sector 4/C',
+  },
+  {
+    id: 4,
+    name: 'Sunita Agarwal',
+    role: 'Senior Citizen',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
+    rating: 5,
+    text: 'At my age, cooking daily was becoming difficult. Mealzee provides nutritious meals that are perfect for my dietary needs.',
+    location: 'Sector 4/D',
+  },
+  {
+    id: 5,
+    name: 'Deepak Verma',
+    role: 'IT Professional',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+    rating: 5,
+    text: 'Working from home made me realize the importance of good food. Mealzee delivers fresh, tasty meals right to my doorstep.',
+    location: 'Sector 4/E',
+  },
+  {
+    id: 6,
+    name: 'Kavita Singh',
+    role: 'Teacher',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+    rating: 5,
+    text: 'The variety in their menu is amazing! My family loves the different cuisines they offer. Highly satisfied with their service.',
+    location: 'Sector 4/F',
   },
 ];
+
+

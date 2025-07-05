@@ -113,7 +113,7 @@ const NotAvailablePage: React.FC = () => {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
           >
-            Oops! We're not cooking
+            Oops! We&apos;re not cooking
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-olive-500 to-olive-600">
               near you... yet!
             </span>
@@ -126,9 +126,9 @@ const NotAvailablePage: React.FC = () => {
             transition={{ delay: 0.8, duration: 0.8 }}
             className="text-xl text-gray-600 mb-8 leading-relaxed"
           >
-            We're working hard to expand our delicious reach. 
+            We&apos;re working hard to expand our delicious reach.
             <br />
-            Stay hungry, we'll be there soon! 🚀
+            Stay hungry, we&apos;ll be there soon! 🚀
           </motion.p>
 
           {/* Features Coming Soon */}
@@ -141,7 +141,7 @@ const NotAvailablePage: React.FC = () => {
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <Clock className="w-8 h-8 text-olive-500 mx-auto mb-3" />
               <h3 className="font-semibold text-gray-800 mb-2">Coming Soon</h3>
-              <p className="text-sm text-gray-600">We're expanding to new areas every month</p>
+              <p className="text-sm text-gray-600">We&apos;re expanding to new areas every month</p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <Heart className="w-8 h-8 text-red-500 mx-auto mb-3" />
@@ -178,7 +178,7 @@ const NotAvailablePage: React.FC = () => {
               className="px-8 py-4 text-lg border-2 border-olive-500 text-olive-500 hover:bg-olive-500 hover:text-white"
               onClick={() => {
                 // In a real app, this could open a notification signup form
-                alert('We\'ll notify you when Mealzee arrives in your area!');
+                alert('We&apos;ll notify you when Mealzee arrives in your area!');
               }}
             >
               Notify Me

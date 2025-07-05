@@ -20,7 +20,7 @@ const reviews: Review[] = [
     name: 'Priya Sharma',
     rating: 5,
     comment: 'Amazing food quality! The breakfast combo is perfect for my busy mornings.',
-    location: 'Mumbai',
+    location: 'Sector 4/A',
     avatar: '👩‍💼'
   },
   {
@@ -28,7 +28,7 @@ const reviews: Review[] = [
     name: 'Rahul Kumar',
     rating: 5,
     comment: 'Mealzee has made my life so much easier. Healthy and delicious meals every day!',
-    location: 'Delhi',
+    location: 'Sector 4/B',
     avatar: '👨‍💻'
   },
   {
@@ -36,7 +36,7 @@ const reviews: Review[] = [
     name: 'Anjali Patel',
     rating: 4,
     comment: 'Love the variety and the birthday surprise was such a sweet gesture!',
-    location: 'Bangalore',
+    location: 'Sector 4/C',
     avatar: '👩‍🎓'
   },
   {
@@ -44,7 +44,7 @@ const reviews: Review[] = [
     name: 'Vikram Singh',
     rating: 5,
     comment: 'Best tiffin service in the city. Fresh food delivered on time, every time.',
-    location: 'Pune',
+    location: 'Sector 4/D',
     avatar: '👨‍🏭'
   },
   {
@@ -52,7 +52,7 @@ const reviews: Review[] = [
     name: 'Sneha Gupta',
     rating: 5,
     comment: 'The lunch & dinner combo is perfect for my work schedule. Highly recommended!',
-    location: 'Hyderabad',
+    location: 'Sector 4/E',
     avatar: '👩‍⚕️'
   },
   {
@@ -60,15 +60,15 @@ const reviews: Review[] = [
     name: 'Arjun Mehta',
     rating: 4,
     comment: 'Great value for money and the food tastes just like home-cooked meals.',
-    location: 'Chennai',
+    location: 'Sector 4/F',
     avatar: '👨‍🎨'
   },
   {
     id: '7',
-    name: 'Kavya Reddy',
+    name: 'Kavita Reddy',
     rating: 5,
     comment: 'The festival specials are amazing! Mealzee truly cares about their customers.',
-    location: 'Kolkata',
+    location: 'Sector 4/A',
     avatar: '👩‍🔬'
   },
   {
@@ -76,7 +76,7 @@ const reviews: Review[] = [
     name: 'Rohit Jain',
     rating: 5,
     comment: 'Switched to Mealzee 6 months ago and never looked back. Excellent service!',
-    location: 'Ahmedabad',
+    location: 'Sector 4/B',
     avatar: '👨‍🚀'
   }
 ];

@@ -52,7 +52,7 @@ const OrderFlowManager: React.FC = () => {
           dispatch({ type: 'CLOSE_ORDER_MODAL' });
           dispatch({ type: 'RESET_ORDER_FLOW' });
         }}
-        selectedPlan={state.selectedMealPlan}
+        selectedPlan={state.selectedMealPlan || undefined}
       />
     </>
   );

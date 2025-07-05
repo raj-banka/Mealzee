@@ -98,7 +98,7 @@ const RefundPage: React.FC = () => {
                 <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
                 <div>
                   <h3 className="font-semibold text-gray-800">Resolution</h3>
-                  <p className="text-gray-600">We'll provide a replacement meal or process a refund within 2-3 business days</p>
+                  <p className="text-gray-600">We&apos;ll provide a replacement meal or process a refund within 2-3 business days</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
@@ -175,8 +175,8 @@ const RefundPage: React.FC = () => {
             <div className="bg-green-50 rounded-xl p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">🌟 Our Quality Guarantee</h3>
               <p className="text-gray-600 mb-4">
-                We're committed to providing fresh, delicious meals. If you're not satisfied with the quality 
-                of your meal, we'll make it right with a replacement or refund.
+                We&apos;re committed to providing fresh, delicious meals. If you&apos;re not satisfied with the quality
+                of your meal, we&apos;ll make it right with a replacement or refund.
               </p>
               <ul className="space-y-2 text-gray-700">
                 <li>• Fresh ingredients sourced daily</li>
@@ -191,7 +191,7 @@ const RefundPage: React.FC = () => {
           <div className="bg-green-50 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">Need a Refund?</h3>
             <p className="text-gray-600 mb-4">
-              Contact our customer support team to initiate a refund request. We're here to help!
+              Contact our customer support team to initiate a refund request. We&apos;re here to help!
             </p>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
               <a

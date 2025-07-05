@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { Clock, Star, Leaf, Utensils } from 'lucide-react';
 import { MEAL_CATEGORIES } from '@/lib/constants';
 import { useApp } from '@/contexts/AppContext';
@@ -96,13 +97,14 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 export default function MenuPage() {
   const { startOrderFlow } = useApp();
+  const router = useRouter();
   const [selectedDay, setSelectedDay] = useState('Monday');
   const [selectedMealType, setSelectedMealType] = useState('breakfast');
 
   const currentMenu = WEEKLY_MENU[selectedDay as keyof typeof WEEKLY_MENU] || WEEKLY_MENU.Monday;
   const currentMealItems = currentMenu[selectedMealType as keyof typeof currentMenu] || [];
 
-  const handleOrderItem = (item: any) => {
+  const handleOrderItem = () => {
     // For now, just start the order flow
     startOrderFlow();
   };
@@ -215,7 +217,7 @@ export default function MenuPage() {
                       variant="primary"
                       size="sm"
                       className="w-full bg-olive-500 hover:bg-olive-600"
-                      onClick={() => handleOrderItem(item)}
+                      onClick={() => handleOrderItem()}
                     >
                       Order Now
                     </Button>
@@ -234,7 +236,7 @@ export default function MenuPage() {
 
         {/* Call to Action */}
         <div className="bg-gradient-to-r from-olive-500 to-olive-600 rounded-2xl p-8 text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Can't find what you're looking for?</h2>
+          <h2 className="text-2xl font-bold mb-4">Can&apos;t find what you&apos;re looking for?</h2>
           <p className="text-olive-100 mb-6">
             Contact us for custom meal plans or special dietary requirements
           </p>

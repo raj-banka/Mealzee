@@ -61,8 +61,16 @@ export function isLocationServiceable(coordinates: LocationCoordinates): boolean
     SERVICE_AREA.coordinates.lat,
     SERVICE_AREA.coordinates.lng
   );
-  
-  return distance <= APP_CONFIG.maxDeliveryRadius;
+
+  console.log(`📍 Distance from service center: ${distance.toFixed(2)} km`);
+  console.log(`📍 Max delivery radius: ${APP_CONFIG.maxDeliveryRadius} km`);
+  console.log(`🧪 TESTING MODE: Allowing all locations`);
+
+  // Return true for all locations during testing
+  return true;
+
+  // Original logic (commented out for testing):
+  // return distance <= APP_CONFIG.maxDeliveryRadius;
 }
 
 /**
@@ -254,16 +262,16 @@ export async function getLocationSuggestions(query: string): Promise<LocationDat
 
     const data = await response.json();
     
-    return data.map((result: any) => {
+    return data.map((result: any): LocationData => {
       const coordinates = {
         lat: parseFloat(result.lat),
         lng: parseFloat(result.lon)
       };
-      
+
       const address = result.address || {};
       const isServiceable = isLocationServiceable(coordinates);
       const nearestSector = findNearestSector(coordinates);
-      
+
       return {
         address: result.display_name,
         coordinates,
@@ -274,7 +282,7 @@ export async function getLocationSuggestions(query: string): Promise<LocationDat
         sector: nearestSector || undefined,
         isServiceable
       };
-    }).filter(location => location.isServiceable); // Only return serviceable locations
+    }).filter((location: LocationData) => location.isServiceable); // Only return serviceable locations
   } catch (error) {
     console.error('Location suggestions error:', error);
     return [];
@@ -286,17 +294,28 @@ export async function getLocationSuggestions(query: string): Promise<LocationDat
  */
 export async function validateServiceArea(address: string): Promise<{ isValid: boolean; message: string; suggestions?: LocationData[] }> {
   try {
+    console.log('🧪 TESTING MODE: validateServiceArea called for:', address);
+
+    // TESTING MODE: Always return valid
+    return {
+      isValid: true,
+      message: '🧪 TESTING MODE: All addresses are valid for testing',
+      suggestions: []
+    };
+
+    // Original logic (commented out for testing):
+    /*
     const locations = await forwardGeocode(address);
-    
+
     if (locations.length === 0) {
       return {
         isValid: false,
         message: 'Address not found. Please enter a valid address.'
       };
     }
-    
+
     const serviceableLocations = locations.filter(loc => loc.isServiceable);
-    
+
     if (serviceableLocations.length === 0) {
       return {
         isValid: false,
@@ -304,12 +323,13 @@ export async function validateServiceArea(address: string): Promise<{ isValid: b
         suggestions: locations
       };
     }
-    
+
     return {
       isValid: true,
       message: 'Address is within our delivery area!',
       suggestions: serviceableLocations
     };
+    */
   } catch (error) {
     return {
       isValid: false,

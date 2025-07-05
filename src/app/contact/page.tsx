@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 
@@ -26,7 +26,15 @@ const ContactPage: React.FC = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const [messageData, setMessageData] = useState<any>(null);
+  const [messageData, setMessageData] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    subject: string;
+    message: string;
+    referenceId: string;
+    timestamp: string;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +122,7 @@ const ContactPage: React.FC = () => {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Get in touch with our team - we're here to help with your food delivery needs
+                Get in touch with our team - we&apos;re here to help with your food delivery needs
               </p>
             </div>
           </div>
@@ -164,7 +172,7 @@ const ContactPage: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-800">Email</h3>
                     <p className="text-gray-600">hello@mealzee.com</p>
-                    <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                    <p className="text-sm text-gray-500">We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>
 
@@ -385,7 +393,7 @@ const ContactPage: React.FC = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
-                        <span>You'll receive a response within 24 hours</span>
+                        <span>You&apos;ll receive a response within 24 hours</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-olive-500 rounded-full"></div>

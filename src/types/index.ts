@@ -110,6 +110,8 @@ export interface MenuItem {
   preparationTime?: number;
   isSignatureDish?: boolean;
   dietaryTags?: string[]; // e.g., 'Low Carb', 'High Protein', 'Diabetic Friendly'
+  rating?: number;
+  reviews?: number;
 }
 
 export interface NutritionInfo {

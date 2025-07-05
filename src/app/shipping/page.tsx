@@ -59,7 +59,7 @@ const ShippingPage: React.FC = () => {
                 </li>
               </ul>
               <p className="text-sm text-gray-600 mt-4">
-                Don't see your area? Contact us at +91 9608036638 to check if we can deliver to your location.
+                Don&apos;t see your area? Contact us at +91 9608036638 to check if we can deliver to your location.
               </p>
             </div>
           </div>

@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Users, Target, Award, Heart, Truck, Shield, Clock, Star } from 'lucide-react';
+import { Target, Award, Heart, Truck, Shield, Star } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 
 const AboutPage: React.FC = () => {
@@ -72,13 +73,13 @@ const AboutPage: React.FC = () => {
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               About
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-olive-500 to-olive-600">
-                FoodieExpress
+                Mealzee
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              We're on a mission to connect food lovers with their favorite restaurants, 
-              delivering happiness one meal at a time. Founded in 2020, we've grown to become 
-              the most trusted food delivery platform in the region.
+              We&apos;re on a mission to connect food lovers with their favorite meals,
+              delivering happiness one meal at a time. Founded in 2020, we&apos;ve grown to become
+              the most trusted tiffin service in Bokaro Steel City.
             </p>
           </motion.div>
         </div>
@@ -117,9 +118,11 @@ const AboutPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop"
                 alt="Food delivery team"
+                width={600}
+                height={400}
                 className="rounded-2xl shadow-lg"
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg">
@@ -237,8 +240,8 @@ const AboutPage: React.FC = () => {
               Meet Our Team
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              The passionate people behind FoodieExpress, working tirelessly 
-              to bring you the best food delivery experience.
+              The passionate people behind Mealzee, working tirelessly
+              to bring you the best tiffin service experience.
             </p>
           </motion.div>
 
@@ -252,9 +255,11 @@ const AboutPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transition-shadow duration-300"
               >
-                <img
+                <Image
                   src={member.image}
                   alt={member.name}
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
                 />
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
@@ -284,8 +289,8 @@ const AboutPage: React.FC = () => {
               Join Our Journey
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Whether you're a food lover, restaurant owner, or delivery partner, 
-              there's a place for you in the FoodieExpress family.
+              Whether you&apos;re a food lover, home cook, or delivery partner,
+              there&apos;s a place for you in the Mealzee family.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button

@@ -13,6 +13,7 @@ const Button: React.FC<ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElemen
   children,
   onClick,
   className,
+  type = 'button',
   ...props
 }) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -44,7 +45,16 @@ const Button: React.FC<ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElemen
       className={buttonClasses}
       disabled={disabled || isLoading}
       onClick={onClick}
-      {...props}
+      type={type}
+      id={props.id}
+      name={props.name}
+      value={props.value}
+      form={props.form}
+      formAction={props.formAction}
+      formEncType={props.formEncType}
+      formMethod={props.formMethod}
+      formNoValidate={props.formNoValidate}
+      formTarget={props.formTarget}
     >
       {isLoading ? (
         <>

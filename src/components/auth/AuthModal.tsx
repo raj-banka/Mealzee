@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
@@ -33,14 +33,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Handle location checking after OTP verification
-  useEffect(() => {
-    if (authStep === 'location-check') {
-      handleLocationCheck();
-    }
-  }, [authStep]);
-
-  const handleLocationCheck = async () => {
+  const handleLocationCheck = useCallback(async () => {
     try {
       console.log('🔍 Checking location serviceability...');
       const coordinates = await getCurrentLocation();
@@ -49,13 +42,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       // Store location data for later use
       setLocationData(locationData);
 
+      // TESTING MODE: Skip location validation
       if (!locationData.isServiceable) {
-        console.log('❌ Location not serviceable, redirecting to not-available page');
-        // Close modal and redirect to not-available page
-        dispatch({ type: 'CLOSE_AUTH_MODAL' });
-        router.push('/not-available');
-        resetModal();
-        return;
+        console.log('🧪 TESTING MODE: Location not serviceable but allowing for testing');
+        // In testing mode, we'll continue instead of redirecting
+        // Uncomment below lines to restore original behavior:
+        // dispatch({ type: 'CLOSE_AUTH_MODAL' });
+        // router.push('/not-available');
+        // resetModal();
+        // return;
       }
 
       console.log('✅ Location is serviceable, proceeding to details');
@@ -70,7 +65,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       // User can manually enter address
       setAuthStep('details');
     }
-  };
+  }, [dispatch, router, setLocationData, setUserDetails]);
+
+  // Handle location checking after OTP verification
+  useEffect(() => {
+    if (authStep === 'location-check') {
+      handleLocationCheck();
+    }
+  }, [authStep, handleLocationCheck]);
 
   // Phone number validation
   const validatePhoneNumber = (phone: string): boolean => {
@@ -127,21 +129,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
+    // TESTING MODE: Skip address validation
     // If location data is available from OTP step, use it
     // Otherwise validate the manually entered address
     let isAddressServiceable = true;
     if (locationData) {
       // Location was already checked during OTP verification
-      isAddressServiceable = locationData.isServiceable;
+      isAddressServiceable = true; // Force true for testing
+      console.log('🧪 TESTING MODE: Skipping location validation');
     } else {
       // Validate manually entered address
       try {
         const validation = await validateServiceArea(userDetails.address);
-        isAddressServiceable = validation.isValid;
+        isAddressServiceable = true; // Force true for testing
+        console.log('🧪 TESTING MODE: Skipping address validation, original result:', validation.isValid);
       } catch (error) {
         console.error('Address validation error:', error);
-        // Assume not serviceable if validation fails
-        isAddressServiceable = false;
+        // Force true for testing instead of false
+        isAddressServiceable = true;
+        console.log('🧪 TESTING MODE: Address validation failed but allowing for testing');
       }
     }
 
@@ -162,12 +168,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setTimeout(() => {
       dispatch({ type: 'CLOSE_AUTH_MODAL' });
 
-      // Check if location is serviceable
+      // TESTING MODE: Skip location serviceability check
       if (!isAddressServiceable) {
+        console.log('🧪 TESTING MODE: Would redirect to not-available but allowing for testing');
         // Redirect to not-available page if location is not serviceable
-        router.push('/not-available');
-        resetModal();
-        return;
+        // router.push('/not-available');
+        // resetModal();
+        // return;
       }
 
       // Continue with the order flow based on current state
@@ -383,7 +390,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 exit={{ opacity: 0, x: -20 }}
               >
                 <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
-                  We've sent a 6-digit code to{' '}
+                  We&apos;ve sent a 6-digit code to{' '}
                   <span className="font-semibold text-green-600">{phoneNumber}</span>
                 </p>
 
@@ -473,7 +480,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     Checking Your Location
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    We're verifying if we deliver to your area...
+                    We&apos;re verifying if we deliver to your area...
                   </p>
                 </div>
               </motion.div>

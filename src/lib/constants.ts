@@ -187,13 +187,7 @@ export const SPECIAL_OFFERS = [
   },
 ] as const;
 
-// Price Ranges
-export const PRICE_RANGES = [
-  { value: '$', label: '$ - Under $15', min: 0, max: 15 },
-  { value: '$$', label: '$$ - $15-25', min: 15, max: 25 },
-  { value: '$$$', label: '$$$ - $25-35', min: 25, max: 35 },
-  { value: '$$$$', label: '$$$$ - Over $35', min: 35, max: Infinity },
-] as const;
+
 
 // Delivery Time Options
 export const DELIVERY_TIME_OPTIONS = [
@@ -271,13 +265,7 @@ export const DELIVERY_SLOTS = [
   { id: 'dinner', name: 'Dinner', time: '7:00 PM - 9:00 PM', mealType: 'Dinner' },
 ] as const;
 
-// Sort Options
-export const SORT_OPTIONS = [
-  { value: 'rating', label: 'Highest Rated' },
-  { value: 'delivery_time', label: 'Fastest Delivery' },
-  { value: 'price', label: 'Lowest Delivery Fee' },
-  { value: 'distance', label: 'Nearest' },
-] as const;
+
 
 // Order Status
 export const ORDER_STATUS_LABELS = {
@@ -395,12 +383,6 @@ export const API_ENDPOINTS = {
     logout: '/api/auth/logout',
     profile: '/api/auth/profile',
   },
-  restaurants: {
-    list: '/api/restaurants',
-    detail: '/api/restaurants/:id',
-    menu: '/api/restaurants/:id/menu',
-    search: '/api/restaurants/search',
-  },
   orders: {
     create: '/api/orders',
     list: '/api/orders',
@@ -443,9 +425,8 @@ export const SUCCESS_MESSAGES = {
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  cart: 'foodie_cart',
-  user: 'foodie_user',
-  preferences: 'foodie_preferences',
-  recentSearches: 'foodie_recent_searches',
-  favoriteRestaurants: 'foodie_favorites',
+  cart: 'mealzee_cart',
+  user: 'mealzee_user',
+  preferences: 'mealzee_preferences',
+  recentSearches: 'mealzee_recent_searches',
 } as const;

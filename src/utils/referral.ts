@@ -127,8 +127,6 @@ export const createReferralMessage = (referralCode: string, userName: string): s
 
 Use my referral code: *${referralCode}* when you place your first order and get special discounts!
 
-💰 I'll get ₹499 credit on my next month's bill when you complete your first month's payment!
-
 Fresh, healthy, and delivered right to your doorstep! 🚀
 
 Order now: https://mealzee.in

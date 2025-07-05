@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Cart, CartItem, MenuItem, Restaurant } from '@/types';
+import { Cart, CartItem, MenuItem } from '@/types';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { generateId } from '@/lib/utils';
 
@@ -33,7 +33,6 @@ export function useCart() {
 
   const addToCart = useCallback((
     menuItem: MenuItem,
-    restaurant: Restaurant,
     quantity: number = 1,
     customizations: any[] = [],
     specialInstructions?: string
@@ -51,17 +50,37 @@ export function useCart() {
     };
 
     setCart(prevCart => {
-      // If cart is empty or from different restaurant, create new cart
-      if (!prevCart || prevCart.restaurantId !== restaurant.id) {
+      // If cart is empty, create new cart
+      if (!prevCart) {
         const newCart: Cart = {
           id: generateId(),
-          restaurantId: restaurant.id,
-          restaurant,
+          tiffinServiceId: 'mealzee-main',
+          tiffinService: {
+            id: 'mealzee-main',
+            name: 'Mealzee',
+            description: 'Home-style tiffin service',
+            ownerName: 'Mealzee Team',
+            image: '/logo.jpg',
+            specialties: ['Indian', 'North Indian'],
+            rating: 4.8,
+            reviewCount: 150,
+            deliverySlots: [],
+            deliveryFee: 0,
+            minimumOrder: 100,
+            isOpen: true,
+            address: 'Sector 4, Bokaro Steel City',
+            serviceArea: 'Sector 4',
+            coordinates: { lat: 23.6693, lng: 85.9606 },
+            maxDeliveryRadius: 5,
+            dailyMenus: [],
+            features: ['Fresh Food', 'Home Style', 'Healthy'],
+            subscriptionPlans: []
+          },
           items: [cartItem],
           subtotal: totalPrice,
-          deliveryFee: restaurant.deliveryFee,
+          deliveryFee: 0,
           tax: totalPrice * 0.08, // 8% tax
-          total: totalPrice + restaurant.deliveryFee + (totalPrice * 0.08),
+          total: totalPrice + (totalPrice * 0.08),
         };
         return newCart;
       }
