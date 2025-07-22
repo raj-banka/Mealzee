@@ -115,11 +115,11 @@ const MealPlans: React.FC = () => {
             >
               <div className="flex items-center space-x-4">
                 {/* Meal Image */}
-                <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-md">
+                <div className="relative">
                   <img
-                    src="/thali.png"
+                     src="/pic.png"
                     alt="Delicious Meal"
-                    className="w-full h-full object-cover"
+                    className="w-24 h-24"
                   />
                   {state.selectedMealPlan?.id === plan.id && (
                     <motion.div

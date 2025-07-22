@@ -3,93 +3,103 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Clock, Star, Leaf, Utensils } from 'lucide-react';
+import { Clock, Star, Leaf, Utensils, Download } from 'lucide-react';
 import { MEAL_CATEGORIES } from '@/lib/constants';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Navbar from '@/components/layout/Navbar';
 
-// Sample menu data organized by meal types and days
+// Updated weekly menu data with new meal plan and prices
 const WEEKLY_MENU = {
   Monday: {
     breakfast: [
-      { id: 1, name: 'Masala Dosa', price: 80, time: '15 min', rating: 4.5, isVeg: true, description: 'Crispy dosa with spicy potato filling' },
-      { id: 2, name: 'Poha', price: 60, time: '10 min', rating: 4.3, isVeg: true, description: 'Flattened rice with vegetables and spices' },
-      { id: 3, name: 'Upma', price: 50, time: '12 min', rating: 4.2, isVeg: true, description: 'Semolina porridge with vegetables' },
+      { id: 1, name: 'Aloo Paratha & Tomato Ketchup', price: 40, time: '15 min', rating: 4.5, isVeg: true, description: 'Stuffed potato paratha served with tangy tomato ketchup', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop' },
     ],
     lunch: [
-      { id: 4, name: 'Dal Rice Combo', price: 120, time: '20 min', rating: 4.4, isVeg: true, description: 'Yellow dal with steamed rice and pickle' },
-      { id: 5, name: 'Chicken Curry Rice', price: 180, time: '25 min', rating: 4.6, isVeg: false, description: 'Spicy chicken curry with basmati rice' },
-      { id: 6, name: 'Rajma Rice', price: 140, time: '22 min', rating: 4.5, isVeg: true, description: 'Kidney beans curry with rice' },
+      { id: 2, name: 'Roti, Chawal, Dal, Sabji, Achar, Chutney', price: 70, time: '20 min', rating: 4.4, isVeg: true, description: 'Complete traditional meal with roti, rice, dal, vegetables, pickle and chutney', image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop' },
     ],
     dinner: [
-      { id: 7, name: 'Paneer Butter Masala', price: 160, time: '20 min', rating: 4.7, isVeg: true, description: 'Rich paneer curry with butter naan' },
-      { id: 8, name: 'Fish Curry', price: 200, time: '30 min', rating: 4.5, isVeg: false, description: 'Bengali style fish curry with rice' },
-      { id: 9, name: 'Aloo Gobi', price: 130, time: '18 min', rating: 4.3, isVeg: true, description: 'Potato and cauliflower curry with roti' },
+      { id: 3, name: 'Roti, Sabji, Sweet', price: 60, time: '18 min', rating: 4.3, isVeg: true, description: 'Fresh roti with seasonal vegetables and sweet dessert', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
     ],
-    combo: [
-      { id: 10, name: 'Monday Special Thali', price: 220, time: '25 min', rating: 4.8, isVeg: true, description: 'Complete meal with dal, sabzi, rice, roti, and dessert' },
-    ]
+    combo: []
   },
   Tuesday: {
     breakfast: [
-      { id: 11, name: 'Idli Sambar', price: 70, time: '12 min', rating: 4.6, isVeg: true, description: 'Steamed rice cakes with lentil curry' },
-      { id: 12, name: 'Aloo Paratha', price: 90, time: '18 min', rating: 4.4, isVeg: true, description: 'Stuffed potato flatbread with curd' },
-      { id: 13, name: 'Bread Omelette', price: 80, time: '10 min', rating: 4.2, isVeg: false, description: 'Fluffy omelette with bread slices' },
+      { id: 4, name: 'Bread Toast & Jam/Ketchup', price: 35, time: '10 min', rating: 4.2, isVeg: true, description: 'Crispy bread toast served with jam or ketchup', image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400&h=300&fit=crop' },
     ],
     lunch: [
-      { id: 14, name: 'Chole Rice', price: 150, time: '22 min', rating: 4.5, isVeg: true, description: 'Spicy chickpea curry with rice' },
-      { id: 15, name: 'Mutton Curry', price: 220, time: '35 min', rating: 4.7, isVeg: false, description: 'Tender mutton curry with rice' },
-      { id: 16, name: 'Palak Paneer', price: 160, time: '20 min', rating: 4.6, isVeg: true, description: 'Spinach curry with cottage cheese' },
+      { id: 5, name: 'Pulao, Tadka, Papad', price: 60, time: '18 min', rating: 4.4, isVeg: true, description: 'Aromatic rice pulao with dal tadka and crispy papad', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop' },
     ],
     dinner: [
-      { id: 17, name: 'Butter Chicken', price: 200, time: '25 min', rating: 4.8, isVeg: false, description: 'Creamy chicken curry with naan' },
-      { id: 18, name: 'Dal Makhani', price: 140, time: '22 min', rating: 4.5, isVeg: true, description: 'Rich black lentil curry with rice' },
-      { id: 19, name: 'Egg Curry', price: 120, time: '18 min', rating: 4.3, isVeg: false, description: 'Spiced egg curry with rice' },
+      { id: 6, name: 'Paratha, Mix Veg', price: 55, time: '15 min', rating: 4.3, isVeg: true, description: 'Fresh paratha with mixed vegetable curry', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop' },
     ],
-    combo: [
-      { id: 20, name: 'Tuesday Feast', price: 250, time: '30 min', rating: 4.9, isVeg: false, description: 'Non-veg thali with chicken, rice, dal, and sides' },
-    ]
+    combo: []
   },
   Wednesday: {
     breakfast: [
-      { id: 21, name: 'Vada Pav', price: 40, time: '8 min', rating: 4.4, isVeg: true, description: 'Mumbai street food with potato fritter' },
-      { id: 22, name: 'Medu Vada', price: 60, time: '15 min', rating: 4.3, isVeg: true, description: 'Crispy lentil donuts with sambar' },
-      { id: 23, name: 'Sandwich', price: 70, time: '10 min', rating: 4.1, isVeg: true, description: 'Grilled vegetable sandwich' },
+      { id: 7, name: 'Idli & Chutney', price: 35, time: '12 min', rating: 4.3, isVeg: true, description: 'Steamed rice cakes with coconut chutney', image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&h=300&fit=crop' },
     ],
     lunch: [
-      { id: 24, name: 'Biryani', price: 180, time: '30 min', rating: 4.8, isVeg: true, description: 'Fragrant rice with vegetables and spices' },
-      { id: 25, name: 'Chicken Biryani', price: 220, time: '35 min', rating: 4.9, isVeg: false, description: 'Aromatic chicken biryani with raita' },
-      { id: 26, name: 'Sambar Rice', price: 110, time: '18 min', rating: 4.4, isVeg: true, description: 'South Indian lentil curry with rice' },
+      { id: 8, name: 'Roti, Jeera Rice, Egg Curry, Chips', price: 85, time: '22 min', rating: 4.6, isVeg: false, description: 'Complete meal with roti, cumin rice, egg curry and chips', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop' },
+      { id: 9, name: 'Roti, Jeera Rice, Pakoda, Kadhi', price: 70, time: '20 min', rating: 4.4, isVeg: true, description: 'Traditional meal with roti, cumin rice, pakoda and kadhi', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop' },
     ],
     dinner: [
-      { id: 27, name: 'Kadai Paneer', price: 170, time: '22 min', rating: 4.6, isVeg: true, description: 'Spicy paneer curry with bell peppers' },
-      { id: 28, name: 'Prawn Curry', price: 240, time: '28 min', rating: 4.7, isVeg: false, description: 'Coastal style prawn curry with rice' },
-      { id: 29, name: 'Mixed Vegetable Curry', price: 120, time: '20 min', rating: 4.2, isVeg: true, description: 'Seasonal vegetables in curry' },
+      { id: 10, name: 'Roti, Chicken Chili', price: 95, time: '25 min', rating: 4.7, isVeg: false, description: 'Fresh roti with spicy chicken chili', image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400&h=300&fit=crop' },
+      { id: 11, name: 'Roti, Soya Chili', price: 70, time: '18 min', rating: 4.5, isVeg: true, description: 'Fresh roti with soya chili curry', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
     ],
-    combo: [
-      { id: 30, name: 'Wednesday Special', price: 200, time: '25 min', rating: 4.7, isVeg: true, description: 'Vegetarian thali with variety of dishes' },
-    ]
+    combo: []
   },
   Thursday: {
     breakfast: [
-      { id: 31, name: 'Rava Dosa', price: 90, time: '18 min', rating: 4.5, isVeg: true, description: 'Crispy semolina crepe with chutney' },
-      { id: 32, name: 'Puri Bhaji', price: 80, time: '15 min', rating: 4.3, isVeg: true, description: 'Fried bread with spiced potato curry' },
-      { id: 33, name: 'Maggi', price: 50, time: '8 min', rating: 4.0, isVeg: true, description: 'Instant noodles with vegetables' },
+      { id: 12, name: 'Chowmein / Pasta', price: 45, time: '15 min', rating: 4.4, isVeg: true, description: 'Stir-fried noodles or pasta with vegetables', image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop' },
     ],
     lunch: [
-      { id: 34, name: 'Thali', price: 160, time: '25 min', rating: 4.6, isVeg: true, description: 'Traditional Indian platter with variety' },
-      { id: 35, name: 'Fish Fry', price: 180, time: '20 min', rating: 4.5, isVeg: false, description: 'Crispy fried fish with rice' },
-      { id: 36, name: 'Paneer Tikka', price: 150, time: '22 min', rating: 4.4, isVeg: true, description: 'Grilled paneer with mint chutney' },
+      { id: 13, name: 'Roti, Rajma, Chawal, Sabji, Achar, Chips', price: 75, time: '25 min', rating: 4.6, isVeg: true, description: 'Complete meal with roti, rajma, rice, vegetables, pickle and chips', image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop' },
     ],
     dinner: [
-      { id: 37, name: 'Chicken Tikka Masala', price: 190, time: '25 min', rating: 4.7, isVeg: false, description: 'Grilled chicken in creamy tomato sauce' },
-      { id: 38, name: 'Bhindi Masala', price: 130, time: '18 min', rating: 4.3, isVeg: true, description: 'Spiced okra curry with roti' },
-      { id: 39, name: 'Keema Curry', price: 200, time: '30 min', rating: 4.6, isVeg: false, description: 'Minced meat curry with rice' },
+      { id: 14, name: 'Sattu Paratha & Ketchup / Sabji', price: 65, time: '18 min', rating: 4.5, isVeg: true, description: 'Nutritious sattu paratha with ketchup or vegetable curry', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop' },
     ],
-    combo: [
-      { id: 40, name: 'Thursday Delight', price: 230, time: '28 min', rating: 4.8, isVeg: false, description: 'Mixed thali with both veg and non-veg options' },
-    ]
+    combo: []
+  },
+  Friday: {
+    breakfast: [
+      { id: 15, name: 'Puri & Sabji', price: 45, time: '15 min', rating: 4.4, isVeg: true, description: 'Fried bread with spiced vegetable curry', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop' },
+    ],
+    lunch: [
+      { id: 16, name: 'Roti, Chawal, Fish Curry', price: 95, time: '25 min', rating: 4.7, isVeg: false, description: 'Fresh roti, rice with delicious fish curry', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop' },
+      { id: 17, name: 'Roti, Chawal, Aloo Dum', price: 70, time: '20 min', rating: 4.5, isVeg: true, description: 'Roti, rice with spiced potato curry', image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop' },
+    ],
+    dinner: [
+      { id: 18, name: 'Paratha & Paneer', price: 75, time: '20 min', rating: 4.6, isVeg: true, description: 'Fresh paratha with paneer curry', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
+      { id: 19, name: 'Paratha & Sabji', price: 60, time: '15 min', rating: 4.4, isVeg: true, description: 'Fresh paratha with seasonal vegetable curry', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop' },
+    ],
+    combo: []
+  },
+  Saturday: {
+    breakfast: [
+      { id: 20, name: 'Sandwich & Ketchup', price: 40, time: '12 min', rating: 4.3, isVeg: true, description: 'Grilled sandwich served with tomato ketchup', image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400&h=300&fit=crop' },
+    ],
+    lunch: [
+      { id: 21, name: 'Khichdi, Chokha, Achar, Chips', price: 65, time: '18 min', rating: 4.5, isVeg: true, description: 'Comfort meal with khichdi, mashed vegetables, pickle and chips', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop' },
+    ],
+    dinner: [
+      { id: 22, name: 'Roti & Sabji', price: 55, time: '15 min', rating: 4.4, isVeg: true, description: 'Fresh roti with seasonal vegetable curry', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
+      { id: 23, name: 'Roti & Bhindi', price: 60, time: '18 min', rating: 4.5, isVeg: true, description: 'Fresh roti with spiced okra curry', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
+    ],
+    combo: []
+  },
+  Sunday: {
+    breakfast: [
+      { id: 24, name: 'Roti & Mix Veg', price: 45, time: '15 min', rating: 4.4, isVeg: true, description: 'Fresh roti with mixed vegetable curry', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop' },
+    ],
+    lunch: [
+      { id: 25, name: 'Chicken Biryani, Raita & Papad', price: 110, time: '30 min', rating: 4.8, isVeg: false, description: 'Aromatic chicken biryani with cooling raita and crispy papad', image: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop' },
+      { id: 26, name: 'Veg Biryani, Raita & Papad', price: 85, time: '25 min', rating: 4.6, isVeg: true, description: 'Fragrant vegetable biryani with raita and papad', image: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop' },
+    ],
+    dinner: [
+      { id: 27, name: 'Chole Bhature', price: 70, time: '20 min', rating: 4.7, isVeg: true, description: 'Spicy chickpea curry with fried bread', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop' },
+    ],
+    combo: []
   }
 };
 
@@ -109,6 +119,15 @@ export default function MenuPage() {
     startOrderFlow();
   };
 
+  const handleDownloadMenu = () => {
+    const link = document.createElement('a');
+    link.href = '/download_menu.jpg';
+    link.download = 'mealzee_weekly_menu.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-olive-50">
       <Navbar />
@@ -118,9 +137,16 @@ export default function MenuPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">Our Weekly Menu</h1>
-            <p className="text-olive-100 text-lg">
+            <p className="text-olive-100 text-lg mb-6">
               Fresh, delicious meals prepared daily with love
             </p>
+            <Button
+              onClick={handleDownloadMenu}
+              className="bg-white text-olive-600 hover:bg-gray-50 font-semibold px-6 py-3 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Download Menu
+            </Button>
           </div>
         </div>
       </div>
@@ -183,40 +209,51 @@ export default function MenuPage() {
                   key={item.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group"
                 >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-semibold text-gray-900 text-lg">{item.name}</h3>
-                      <div className="flex items-center space-x-1">
-                        {item.isVeg ? (
-                          <Leaf className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <Utensils className="w-4 h-4 text-red-500" />
-                        )}
+                  {/* Food Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <div className={`w-6 h-6 rounded-sm flex items-center justify-center ${
+                        item.isVeg ? 'bg-green-500' : 'bg-red-500'
+                      }`}>
+                        <div className={`w-3 h-3 rounded-full ${
+                          item.isVeg ? 'bg-green-600' : 'bg-red-600'
+                        }`}></div>
                       </div>
                     </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4">{item.description}</p>
-                    
+                    <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded-lg shadow-md">
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                        <span className="text-xs font-medium">{item.rating}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 text-lg leading-tight">{item.name}</h3>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
+
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm font-medium">{item.rating}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-600">{item.time}</span>
-                        </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">{item.time}</span>
                       </div>
                       <div className="text-xl font-bold text-olive-600">₹{item.price}</div>
                     </div>
-                    
+
                     <Button
                       variant="primary"
                       size="sm"
-                      className="w-full bg-olive-500 hover:bg-olive-600"
+                      className="w-full bg-olive-500 hover:bg-olive-600 text-white font-medium py-2 rounded-lg transition-colors"
                       onClick={() => handleOrderItem()}
                     >
                       Order Now

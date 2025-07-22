@@ -4,9 +4,9 @@ export const APP_CONFIG = {
   description: 'Better food for more people',
   tagline: 'Delicious meals delivered to your doorstep',
   version: '1.0.0',
-  supportEmail: 'hello@mealzee.in',
-  supportPhone: '+91 9608036638',
-  whatsappNumber: '9608036638',
+  supportEmail: 'Mealzee.india@gmail.com',
+  supportPhone: '+91 9204 666 105',
+  whatsappNumber: '9204666105',
   domain: 'Mealzee.in',
   serviceLocation: 'Sector 4, Bokaro Steel City, Jharkhand',
   maxDeliveryRadius: 15, // km
@@ -55,8 +55,8 @@ export const SOCIAL_LINKS = {
 
 // WhatsApp Configuration
 export const WHATSAPP_CONFIG = {
-  phoneNumber: '919608036638',
-  baseUrl: 'https://wa.me/919608036638',
+  phoneNumber: '919204666105',
+  baseUrl: 'https://wa.me/919204666105',
   messages: {
     orderNow: 'Hi Mealzee! 🍽️ I would like to place an order. Please share your menu and pricing details.',
     generalInquiry: 'Hi Mealzee! I have some questions about your food delivery service.',
@@ -117,14 +117,7 @@ export const MEAL_CATEGORIES = [
     color: 'from-violet-400 via-purple-400 to-fuchsia-400',
     bgColor: 'bg-gradient-to-br from-violet-50 to-purple-100',
   },
-  {
-    id: 'combo',
-    name: 'Combo Meals',
-    emoji: '🥘',
-    description: 'Complete meal combos for great value',
-    color: 'from-rose-400 via-pink-400 to-red-400',
-    bgColor: 'bg-gradient-to-br from-rose-50 to-pink-100',
-  },
+
 ] as const;
 
 // Navigation Links

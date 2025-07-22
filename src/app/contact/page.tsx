@@ -149,7 +149,7 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Phone</h3>
-                    <p className="text-gray-600">+91 9608036638</p>
+                    <p className="text-gray-600">+91 9204 666 105</p>
                     <p className="text-sm text-gray-500">Available 9 AM - 9 PM</p>
                   </div>
                 </div>
@@ -160,7 +160,7 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">WhatsApp</h3>
-                    <p className="text-gray-600">+91 9608036638</p>
+                    <p className="text-gray-600">+91 9204 666 105</p>
                     <p className="text-sm text-gray-500">Quick responses, 24/7</p>
                   </div>
                 </div>
@@ -171,7 +171,7 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Email</h3>
-                    <p className="text-gray-600">hello@mealzee.com</p>
+                    <p className="text-gray-600">Mealzee.india@gmail.com</p>
                     <p className="text-sm text-gray-500">We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>
@@ -199,28 +199,7 @@ const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <a
-                    href="https://wa.me/919608036638?text=Hi! I'd like to place an order."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center px-4 py-3 bg-olive-500 text-white rounded-lg hover:bg-olive-600 transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Order Now
-                  </a>
-                  <a
-                    href="tel:+919608036638"
-                    className="flex items-center justify-center px-4 py-3 bg-olive-600 text-white rounded-lg hover:bg-olive-700 transition-colors"
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Us
-                  </a>
-                </div>
-              </div>
+
             </div>
           </motion.div>
 

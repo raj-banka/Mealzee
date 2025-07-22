@@ -294,14 +294,28 @@ export async function getLocationSuggestions(query: string): Promise<LocationDat
  */
 export async function validateServiceArea(address: string): Promise<{ isValid: boolean; message: string; suggestions?: LocationData[] }> {
   try {
-    console.log('🧪 TESTING MODE: validateServiceArea called for:', address);
+    console.log('🏠 Validating service area for:', address);
 
-    // TESTING MODE: Always return valid
-    return {
-      isValid: true,
-      message: '🧪 TESTING MODE: All addresses are valid for testing',
-      suggestions: []
-    };
+    // Check if address contains "Sector 4" or "Sec 4"
+    const addressLower = address.toLowerCase();
+    const isSector4 = addressLower.includes('sector 4') ||
+                     addressLower.includes('sec 4') ||
+                     addressLower.includes('sector-4') ||
+                     addressLower.includes('sec-4');
+
+    if (isSector4) {
+      return {
+        isValid: true,
+        message: 'Great! We deliver to Sector 4, Bokaro Steel City.',
+        suggestions: []
+      };
+    } else {
+      return {
+        isValid: false,
+        message: 'Sorry, we currently only deliver to Sector 4, Bokaro Steel City. Please enter a Sector 4 address.',
+        suggestions: []
+      };
+    }
 
     // Original logic (commented out for testing):
     /*

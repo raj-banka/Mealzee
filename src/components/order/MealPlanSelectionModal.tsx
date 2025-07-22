@@ -127,7 +127,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 rounded-xl overflow-hidden bg-white shadow-sm">
                         <img
-                          src="/thali.png"
+                          src="/pic.png"
                           alt="Meal Plan"
                           className="w-full h-full object-cover"
                         />

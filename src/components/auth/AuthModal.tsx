@@ -27,6 +27,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     dietaryPreference: 'vegetarian' as 'vegetarian' | 'non-vegetarian',
     dateOfBirth: ''
   });
+  const [hasReferralCode, setHasReferralCode] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralName, setReferralName] = useState('');
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
@@ -576,9 +579,61 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         validateOnChange={true}
                       />
                     </div>
+
+                    {/* Referral Code Section */}
+                    <div className="space-y-3 border-t border-gray-200 pt-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="hasReferralCode"
+                          checked={hasReferralCode}
+                          onChange={(e) => setHasReferralCode(e.target.checked)}
+                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <label htmlFor="hasReferralCode" className="text-sm font-medium text-gray-700">
+                          Have any referral code?
+                        </label>
+                      </div>
+
+                      {hasReferralCode && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-3"
+                        >
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Enter referral code"
+                              value={referralCode}
+                              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-sm"
+                            />
+                          </div>
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Referral name (optional)"
+                              value={referralName}
+                              onChange={(e) => setReferralName(e.target.value)}
+                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-sm"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            className="w-full py-2 px-4 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors text-sm"
+                            onClick={() => {
+                              // Apply referral code logic here
+                              console.log('Applying referral code:', referralCode, 'from:', referralName);
+                            }}
+                          >
+                            Apply Referral Code
+                          </button>
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
-
-
 
                   <motion.button
                     type="submit"
