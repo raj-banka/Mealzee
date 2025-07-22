@@ -52,25 +52,38 @@ export function calculateDistance(
 }
 
 /**
- * Check if coordinates are within service area
+ * Check if coordinates are within service area (Sector 4 and nearby sectors only)
  */
 export function isLocationServiceable(coordinates: LocationCoordinates): boolean {
-  const distance = calculateDistance(
+  // Define allowed sectors (Sector 4 and immediately adjacent sectors)
+  const allowedSectors = ['Sector 4', 'Sector 3', 'Sector 5'];
+
+  // Find the nearest sector
+  const nearestSector = findNearestSector(coordinates);
+
+  // Check if the nearest sector is in our allowed list
+  const isSectorAllowed = nearestSector ? allowedSectors.includes(nearestSector) : false;
+
+  // Also check distance from Sector 4 center (stricter validation)
+  const sector4Coords = SERVICE_AREA.sectors.find(s => s.name === 'Sector 4')?.coordinates;
+  if (!sector4Coords) return false;
+
+  const distanceFromSector4 = calculateDistance(
     coordinates.lat,
     coordinates.lng,
-    SERVICE_AREA.coordinates.lat,
-    SERVICE_AREA.coordinates.lng
+    sector4Coords.lat,
+    sector4Coords.lng
   );
 
-  console.log(`📍 Distance from service center: ${distance.toFixed(2)} km`);
-  console.log(`📍 Max delivery radius: ${APP_CONFIG.maxDeliveryRadius} km`);
-  console.log(`🧪 TESTING MODE: Allowing all locations`);
+  // Allow only within 3km of Sector 4 center AND in allowed sectors
+  const isWithinRange = distanceFromSector4 <= 3; // 3km radius from Sector 4
 
-  // Return true for all locations during testing
-  return true;
+  console.log(`📍 Nearest sector: ${nearestSector}`);
+  console.log(`📍 Distance from Sector 4: ${distanceFromSector4.toFixed(2)} km`);
+  console.log(`📍 Sector allowed: ${isSectorAllowed}`);
+  console.log(`📍 Within range: ${isWithinRange}`);
 
-  // Original logic (commented out for testing):
-  // return distance <= APP_CONFIG.maxDeliveryRadius;
+  return isSectorAllowed && isWithinRange;
 }
 
 /**
@@ -296,54 +309,42 @@ export async function validateServiceArea(address: string): Promise<{ isValid: b
   try {
     console.log('🏠 Validating service area for:', address);
 
-    // Check if address contains "Sector 4" or "Sec 4"
+    // Check if address contains allowed sectors
     const addressLower = address.toLowerCase();
-    const isSector4 = addressLower.includes('sector 4') ||
-                     addressLower.includes('sec 4') ||
-                     addressLower.includes('sector-4') ||
-                     addressLower.includes('sec-4');
+    const allowedSectorPatterns = [
+      'sector 4', 'sec 4', 'sector-4', 'sec-4',
+      'sector 3', 'sec 3', 'sector-3', 'sec-3',
+      'sector 5', 'sec 5', 'sector-5', 'sec-5'
+    ];
 
-    if (isSector4) {
+    const isAllowedSector = allowedSectorPatterns.some(pattern =>
+      addressLower.includes(pattern)
+    );
+
+    // Also check for Bokaro Steel City or BSC
+    const isBokaro = addressLower.includes('bokaro') ||
+                     addressLower.includes('bsc') ||
+                     addressLower.includes('bokaro steel city');
+
+    if (isAllowedSector && isBokaro) {
       return {
         isValid: true,
-        message: 'Great! We deliver to Sector 4, Bokaro Steel City.',
+        message: 'Great! We deliver to your area in Bokaro Steel City.',
+        suggestions: []
+      };
+    } else if (isAllowedSector && !isBokaro) {
+      return {
+        isValid: false,
+        message: 'Please specify the complete address including Bokaro Steel City.',
         suggestions: []
       };
     } else {
       return {
         isValid: false,
-        message: 'Sorry, we currently only deliver to Sector 4, Bokaro Steel City. Please enter a Sector 4 address.',
+        message: 'Sorry, we currently only deliver to Sector 3, 4, and 5 in Bokaro Steel City. Please enter a valid address.',
         suggestions: []
       };
     }
-
-    // Original logic (commented out for testing):
-    /*
-    const locations = await forwardGeocode(address);
-
-    if (locations.length === 0) {
-      return {
-        isValid: false,
-        message: 'Address not found. Please enter a valid address.'
-      };
-    }
-
-    const serviceableLocations = locations.filter(loc => loc.isServiceable);
-
-    if (serviceableLocations.length === 0) {
-      return {
-        isValid: false,
-        message: `Sorry, we don't deliver to this area yet. We currently serve ${SERVICE_AREA.city}, ${SERVICE_AREA.state}.`,
-        suggestions: locations
-      };
-    }
-
-    return {
-      isValid: true,
-      message: 'Address is within our delivery area!',
-      suggestions: serviceableLocations
-    };
-    */
   } catch (error) {
     return {
       isValid: false,

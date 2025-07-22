@@ -159,16 +159,24 @@ const PrivacyPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
               <a
-                href="mailto:privacy@mealzee.com"
+                href="mailto:mealzeeindia@gmail.com"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📧 privacy@mealzee.com
+                📧 mealzeeindia@gmail.com
               </a>
               <a
-                href="tel:+919608036638"
+                href="tel:+916299367631"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📞 +91 9608036638
+                📞 +91 6299367631
+              </a>
+              <a
+                href="https://wa.me/916299367631"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                💬 WhatsApp
               </a>
             </div>
           </div>

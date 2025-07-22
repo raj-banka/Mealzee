@@ -70,12 +70,16 @@ const LocationInput: React.FC<LocationInputProps> = ({
       setValidationStatus('loading');
       try {
         const result = await validateServiceArea(value);
-        // Always show as valid - AuthModal will handle redirection if not serviceable
-        setValidationStatus('valid');
-        setValidationMessage('Address validated successfully!');
+        if (result.isValid) {
+          setValidationStatus('valid');
+          setValidationMessage(result.message);
+        } else {
+          setValidationStatus('invalid');
+          setValidationMessage(result.message);
+        }
       } catch (error) {
-        setValidationStatus('valid');
-        setValidationMessage('Address accepted!');
+        setValidationStatus('invalid');
+        setValidationMessage('Unable to validate address. Please try again.');
       }
     }, 1000);
 
@@ -92,12 +96,18 @@ const LocationInput: React.FC<LocationInputProps> = ({
       const coordinates = await getCurrentLocation();
       const locationData = await reverseGeocode(coordinates);
 
-      // Always set the address regardless of serviceability
-      // The AuthModal will handle redirection after login if not serviceable
+      // Check if the detected location is serviceable
       const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
-      onChange(addressString, locationData);
-      setValidationStatus('valid');
-      setValidationMessage('Location detected successfully!');
+
+      if (locationData.isServiceable) {
+        onChange(addressString, locationData);
+        setValidationStatus('valid');
+        setValidationMessage('Location detected and verified!');
+      } else {
+        onChange(addressString, locationData);
+        setValidationStatus('invalid');
+        setValidationMessage('Location detected but not in our service area. We serve Sector 3, 4, and 5 in Bokaro Steel City.');
+      }
       setShowSuggestions(false);
     } catch (error) {
       console.error('Error getting location:', error);

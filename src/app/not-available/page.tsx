@@ -192,7 +192,7 @@ const NotAvailablePage: React.FC = () => {
             transition={{ delay: 1.5, duration: 1 }}
             className="mt-12 text-gray-500 text-sm"
           >
-            Currently serving: <span className="font-semibold text-olive-600">Sector 4, B.S. City</span>
+            Currently serving: <span className="font-semibold text-olive-600">Sector 3, 4 & 5, Bokaro Steel City</span>
           </motion.p>
         </motion.div>
       </div>

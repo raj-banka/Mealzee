@@ -77,7 +77,7 @@ const ContactPage: React.FC = () => {
         console.log('✅ Method used:', result.method);
 
         if (result.whatsappMessage) {
-          console.log('📱 Message sent to +91 9608036638:');
+          console.log('📱 Message sent to +91 6299367631:');
           console.log('---');
           console.log(result.whatsappMessage);
           console.log('---');
@@ -171,7 +171,7 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800">Email</h3>
-                    <p className="text-gray-600">Mealzee.india@gmail.com</p>
+                    <p className="text-gray-600">mealzeeindia@gmail.com</p>
                     <p className="text-sm text-gray-500">We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>

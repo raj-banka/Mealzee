@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mealzee.in/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /menu
+Allow: /privacy
+Allow: /terms
+Allow: /refund
+Allow: /shipping
+
+# Crawl delay
+Crawl-delay: 1

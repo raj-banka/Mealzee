@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getCurrentLocation, reverseGeocode } from '@/lib/location';
+import { sendOrderToWhatsApp, OrderData } from '@/lib/whatsapp';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -166,40 +167,16 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
     // Simulate professional order processing
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Send order to admin WhatsApp using simple method
+    // Send order to admin WhatsApp using standardized service
     try {
-      const orderMessage = `🍽️ *New Order from Mealzee Website*
+      const success = sendOrderToWhatsApp(orderPayload);
 
-👤 *Customer Details:*
-Name: ${orderPayload.customerName}
-Phone: ${orderPayload.phone}
-Email: ${orderPayload.email}
-
-🥘 *Order Details:*
-Plan: ${orderPayload.planTitle}
-Duration: ${orderPayload.planDuration}
-Price: ₹${orderPayload.planPrice}
-Start Date: ${orderPayload.startDate}
-
-📍 *Delivery Address:*
-${orderPayload.address}
-
-📝 *Special Preferences:*
-${orderPayload.preferences || 'None'}
-
-🆔 *Order ID:* #${orderPayload.orderId}
-⏰ *Timestamp:* ${new Date().toLocaleString()}
-
-Please process this order and contact customer for confirmation.
-
-Thank you! 🙏`;
-
-      // Open WhatsApp with order details
-      const whatsappUrl = `https://wa.me/919608036638?text=${encodeURIComponent(orderMessage)}`;
-      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-
-      console.log('📱 Order sent to WhatsApp: +91 9608036638');
-      console.log('📄 Order message:', orderMessage);
+      if (success) {
+        console.log('📱 Order sent to WhatsApp: +91 6299367631');
+        console.log('📄 Order data:', orderPayload);
+      } else {
+        console.warn('⚠️ Failed to send order to WhatsApp');
+      }
     } catch (error) {
       console.warn('⚠️ WhatsApp error:', error);
     }
@@ -434,7 +411,7 @@ Thank you! 🙏`;
 
                 <div className="bg-yellow-50 rounded-xl p-4">
                   <p className="text-sm text-yellow-700">
-                    📞 <strong>Need help?</strong> Call us at +91 9608036638 for any queries about your order.
+                    📞 <strong>Need help?</strong> Call us at +91 6299367631 for any queries about your order.
                   </p>
                 </div>
 

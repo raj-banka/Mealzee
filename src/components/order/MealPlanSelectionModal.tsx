@@ -58,11 +58,16 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
 
   const handlePlanSelect = (plan: MealPlan) => {
     selectMealPlan(plan);
-    
+
     // Close meal plan selection and open order modal
     dispatch({ type: 'CLOSE_MEAL_PLAN_SELECTION' });
     dispatch({ type: 'SET_ORDER_FLOW', payload: 'order-confirmation' });
     dispatch({ type: 'OPEN_ORDER_MODAL' });
+  };
+
+  const handlePlanClick = (plan: MealPlan) => {
+    // Just select the plan, don't proceed to order yet
+    selectMealPlan(plan);
   };
 
   const handleClose = () => {
@@ -120,7 +125,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                       ? 'border-green-500 shadow-lg' 
                       : 'border-transparent hover:border-green-300 hover:shadow-md'
                   }`}
-                  onClick={() => handlePlanSelect(plan)}
+                  onClick={() => handlePlanClick(plan)}
                 >
                   {/* Plan Header */}
                   <div className="flex items-start justify-between mb-4">

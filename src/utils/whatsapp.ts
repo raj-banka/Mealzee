@@ -1,4 +1,5 @@
 import { WHATSAPP_CONFIG } from '@/lib/constants';
+import { sendOrderToWhatsApp, OrderData } from '@/lib/whatsapp';
 
 export interface WhatsAppOptions {
   message?: string;
@@ -71,6 +72,38 @@ export const openWhatsAppForLocationOrder = (location: string) => {
 export const openWhatsAppForSpecialOffer = (offerName: string) => {
   const message = WHATSAPP_CONFIG.messages.specialOffer(offerName);
   openWhatsApp({ message });
+};
+
+/**
+ * Send menu item order to admin WhatsApp with standardized template
+ */
+export const sendMenuItemOrderToWhatsApp = (orderData: {
+  customerName: string;
+  phone: string;
+  email: string;
+  address: string;
+  itemName: string;
+  itemPrice: string;
+  quantity: number;
+  totalPrice: string;
+  specialInstructions?: string;
+}) => {
+  const orderId = Date.now().toString().slice(-6);
+
+  const whatsappOrderData: OrderData = {
+    customerName: orderData.customerName,
+    phone: orderData.phone,
+    email: orderData.email,
+    address: orderData.address,
+    planTitle: `${orderData.itemName} x${orderData.quantity}`,
+    planDuration: 'Single Order',
+    planPrice: orderData.totalPrice,
+    startDate: new Date().toLocaleDateString(),
+    preferences: orderData.specialInstructions,
+    orderId: orderId
+  };
+
+  return sendOrderToWhatsApp(whatsappOrderData);
 };
 
 /**

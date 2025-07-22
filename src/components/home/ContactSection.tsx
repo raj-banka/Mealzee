@@ -46,13 +46,13 @@ const ContactSection: React.FC = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['+91 98765 43210', '+91 87654 32109', 'Mon-Sun: 9AM-11PM'],
+      details: ['+91 6299 367 631', 'WhatsApp Available', 'Mon-Sun: 9AM-11PM'],
       color: 'from-green-400 to-emerald-500',
     },
     {
       icon: Mail,
       title: 'Email Us',
-      details: ['hello@mealzee.in', 'support@mealzee.in', 'We reply within 2 hours'],
+      details: ['mealzeeindia@gmail.com', 'Quick responses', 'We reply within 2 hours'],
       color: 'from-purple-400 to-violet-500',
     },
     {

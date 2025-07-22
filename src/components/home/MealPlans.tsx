@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Clock, Star, Utensils } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
@@ -65,10 +65,21 @@ const mealPlans: MealPlan[] = [
 ];
 
 const MealPlans: React.FC = () => {
-  const { startOrderFlow, state } = useApp();
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const { startOrderFlow, state, selectMealPlan, clearSelectedMealPlan } = useApp();
+
+  const handlePlanClick = (plan: MealPlan) => {
+    // If clicking on the already selected plan, allow deselection
+    if (state.selectedMealPlan?.id === plan.id) {
+      clearSelectedMealPlan();
+    } else {
+      // Update global state when user clicks on a plan
+      selectMealPlan(plan);
+    }
+  };
 
   const handleOrderNow = (plan: MealPlan) => {
+    // Ensure the plan is selected before starting order flow
+    selectMealPlan(plan);
     startOrderFlow(plan);
   };
 
@@ -107,11 +118,9 @@ const MealPlans: React.FC = () => {
               className={`bg-gradient-to-br from-olive-100 to-olive-200 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 ${
                 state.selectedMealPlan?.id === plan.id
                   ? 'border-olive-500 ring-2 ring-olive-200'
-                  : selectedPlan === plan.id
-                    ? 'border-olive-300'
-                    : 'border-transparent'
+                  : 'border-transparent hover:border-olive-300'
               }`}
-              onClick={() => setSelectedPlan(plan.id)}
+              onClick={() => handlePlanClick(plan)}
             >
               <div className="flex items-center space-x-4">
                 {/* Meal Image */}
@@ -167,13 +176,31 @@ const MealPlans: React.FC = () => {
                 }}
                 className={`w-full mt-4 py-3 rounded-2xl font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
                   state.selectedMealPlan?.id === plan.id
-                    ? 'bg-olive-700 text-white'
+                    ? 'bg-olive-700 text-white shadow-lg'
                     : 'bg-olive-600 text-white hover:bg-olive-700'
                 }`}
               >
                 <ShoppingCart className="w-5 h-5" />
-                <span>{state.selectedMealPlan?.id === plan.id ? 'Selected Plan' : 'Subscribe Meal'}</span>
+                <span>
+                  {state.selectedMealPlan?.id === plan.id ? 'Order Selected Plan' : 'Select & Order'}
+                </span>
               </motion.button>
+
+              {/* Selected Plan Indicator */}
+              {state.selectedMealPlan?.id === plan.id && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 text-center"
+                >
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-olive-100 text-olive-800">
+                    ✓ Currently Selected
+                  </span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Click card to change selection
+                  </p>
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>

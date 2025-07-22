@@ -161,6 +161,7 @@ const AppContext = createContext<{
   login: (userData: Omit<User, 'id' | 'isAuthenticated'>) => void;
   logout: () => void;
   selectMealPlan: (plan: MealPlan) => void;
+  clearSelectedMealPlan: () => void;
   startOrderFlow: (preSelectedPlan?: MealPlan) => void;
   isLoggedIn: () => boolean;
 } | null>(null);
@@ -169,7 +170,7 @@ const AppContext = createContext<{
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  // Load user data from localStorage on mount
+  // Load user data and selected meal plan from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('mealzee_user');
     if (savedUser) {
@@ -179,6 +180,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error loading user data:', error);
         localStorage.removeItem('mealzee_user');
+      }
+    }
+
+    const savedMealPlan = localStorage.getItem('mealzee_selected_plan');
+    if (savedMealPlan) {
+      try {
+        const mealPlanData = JSON.parse(savedMealPlan);
+        dispatch({ type: 'SET_SELECTED_MEAL_PLAN', payload: mealPlanData });
+      } catch (error) {
+        console.error('Error loading meal plan data:', error);
+        localStorage.removeItem('mealzee_selected_plan');
       }
     }
   }, []);
@@ -191,6 +203,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem('mealzee_user');
     }
   }, [state.user]);
+
+  // Save selected meal plan to localStorage when it changes
+  useEffect(() => {
+    if (state.selectedMealPlan) {
+      localStorage.setItem('mealzee_selected_plan', JSON.stringify(state.selectedMealPlan));
+    } else {
+      localStorage.removeItem('mealzee_selected_plan');
+    }
+  }, [state.selectedMealPlan]);
 
   // Helper functions
   const login = (userData: Omit<User, 'id' | 'isAuthenticated'>) => {
@@ -208,6 +229,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const selectMealPlan = (plan: MealPlan) => {
     dispatch({ type: 'SET_SELECTED_MEAL_PLAN', payload: plan });
+  };
+
+  const clearSelectedMealPlan = () => {
+    dispatch({ type: 'CLEAR_SELECTED_MEAL_PLAN' });
   };
 
   const isLoggedIn = () => {
@@ -242,6 +267,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     login,
     logout,
     selectMealPlan,
+    clearSelectedMealPlan,
     startOrderFlow,
     isLoggedIn,
   };

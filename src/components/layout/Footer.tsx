@@ -14,6 +14,7 @@ import {
   Twitter
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { SOCIAL_LINKS } from '@/lib/constants';
 
 const Footer: React.FC = () => {
   const { state, dispatch, logout, isLoggedIn, startOrderFlow } = useApp();
@@ -36,9 +37,11 @@ const Footer: React.FC = () => {
                 transition={{ duration: 0.6 }}
               >
                 <div className="mb-4">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    <span style={{ color: '#FFD700' }}>Meal</span><span className="text-green-600">zee</span>
-                  </h3>
+                  <img
+                    src="/footer_logo.jpg"
+                    alt="Mealzee Logo"
+                    className="h-12 w-auto"
+                  />
                 </div>
                 <p className="text-gray-700 leading-relaxed mb-2">
                   Mealzee is your daily dose of homemade food.
@@ -50,7 +53,7 @@ const Footer: React.FC = () => {
                 {/* Social Media Icons */}
                 <div className="flex space-x-4 mt-4">
                   <motion.a
-                    href="https://twitter.com/mealzee"
+                    href={SOCIAL_LINKS.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
@@ -59,7 +62,7 @@ const Footer: React.FC = () => {
                     <Twitter className="w-4 h-4" />
                   </motion.a>
                   <motion.a
-                    href="https://instagram.com/mealzee"
+                    href={SOCIAL_LINKS.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
@@ -68,7 +71,7 @@ const Footer: React.FC = () => {
                     <Instagram className="w-4 h-4" />
                   </motion.a>
                   <motion.a
-                    href="https://wa.me/919204666105"
+                    href="https://wa.me/916299367631"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}

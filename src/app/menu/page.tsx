@@ -8,6 +8,7 @@ import { MEAL_CATEGORIES } from '@/lib/constants';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Navbar from '@/components/layout/Navbar';
+import OrderFlowManager from '@/components/order/OrderFlowManager';
 
 // Updated weekly menu data with new meal plan and prices
 const WEEKLY_MENU = {
@@ -115,7 +116,11 @@ export default function MenuPage() {
   const currentMealItems = currentMenu[selectedMealType as keyof typeof currentMenu] || [];
 
   const handleOrderItem = () => {
-    // For now, just start the order flow
+    // Start the order flow - this will check if user is logged in and has selected a meal plan
+    // If not, it will guide them through the proper flow:
+    // 1. If not logged in -> show auth modal
+    // 2. If logged in but no meal plan -> show meal plan selection
+    // 3. If logged in and meal plan selected -> show order confirmation
     startOrderFlow();
   };
 
@@ -256,7 +261,7 @@ export default function MenuPage() {
                       className="w-full bg-olive-500 hover:bg-olive-600 text-white font-medium py-2 rounded-lg transition-colors"
                       onClick={() => handleOrderItem()}
                     >
-                      Order Now
+                      Start Order
                     </Button>
                   </div>
                 </motion.div>
@@ -287,6 +292,9 @@ export default function MenuPage() {
           </Button>
         </div>
       </div>
+
+      {/* Global Order Flow Manager */}
+      <OrderFlowManager />
     </div>
   );
 }

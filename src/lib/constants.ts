@@ -4,9 +4,9 @@ export const APP_CONFIG = {
   description: 'Better food for more people',
   tagline: 'Delicious meals delivered to your doorstep',
   version: '1.0.0',
-  supportEmail: 'Mealzee.india@gmail.com',
+  supportEmail: 'mealzeeindia@gmail.com',
   supportPhone: '+91 9204 666 105',
-  whatsappNumber: '9204666105',
+  whatsappNumber: '6299367631',
   domain: 'Mealzee.in',
   serviceLocation: 'Sector 4, Bokaro Steel City, Jharkhand',
   maxDeliveryRadius: 15, // km
@@ -48,15 +48,18 @@ export const SERVICE_AREA = {
 // Social Media Links
 export const SOCIAL_LINKS = {
   facebook: 'https://facebook.com/mealzee',
-  instagram: 'https://instagram.com/mealzee',
-  twitter: 'https://twitter.com/mealzee',
+  instagram: 'https://www.instagram.com/mealzeeindia/',
+  twitter: 'https://x.com/Mealzeeindia?t=zITsF0h84cXd6ph8GDw2Bg&s=08',
   whatsapp: `https://wa.me/${APP_CONFIG.whatsappNumber}`,
 } as const;
 
 // WhatsApp Configuration
 export const WHATSAPP_CONFIG = {
-  phoneNumber: '919204666105',
-  baseUrl: 'https://wa.me/919204666105',
+  phoneNumber: '919608036638', // Mealzee WhatsApp admin number
+  adminPhoneNumber: '919608036638', // Admin number for order notifications
+  baseUrl: 'https://wa.me/919608036638',
+  businessApiUrl: 'https://api.whatsapp.com/send', // For WhatsApp Business accounts
+  isBusinessAccount: false, // Set to false for normal WhatsApp account
   messages: {
     orderNow: 'Hi Mealzee! 🍽️ I would like to place an order. Please share your menu and pricing details.',
     generalInquiry: 'Hi Mealzee! I have some questions about your food delivery service.',

@@ -13,7 +13,7 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-type AuthStep = 'input' | 'otp' | 'location-check' | 'details' | 'success';
+type AuthStep = 'input' | 'location-check' | 'otp' | 'details' | 'success';
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { login, dispatch, state } = useApp();
@@ -45,27 +45,27 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       // Store location data for later use
       setLocationData(locationData);
 
-      // TESTING MODE: Skip location validation
+      // Strict location validation - redirect if not serviceable
       if (!locationData.isServiceable) {
-        console.log('🧪 TESTING MODE: Location not serviceable but allowing for testing');
-        // In testing mode, we'll continue instead of redirecting
-        // Uncomment below lines to restore original behavior:
-        // dispatch({ type: 'CLOSE_AUTH_MODAL' });
-        // router.push('/not-available');
-        // resetModal();
-        // return;
+        console.log('❌ Location not serviceable, redirecting to not-available page');
+        dispatch({ type: 'CLOSE_AUTH_MODAL' });
+        router.push('/not-available');
+        resetModal();
+        return;
       }
 
-      console.log('✅ Location is serviceable, proceeding to details');
+      console.log('✅ Location is serviceable, proceeding to OTP');
       // Pre-fill address if location is serviceable
       const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
       setUserDetails(prev => ({ ...prev, address: addressString }));
 
-      setAuthStep('details');
+      // Show fake OTP in console for testing
+      console.log('🔧 DEMO MODE: Use OTP 123456 to login');
+      setAuthStep('otp');
     } catch (error) {
       console.error('Location check failed:', error);
-      // If location check fails, continue to details step
-      // User can manually enter address
+      // If location check fails, still proceed to details step
+      // User can manually enter address and we'll validate it there
       setAuthStep('details');
     }
   }, [dispatch, router, setLocationData, setUserDetails]);
@@ -116,12 +116,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Always succeed for demo/testing
-    setAuthStep('otp');
-
-    // Show fake OTP in console for testing
-    console.log('🔧 DEMO MODE: Use OTP 123456 to login');
-    // alert('Demo Mode: Use OTP 123456 to login');
+    // Check location first before proceeding to OTP
+    setAuthStep('location-check');
 
     setIsLoading(false);
   };
@@ -132,23 +128,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
-    // TESTING MODE: Skip address validation
+    // Strict address validation
     // If location data is available from OTP step, use it
     // Otherwise validate the manually entered address
-    let isAddressServiceable = true;
+    let isAddressServiceable = false;
     if (locationData) {
       // Location was already checked during OTP verification
-      isAddressServiceable = true; // Force true for testing
-      console.log('🧪 TESTING MODE: Skipping location validation');
+      isAddressServiceable = locationData.isServiceable;
+      console.log('📍 Using location data from OTP step, serviceable:', isAddressServiceable);
     } else {
       // Validate manually entered address
       try {
         const validation = await validateServiceArea(userDetails.address);
-        isAddressServiceable = true; // Force true for testing
-        console.log('🧪 TESTING MODE: Skipping address validation, original result:', validation.isValid);
+        isAddressServiceable = validation.isValid;
+        console.log('📍 Address validation result:', validation.isValid, validation.message);
+
+        if (!validation.isValid) {
+          alert(validation.message);
+          setIsLoading(false);
+          return;
+        }
       } catch (error) {
         console.error('Address validation error:', error);
-        // Force true for testing instead of false
+        isAddressServiceable = false;
         isAddressServiceable = true;
         console.log('🧪 TESTING MODE: Address validation failed but allowing for testing');
       }
@@ -171,13 +173,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setTimeout(() => {
       dispatch({ type: 'CLOSE_AUTH_MODAL' });
 
-      // TESTING MODE: Skip location serviceability check
+      // Strict location serviceability check
       if (!isAddressServiceable) {
-        console.log('🧪 TESTING MODE: Would redirect to not-available but allowing for testing');
+        console.log('❌ Address not serviceable, redirecting to not-available page');
         // Redirect to not-available page if location is not serviceable
-        // router.push('/not-available');
-        // resetModal();
-        // return;
+        router.push('/not-available');
+        resetModal();
+        return;
       }
 
       // Continue with the order flow based on current state
@@ -222,7 +224,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Check for demo OTP
     if (otpValue === '123456') {
       console.log('✅ Demo OTP verified successfully');
-      setAuthStep('location-check');
+      setAuthStep('details'); // Go directly to details since location is already verified
     } else {
       alert('Invalid OTP. Use 123456 for demo mode.');
       // Reset OTP inputs
@@ -301,8 +303,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                 {authStep === 'input' && 'Welcome to Mealzee'}
+                {authStep === 'location-check' && 'Checking Service Area'}
                 {authStep === 'otp' && 'Verify OTP'}
-                {authStep === 'location-check' && 'Checking Location'}
                 {authStep === 'details' && 'Complete Your Profile'}
                 {authStep === 'success' && 'Welcome!'}
               </h2>
@@ -480,10 +482,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"
                   />
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    Checking Your Location
+                    Checking Service Area
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    We&apos;re verifying if we deliver to your area...
+                    Verifying if we deliver to your location...
+                    <br />
+                    <span className="text-xs text-gray-500 mt-1 block">
+                      We currently serve Sector 3, 4, and 5 in Bokaro Steel City
+                    </span>
                   </p>
                 </div>
               </motion.div>
