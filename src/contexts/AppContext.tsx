@@ -12,6 +12,8 @@ export interface User {
   dietaryPreference: 'vegetarian' | 'non-vegetarian';
   dateOfBirth: string; // Format: YYYY-MM-DD
   isAuthenticated: boolean;
+  referralCode?: string;
+  referralName?: string;
 }
 
 export interface MealPlan {
@@ -25,13 +27,28 @@ export interface MealPlan {
   features: string[];
 }
 
+export interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  rating: number;
+  time: string;
+  spiceLevel: 'mild' | 'medium' | 'spicy';
+  isVeg: boolean;
+  calories?: number;
+}
+
 export interface AppState {
   user: User | null;
   selectedMealPlan: MealPlan | null;
+  selectedDish: MenuItem | null;
   isAuthModalOpen: boolean;
   isOrderModalOpen: boolean;
   isMealPlanSelectionOpen: boolean;
   orderFlow: 'idle' | 'auth' | 'meal-selection' | 'order-confirmation';
+  orderType: 'meal-plan' | 'individual-dish';
 }
 
 // Actions
@@ -40,6 +57,8 @@ type AppAction =
   | { type: 'LOGOUT_USER' }
   | { type: 'SET_SELECTED_MEAL_PLAN'; payload: MealPlan }
   | { type: 'CLEAR_SELECTED_MEAL_PLAN' }
+  | { type: 'SET_SELECTED_DISH'; payload: MenuItem }
+  | { type: 'CLEAR_SELECTED_DISH' }
   | { type: 'OPEN_AUTH_MODAL' }
   | { type: 'CLOSE_AUTH_MODAL' }
   | { type: 'OPEN_ORDER_MODAL' }
@@ -47,16 +66,19 @@ type AppAction =
   | { type: 'OPEN_MEAL_PLAN_SELECTION' }
   | { type: 'CLOSE_MEAL_PLAN_SELECTION' }
   | { type: 'SET_ORDER_FLOW'; payload: AppState['orderFlow'] }
+  | { type: 'SET_ORDER_TYPE'; payload: AppState['orderType'] }
   | { type: 'RESET_ORDER_FLOW' };
 
 // Initial state
 const initialState: AppState = {
   user: null,
   selectedMealPlan: null,
+  selectedDish: null,
   isAuthModalOpen: false,
   isOrderModalOpen: false,
   isMealPlanSelectionOpen: false,
   orderFlow: 'idle',
+  orderType: 'meal-plan',
 };
 
 // Reducer
@@ -73,10 +95,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         user: null,
         selectedMealPlan: null,
+        selectedDish: null,
         isAuthModalOpen: false,
         isOrderModalOpen: false,
         isMealPlanSelectionOpen: false,
         orderFlow: 'idle',
+        orderType: 'meal-plan',
       };
     
     case 'SET_SELECTED_MEAL_PLAN':
@@ -89,6 +113,19 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         selectedMealPlan: null,
+      };
+    
+    case 'SET_SELECTED_DISH':
+      return {
+        ...state,
+        selectedDish: action.payload,
+        orderType: 'individual-dish',
+      };
+    
+    case 'CLEAR_SELECTED_DISH':
+      return {
+        ...state,
+        selectedDish: null,
       };
     
     case 'OPEN_AUTH_MODAL':
@@ -139,6 +176,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
         orderFlow: action.payload,
       };
     
+    case 'SET_ORDER_TYPE':
+      return {
+        ...state,
+        orderType: action.payload,
+      };
+    
     case 'RESET_ORDER_FLOW':
       return {
         ...state,
@@ -162,7 +205,10 @@ const AppContext = createContext<{
   logout: () => void;
   selectMealPlan: (plan: MealPlan) => void;
   clearSelectedMealPlan: () => void;
+  selectDish: (dish: MenuItem) => void;
+  clearSelectedDish: () => void;
   startOrderFlow: (preSelectedPlan?: MealPlan) => void;
+  startDishOrderFlow: (dish: MenuItem) => void;
   isLoggedIn: () => boolean;
 } | null>(null);
 
@@ -235,11 +281,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'CLEAR_SELECTED_MEAL_PLAN' });
   };
 
+  const selectDish = (dish: MenuItem) => {
+    dispatch({ type: 'SET_SELECTED_DISH', payload: dish });
+  };
+
+  const clearSelectedDish = () => {
+    dispatch({ type: 'CLEAR_SELECTED_DISH' });
+  };
+
   const isLoggedIn = () => {
     return state.user?.isAuthenticated || false;
   };
 
   const startOrderFlow = (preSelectedPlan?: MealPlan) => {
+    // Set order type to meal plan
+    dispatch({ type: 'SET_ORDER_TYPE', payload: 'meal-plan' });
+    
     // If a meal plan is pre-selected, set it
     if (preSelectedPlan) {
       dispatch({ type: 'SET_SELECTED_MEAL_PLAN', payload: preSelectedPlan });
@@ -261,6 +318,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const startDishOrderFlow = (dish: MenuItem) => {
+    // Set order type to individual dish and select the dish
+    dispatch({ type: 'SET_ORDER_TYPE', payload: 'individual-dish' });
+    dispatch({ type: 'SET_SELECTED_DISH', payload: dish });
+
+    // Determine the flow based on user state
+    if (!isLoggedIn()) {
+      // User not logged in - show auth modal first
+      dispatch({ type: 'SET_ORDER_FLOW', payload: 'auth' });
+      dispatch({ type: 'OPEN_AUTH_MODAL' });
+    } else {
+      // User logged in - go directly to order confirmation
+      dispatch({ type: 'SET_ORDER_FLOW', payload: 'order-confirmation' });
+      dispatch({ type: 'OPEN_ORDER_MODAL' });
+    }
+  };
+
   const value = {
     state,
     dispatch,
@@ -268,7 +342,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logout,
     selectMealPlan,
     clearSelectedMealPlan,
+    selectDish,
+    clearSelectedDish,
     startOrderFlow,
+    startDishOrderFlow,
     isLoggedIn,
   };
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Utensils, CheckCircle } from 'lucide-react';
+import { X, Clock, Utensils, CheckCircle, Star } from 'lucide-react';
 import { useApp, MealPlan } from '@/contexts/AppContext';
 
 interface MealPlanSelectionModalProps {
@@ -90,7 +90,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+            className="bg-gradient-to-br from-olive-50 to-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -99,8 +99,19 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
                   Choose Your Meal Plan
                 </h2>
+                {state.selectedMealPlan ? (
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
+                    <p className="text-olive-600 font-medium">
+                      Currently selected: {state.selectedMealPlan.title}
+                    </p>
+                  </div>
+                ) : null}
                 <p className="text-gray-600">
-                  Select the perfect meal combination for your lifestyle
+                  {state.selectedMealPlan 
+                    ? 'Click any plan below to change your selection'
+                    : 'Select the perfect meal combination for your lifestyle'
+                  }
                 </p>
               </div>
               <button
@@ -120,87 +131,101 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -5, scale: 1.02 }}
-                  className={`bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 cursor-pointer border-2 transition-all duration-300 ${
+                  className={`bg-gradient-to-br from-olive-100 to-olive-200 rounded-3xl p-6 cursor-pointer border-2 transition-all duration-300 shadow-lg hover:shadow-xl ${
                     state.selectedMealPlan?.id === plan.id 
-                      ? 'border-green-500 shadow-lg' 
-                      : 'border-transparent hover:border-green-300 hover:shadow-md'
+                      ? 'border-olive-500 ring-2 ring-olive-200' 
+                      : 'border-transparent hover:border-olive-300'
                   }`}
                   onClick={() => handlePlanClick(plan)}
                 >
-                  {/* Plan Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-white shadow-sm">
-                        <img
-                          src="/pic.png"
-                          alt="Meal Plan"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-800">
-                          {plan.title}
-                        </h3>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Clock className="w-4 h-4" />
-                          <span>{plan.duration}</span>
+                  <div className="flex items-center space-x-4">
+                    {/* Meal Image - Same as subscribe meal cards */}
+                    <div className="relative">
+                      <img
+                        src="/pic.png"
+                        alt="Delicious Meal"
+                        className="w-24 h-24"
+                      />
+                      {state.selectedMealPlan?.id === plan.id && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center"
+                        >
+                          <CheckCircle className="w-4 h-4 text-white fill-current" />
+                        </motion.div>
+                      )}
+                    </div>
+
+                    {/* Plan Details */}
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-gray-800 mb-1">
+                        {plan.title}
+                      </h4>
+                      
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Clock className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm text-gray-600">{plan.duration}</span>
+                        <div className="bg-olive-600 text-white text-xs px-2 py-1 rounded-full">
+                          {plan.discount}% off
                         </div>
                       </div>
-                    </div>
-                    
-                    {state.selectedMealPlan?.id === plan.id && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="p-1 bg-green-500 rounded-full"
-                      >
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </motion.div>
-                    )}
-                  </div>
 
-                  {/* Pricing */}
-                  <div className="mb-4">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-2xl font-bold text-green-600">
-                        ₹{plan.discountedPrice}
-                      </span>
-                      <span className="text-lg text-gray-500 line-through">
-                        ₹{plan.originalPrice}
-                      </span>
-                      <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-                        {plan.discount}% off
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">{plan.description}</p>
-                  </div>
-
-                  {/* Features */}
-                  <div className="space-y-2">
-                    {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-2 text-sm text-gray-700">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                        <span>{feature}</span>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-lg font-bold text-green-600">
+                          ₹{plan.discountedPrice}
+                        </span>
+                        <span className="text-sm text-gray-500 line-through">
+                          ₹{plan.originalPrice}
+                        </span>
                       </div>
-                    ))}
+
+                      <p className="text-sm text-gray-600 mb-3">{plan.description}</p>
+
+                      {/* Features */}
+                      <div className="space-y-1">
+                        {plan.features.slice(0, 2).map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2 text-xs text-gray-700">
+                            <div className="w-1.5 h-1.5 bg-olive-500 rounded-full"></div>
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Select Button */}
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`w-full mt-4 py-3 rounded-xl font-semibold transition-colors ${
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`w-full mt-4 py-3 rounded-2xl font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
                       state.selectedMealPlan?.id === plan.id
-                        ? 'bg-green-600 text-white'
-                        : 'bg-white text-green-600 border border-green-600 hover:bg-green-50'
+                        ? 'bg-olive-700 text-white shadow-lg'
+                        : 'bg-olive-600 text-white hover:bg-olive-700'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePlanSelect(plan);
                     }}
                   >
-                    {state.selectedMealPlan?.id === plan.id ? 'Selected' : 'Select Plan'}
+                    <Utensils className="w-5 h-5" />
+                    <span>
+                      {state.selectedMealPlan?.id === plan.id ? '✓ Selected Plan' : 'Select Plan'}
+                    </span>
                   </motion.button>
+
+                  {/* Selected Plan Indicator */}
+                  {state.selectedMealPlan?.id === plan.id && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 text-center"
+                    >
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-olive-100 text-olive-800">
+                        ✓ Currently Selected
+                      </span>
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -225,9 +250,9 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                     dispatch({ type: 'SET_ORDER_FLOW', payload: 'order-confirmation' });
                     dispatch({ type: 'OPEN_ORDER_MODAL' });
                   }}
-                  className="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  className="bg-olive-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-olive-700 transition-colors flex items-center space-x-2 shadow-lg hover:shadow-xl"
                 >
-                  <span>Continue to Order</span>
+                  <span>Continue with {state.selectedMealPlan.title}</span>
                   <CheckCircle className="w-5 h-5" />
                 </motion.button>
               )}

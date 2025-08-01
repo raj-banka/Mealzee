@@ -55,9 +55,9 @@ export const SOCIAL_LINKS = {
 
 // WhatsApp Configuration
 export const WHATSAPP_CONFIG = {
-  phoneNumber: '919608036638', // Mealzee WhatsApp admin number
-  adminPhoneNumber: '919608036638', // Admin number for order notifications
-  baseUrl: 'https://wa.me/919608036638',
+  phoneNumber: '916299367631', // Mealzee WhatsApp admin number
+  adminPhoneNumber: '916299367631', // Admin number for order notifications
+  baseUrl: 'https://wa.me/916299367631',
   businessApiUrl: 'https://api.whatsapp.com/send', // For WhatsApp Business accounts
   isBusinessAccount: false, // Set to false for normal WhatsApp account
   messages: {
@@ -369,6 +369,7 @@ export const Z_INDEX = {
   popover: 1060,
   tooltip: 1070,
   toast: 1080,
+  navbar: 9999,
 } as const;
 
 // API Endpoints (for future backend integration)

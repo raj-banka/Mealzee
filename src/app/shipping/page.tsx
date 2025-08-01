@@ -59,7 +59,7 @@ const ShippingPage: React.FC = () => {
                 </li>
               </ul>
               <p className="text-sm text-gray-600 mt-4">
-                Don&apos;t see your area? Contact us at +91 9608036638 to check if we can deliver to your location.
+                Don&apos;t see your area? Contact us at +91 6299367631 to check if we can deliver to your location.
               </p>
             </div>
           </div>
@@ -160,13 +160,13 @@ const ShippingPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
               <a
-                href="tel:+919608036638"
+                href="tel:+916299367631"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📞 +91 9608036638
+                📞 +91 6299367631
               </a>
               <a
-                href="https://wa.me/919608036638"
+                href="https://wa.me/916299367631"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"

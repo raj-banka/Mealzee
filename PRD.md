@@ -36,7 +36,7 @@ Mealzee is a modern tiffin service platform that provides healthy, affordable, a
 - Location-based service availability
 - Order customization options
 - WhatsApp integration for order confirmation
-- Admin notification system (Phone: 9608036638)
+- Admin notification system (Phone: 6299367631)
 
 ### 2.4 Special Features
 - **Veg & Non-Veg Mode Toggle**
@@ -155,7 +155,7 @@ Mealzee is a modern tiffin service platform that provides healthy, affordable, a
 
 ### 8.1 WhatsApp Integration
 - Order details formatting
-- Admin number: 9608036638
+- Admin number: 6299367631
 - Automated message templates
 - Deep linking support
 

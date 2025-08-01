@@ -250,7 +250,7 @@ const SpecialsSection: React.FC = () => {
                       whileHover={{ x: 5 }}
                       className="flex items-center space-x-2 text-white font-semibold group-hover:text-yellow-200 transition-colors self-start"
                     >
-                      <span>Explore Now</span>
+                      <span>subscribe plan</span>
                       <ArrowRight className="w-4 h-4" />
                     </motion.button>
                   </div>

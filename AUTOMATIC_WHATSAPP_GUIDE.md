@@ -2,12 +2,12 @@
 
 ## 📋 Overview
 
-Implemented a fully automatic WhatsApp integration that sends orders directly to your admin WhatsApp (9608036638) without any user interference, admin dashboards, or manual steps.
+Implemented a fully automatic WhatsApp integration that sends orders directly to your admin WhatsApp (6299367631) without any user interference, admin dashboards, or manual steps.
 
 ## ✅ **What's Implemented**
 
 ### **Automatic Order Sending:**
-- Orders automatically sent to +91 9608036638
+- Orders automatically sent to +91 6299367631
 - Multiple API methods for reliability
 - No user interaction required
 - Completely background processing
@@ -38,7 +38,7 @@ Implemented a fully automatic WhatsApp integration that sends orders directly to
 #### **Step 3: Add WhatsApp Module**
 1. Add "WhatsApp Business" module
 2. Connect your WhatsApp Business account
-3. Set recipient: +919608036638
+3. Set recipient: +916299367631
 4. Set message: `{{message}}` (from webhook data)
 
 #### **Step 4: Configure Environment**
@@ -51,7 +51,7 @@ MAKE_WEBHOOK_URL=https://hook.eu1.make.com/your-webhook-id
 1. Restart your development server
 2. Place test order
 3. Check Make.com scenario runs
-4. Receive WhatsApp message on 9608036638
+4. Receive WhatsApp message on 6299367631
 
 ---
 
@@ -113,11 +113,11 @@ WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
 2. Look for:
    🚀 Order automatically sent to admin WhatsApp
    ✅ Method used: [API method]
-   📱 Message sent to +91 9608036638
+   📱 Message sent to +91 6299367631
 ```
 
 ### **3. Expected WhatsApp Message:**
-You should receive this on 9608036638:
+You should receive this on 6299367631:
 ```
 🍽️ *New Order from Mealzee Website*
 
@@ -191,7 +191,7 @@ Please process this order and contact customer for confirmation.
    - WATI API
    - CallMeBot API
    ↓
-4. Message sent to +91 9608036638
+4. Message sent to +91 6299367631
    ↓
 5. ✅ You receive order notification!
 ```
@@ -275,4 +275,4 @@ Sent from Mealzee Contact Form
 **Admin Experience**: Orders arrive automatically on WhatsApp  
 **Reliability**: Multiple fallback methods ensure delivery
 
-Choose your preferred setup method and start receiving orders automatically on WhatsApp 9608036638! 🚀📱✅
+Choose your preferred setup method and start receiving orders automatically on WhatsApp 6299367631! 🚀📱✅

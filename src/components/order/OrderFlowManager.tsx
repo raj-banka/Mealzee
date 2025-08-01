@@ -53,6 +53,8 @@ const OrderFlowManager: React.FC = () => {
           dispatch({ type: 'RESET_ORDER_FLOW' });
         }}
         selectedPlan={state.selectedMealPlan || undefined}
+        selectedDish={state.selectedDish || undefined}
+        orderType={state.orderType}
       />
     </>
   );

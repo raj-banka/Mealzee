@@ -77,7 +77,7 @@ src/app/api/send-notification/    # Paid notification service
 ### WhatsApp Integration
 - **Method**: web.whatsapp.com (completely free)
 - **Functionality**: Pre-filled order messages
-- **Admin Number**: 9608036638
+- **Admin Number**: 6299367631
 - **User Experience**: Seamless order placement
 
 ## 🔐 Security Features
@@ -121,7 +121,7 @@ src/app/api/send-notification/    # Paid notification service
 7. **Selects meal plan** (with proper images)
 8. **Confirms order**
 9. **WhatsApp opens** with pre-filled order message
-10. **Order sent to admin** (9608036638)
+10. **Order sent to admin** (6299367631)
 
 ## 🚀 Ready for Production
 
@@ -172,7 +172,7 @@ npm run dev
 - ✅ **.env.example**: Environment configuration template
 
 ### Admin Contact
-- **WhatsApp**: +91 9608036638
+- **WhatsApp**: +91 6299367631
 - **Purpose**: Order notifications and support
 
 ## 🎯 Next Steps

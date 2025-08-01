@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendContactToWhatsApp, ContactData } from '@/lib/whatsapp';
+import { formatContactMessage, ContactData } from '@/lib/whatsapp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,25 +20,40 @@ export async function POST(request: NextRequest) {
 
       console.log('📞 Processing contact form submission:', contactData.name);
 
-      // Send to WhatsApp using the standardized service
-      const success = sendContactToWhatsApp(contactData);
+      // Format the message for WhatsApp
+      const whatsappMessage = formatContactMessage(contactData);
+      const adminPhone = '916299367631';
 
-      if (success) {
-        console.log('✅ Contact message sent to WhatsApp successfully');
-        return NextResponse.json({
-          success: true,
-          message: 'Contact message sent to admin WhatsApp',
-          method: 'WhatsApp Web API',
-          whatsappNumber: '+91 6299367631',
-          referenceId: contactData.referenceId
-        });
-      } else {
-        console.warn('⚠️ Failed to send contact message to WhatsApp');
-        return NextResponse.json({
-          success: false,
-          error: 'Failed to send message to WhatsApp'
-        }, { status: 500 });
-      }
+      // Create WhatsApp URL for admin
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      const whatsappUrl = `https://wa.me/${adminPhone}?text=${encodedMessage}`;
+
+      console.log('✅ Contact message formatted for WhatsApp');
+      console.log('📱 Admin WhatsApp URL generated');
+      console.log('📞 Message will be sent to:', `+91 ${adminPhone}`);
+      console.log('📝 Message preview:', whatsappMessage.substring(0, 150) + '...');
+
+      // Log the complete message for admin reference
+      console.log('📱 Complete WhatsApp message for admin:');
+      console.log('=====================================');
+      console.log(whatsappMessage);
+      console.log('=====================================');
+
+      return NextResponse.json({
+        success: true,
+        message: 'Contact message processed and ready for WhatsApp',
+        method: 'WhatsApp Direct URL',
+        whatsappNumber: '+91 6299367631',
+        whatsappUrl: whatsappUrl,
+        whatsappMessage: whatsappMessage,
+        referenceId: contactData.referenceId,
+        adminNotification: {
+          phone: '+91 6299367631',
+          messagePreview: whatsappMessage.substring(0, 100) + '...',
+          timestamp: new Date().toISOString(),
+          status: 'Message ready for delivery'
+        }
+      });
     }
 
     // Handle other types (orders, etc.) in the future

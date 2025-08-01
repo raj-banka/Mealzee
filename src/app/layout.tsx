@@ -88,15 +88,18 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Mealzee" />
         <link rel="canonical" href="https://mealzee.in" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo_resized_for_web.png" />
+        {/* Favicon */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/footer_logo.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/footer_logo.png" />
+        <link rel="shortcut icon" href="/footer_logo.png" />
+        <link rel="apple-touch-icon" href="/footer_logo.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta property="business:contact_data:street_address" content="Bokaro Steel City" />
         <meta property="business:contact_data:locality" content="Bokaro" />
         <meta property="business:contact_data:region" content="Jharkhand" />
         <meta property="business:contact_data:postal_code" content="827004" />
         <meta property="business:contact_data:country_name" content="India" />
-        <meta property="business:contact_data:phone_number" content="+91-9608036638" />
+        <meta property="business:contact_data:phone_number" content="+91-6299367631" />
       </head>
       <body className="font-sans antialiased bg-olive-50">
         <AppProvider>

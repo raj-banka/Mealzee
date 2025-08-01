@@ -209,4 +209,4 @@ Your Mealzee app now has:
 
 - **Firebase Documentation**: [https://firebase.google.com/docs/auth](https://firebase.google.com/docs/auth)
 - **Firebase Console**: [https://console.firebase.google.com/](https://console.firebase.google.com/)
-- **Mealzee Admin**: WhatsApp +91 9608036638
+- **Mealzee Admin**: WhatsApp +91 6299367631

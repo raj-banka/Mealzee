@@ -14,9 +14,10 @@ import {
   Utensils,
   MessageCircle
 } from 'lucide-react';
-import { useApp } from '@/contexts/AppContext';
+import { useApp, MenuItem } from '@/contexts/AppContext';
 import { getCurrentLocation, reverseGeocode } from '@/lib/location';
 import { sendOrderToWhatsApp, OrderData } from '@/lib/whatsapp';
+import { getReferralData } from '@/utils/referral';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ interface OrderModalProps {
     originalPrice: number;
     discount: number;
   };
+  selectedDish?: MenuItem;
+  orderType: 'meal-plan' | 'individual-dish';
 }
 
 interface OrderDetails {
@@ -40,7 +43,7 @@ interface OrderDetails {
   startDate: string;
 }
 
-const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }) => {
+const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, selectedDish, orderType }) => {
   const { state, dispatch } = useApp();
   const [step, setStep] = useState<'confirm' | 'success'>('confirm');
   const [orderDetails, setOrderDetails] = useState<OrderDetails>({
@@ -144,18 +147,36 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
     // Generate order ID
     const orderId = Date.now().toString().slice(-6);
 
-    // Prepare order data
+    // Get dietary preference, dob, and referral info from user context
+    const dietaryPreference = state.user?.dietaryPreference || 'vegetarian';
+    const dob = state.user?.dateOfBirth || '';
+    // Get referral info from user context (entered at signup)
+    const referralCode = state.user?.referralCode || '';
+    const referralName = state.user?.referralName || '';
+
+    // Prepare order data based on order type
     const orderPayload = {
       customerName: orderDetails.customerName,
       phone: orderDetails.phone,
       email: orderDetails.email,
       address: orderDetails.address,
-      planTitle: selectedPlan?.title || '',
-      planDuration: selectedPlan?.duration || '',
-      planPrice: selectedPlan?.discountedPrice?.toString() || '',
-      startDate: orderDetails.startDate,
+      planTitle: orderType === 'meal-plan' ? (selectedPlan?.title || '') : (selectedDish?.name || ''),
+      planDuration: orderType === 'meal-plan' ? (selectedPlan?.duration || '') : 'Single Dish Order',
+      planPrice: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice?.toString() || '') : (selectedDish?.price?.toString() || ''),
+      startDate: orderType === 'individual-dish' ? new Date().toISOString().split('T')[0] : orderDetails.startDate,
       preferences: orderDetails.preferences,
-      orderId: orderId
+      orderId: orderId,
+      dietaryPreference,
+      dob,
+      referralCode: referralCode || undefined,
+      referralName: referralName || undefined,
+      // Additional dish-specific data
+      orderType,
+      dishDescription: orderType === 'individual-dish' ? selectedDish?.description : undefined,
+      dishSpiceLevel: orderType === 'individual-dish' ? selectedDish?.spiceLevel : undefined,
+      dishCalories: orderType === 'individual-dish' ? selectedDish?.calories : undefined,
+      dishRating: orderType === 'individual-dish' ? selectedDish?.rating : undefined,
+      dishPrepTime: orderType === 'individual-dish' ? selectedDish?.time : undefined
     };
 
     // Store order data for display
@@ -204,7 +225,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
     setTimeout(resetModal, 300);
   };
 
-  if (!selectedPlan) return null;
+  if (!selectedPlan && !selectedDish) return null;
 
   return (
     <AnimatePresence>
@@ -238,19 +259,49 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
               </button>
             </div>
 
-            {/* Selected Plan Summary */}
+            {/* Order Summary */}
             <div className="bg-green-50 rounded-2xl p-4 mb-6">
               <div className="flex items-center space-x-3">
                 <Utensils className="w-6 h-6 text-green-600" />
-                <div>
-                  <h3 className="font-semibold text-gray-800">{selectedPlan.title}</h3>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <span className="text-green-600 font-bold">₹{selectedPlan.discountedPrice}</span>
-                    <span className="text-gray-500 line-through">₹{selectedPlan.originalPrice}</span>
-                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
-                      {selectedPlan.discount}% off
-                    </span>
-                  </div>
+                <div className="flex-1">
+                  {orderType === 'meal-plan' && selectedPlan ? (
+                    <>
+                      <h3 className="font-semibold text-gray-800">{selectedPlan.title}</h3>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <span className="text-green-600 font-bold">₹{selectedPlan.discountedPrice}</span>
+                        <span className="text-gray-500 line-through">₹{selectedPlan.originalPrice}</span>
+                        <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
+                          {selectedPlan.discount}% off
+                        </span>
+                      </div>
+                    </>
+                  ) : orderType === 'individual-dish' && selectedDish ? (
+                    <>
+                      <h3 className="font-semibold text-gray-800">{selectedDish.name}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{selectedDish.description}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm">
+                          <span className="text-green-600 font-bold">₹{selectedDish.price}</span>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            selectedDish.isVeg ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {selectedDish.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            selectedDish.spiceLevel === 'mild' ? 'bg-green-100 text-green-700' :
+                            selectedDish.spiceLevel === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-red-100 text-red-700'
+                          }`}>
+                            {selectedDish.spiceLevel === 'mild' ? '🟢 Mild' : 
+                             selectedDish.spiceLevel === 'medium' ? '🟡 Medium' : '🔴 Spicy'}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ⭐ {selectedDish.rating} • ⏱️ {selectedDish.time}
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -286,18 +337,20 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
 
                 {/* Order Preferences */}
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={orderDetails.startDate}
-                      onChange={(e) => handleInputChange('startDate', e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors"
-                      required
-                    />
-                  </div>
+                  {orderType === 'meal-plan' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Start Date *
+                      </label>
+                      <input
+                        type="date"
+                        value={orderDetails.startDate}
+                        onChange={(e) => handleInputChange('startDate', e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors"
+                        required
+                      />
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -315,11 +368,11 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan }
 
                 <motion.button
                   onClick={handleConfirmOrder}
-                  disabled={isLoading || !orderDetails.startDate}
+                  disabled={isLoading || (orderType === 'meal-plan' && !orderDetails.startDate)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`w-full py-4 rounded-xl font-semibold transition-colors flex items-center justify-center space-x-2 ${
-                    orderDetails.startDate && !isLoading
+                    (orderType === 'individual-dish' || orderDetails.startDate) && !isLoading
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}

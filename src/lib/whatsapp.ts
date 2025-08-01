@@ -19,6 +19,17 @@ export interface OrderData {
   startDate: string;
   preferences?: string;
   orderId: string;
+  dietaryPreference: 'vegetarian' | 'non-vegetarian';
+  dob: string;
+  referralCode?: string;
+  referralName?: string;
+  // Additional fields for individual dish orders
+  orderType?: 'meal-plan' | 'individual-dish';
+  dishDescription?: string;
+  dishSpiceLevel?: string;
+  dishCalories?: number;
+  dishRating?: number;
+  dishPrepTime?: string;
 }
 
 export interface ContactData {
@@ -309,30 +320,46 @@ export function sendContactToWhatsApp(contactData: ContactData): boolean {
  * Format order data for WhatsApp message - Clean and URL-safe
  */
 export function formatOrderMessage(orderData: OrderData): string {
+  const isIndividualDish = orderData.orderType === 'individual-dish';
+  
   // Create a clean message that works well with WhatsApp URL encoding
-  const message = `*New Order from Mealzee Website*
+  const message = `*New ${isIndividualDish ? 'Individual Dish' : 'Meal Plan'} Order from Mealzee Website*
 
 *Customer Details:*
 Name: ${orderData.customerName}
 Phone: ${orderData.phone}
+DOB: ${orderData.dob || 'N/A'}
+Dietary Preference: ${orderData.dietaryPreference}
 
 *Order Details:*
-Plan: ${orderData.planTitle}
-Duration: ${orderData.planDuration}
+${isIndividualDish ? 'Dish' : 'Plan'}: ${orderData.planTitle}
+${isIndividualDish ? '' : `Duration: ${orderData.planDuration}`}
 Price: Rs.${orderData.planPrice}
-Start Date: ${orderData.startDate}
+${isIndividualDish ? `Order Date: ${new Date().toLocaleDateString()}` : `Start Date: ${orderData.startDate}`}
 
-*Delivery Address:*
+${isIndividualDish && orderData.dishDescription ? `*Dish Description:*
+${orderData.dishDescription}
+` : ''}${isIndividualDish ? `*Dish Details:*
+${orderData.dishSpiceLevel ? `Spice Level: ${orderData.dishSpiceLevel}` : ''}
+${orderData.dishCalories ? `Calories: ${orderData.dishCalories} cal` : ''}
+${orderData.dishRating ? `Rating: ${orderData.dishRating}⭐` : ''}
+${orderData.dishPrepTime ? `Prep Time: ${orderData.dishPrepTime}` : ''}
+
+` : ''}*Delivery Address:*
 ${orderData.address}
 
 *Special Preferences:*
 ${orderData.preferences || 'None'}
 
+*Referral:*
+Code: ${orderData.referralCode || 'No referral'}
+Name: ${orderData.referralName || 'No referral'}
+
 *Order ID:* #${orderData.orderId}
 
 *Timestamp:* ${new Date().toLocaleString()}
 
-Please process this order.
+Please process this ${isIndividualDish ? 'dish' : 'meal plan'} order.
 
 Thank you!`;
 

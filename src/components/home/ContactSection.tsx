@@ -24,15 +24,61 @@ const ContactSection: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
+    // Generate reference ID
+    const referenceId = Date.now().toString().slice(-6);
+
+    // Prepare contact data
+    const contactPayload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      subject: 'General Inquiry', // Default subject for home page contact
+      message: formData.message,
+      referenceId: referenceId
+    };
+
+    // Send to admin WhatsApp automatically
+    try {
+      const response = await fetch('/api/auto-whatsapp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'contact',
+          data: contactPayload
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('🚀 Home contact message sent to admin WhatsApp:', result);
+
+        if (result.whatsappUrl) {
+          // Automatically open WhatsApp for admin notification
+          const whatsappWindow = window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
+
+          if (whatsappWindow) {
+            setTimeout(() => {
+              try {
+                whatsappWindow.close();
+              } catch (e) {
+                console.log('📱 WhatsApp window handling completed');
+              }
+            }, 2000);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('❌ Auto WhatsApp error:', error);
+    }
+
     // Reset form
     setFormData({ name: '', email: '', phone: '', message: '' });
     setIsSubmitting(false);
-    
-    // You could add a success toast here
+
+    // Success message
     alert('Thank you for your message! We\'ll get back to you soon.');
   };
 
@@ -46,7 +92,7 @@ const ContactSection: React.FC = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['+91 6299 367 631', 'WhatsApp Available', 'Mon-Sun: 9AM-11PM'],
+      details: ['+91 6299367631', 'WhatsApp Available', 'Mon-Sun: 9AM-11PM'],
       color: 'from-green-400 to-emerald-500',
     },
     {

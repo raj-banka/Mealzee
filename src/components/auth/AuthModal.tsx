@@ -7,6 +7,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
 import LocationInput from '@/components/location/LocationInput';
 import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
+import { isValidReferralCode } from '@/utils/referral';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -33,6 +34,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Auto-detect referral code from URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref') || urlParams.get('referral');
+    if (refParam && isValidReferralCode(refParam.toUpperCase())) {
+      setReferralCode(refParam.toUpperCase());
+      setHasReferralCode(true);
+      console.log('✅ Auto-applied referral code from URL:', refParam.toUpperCase());
+    }
+  }, []);
 
   const [resendCooldown, setResendCooldown] = useState(0);
 
@@ -164,6 +176,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       address: userDetails.address,
       dietaryPreference: userDetails.dietaryPreference,
       dateOfBirth: userDetails.dateOfBirth,
+      referralCode: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralCode : undefined,
+      referralName: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralName : undefined,
     });
 
     setIsLoading(false);
@@ -270,6 +284,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setPhoneNumber('');
     setPhoneError('');
     setUserDetails({ fullName: '', address: '', dietaryPreference: 'vegetarian', dateOfBirth: '' });
+    setHasReferralCode(false);
+    setReferralCode('');
+    setReferralName('');
     setOtp(['', '', '', '', '', '']);
     setIsLoading(false);
     setResendCooldown(0);
@@ -611,11 +628,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           <div>
                             <input
                               type="text"
-                              placeholder="Enter referral code"
+                              placeholder="Enter referral code (e.g., MEAL123456)"
                               value={referralCode}
                               onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-sm"
+                              className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm ${
+                                referralCode && isValidReferralCode(referralCode)
+                                  ? 'border-green-500 focus:border-green-600 bg-green-50'
+                                  : referralCode && !isValidReferralCode(referralCode)
+                                  ? 'border-red-500 focus:border-red-600 bg-red-50'
+                                  : 'border-gray-200 focus:border-green-500'
+                              }`}
                             />
+                            {referralCode && !isValidReferralCode(referralCode) && (
+                              <p className="text-red-500 text-xs mt-1">
+                                Invalid referral code format. Should be like MEAL123456
+                              </p>
+                            )}
                           </div>
                           <div>
                             <input
@@ -626,16 +654,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-sm"
                             />
                           </div>
-                          <button
-                            type="button"
-                            className="w-full py-2 px-4 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors text-sm"
-                            onClick={() => {
-                              // Apply referral code logic here
-                              console.log('Applying referral code:', referralCode, 'from:', referralName);
-                            }}
-                          >
-                            Apply Referral Code
-                          </button>
+                          {referralCode && isValidReferralCode(referralCode) && (
+                            <div className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                              ✅ Referral code {referralCode} will be applied to your order
+                            </div>
+                          )}
                         </motion.div>
                       )}
                     </div>

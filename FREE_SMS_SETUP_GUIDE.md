@@ -141,7 +141,7 @@ For production, consider:
 
 - **Fast2SMS Support**: [Contact Fast2SMS](https://www.fast2sms.com/contact-us)
 - **Documentation**: [Fast2SMS API Docs](https://docs.fast2sms.com)
-- **Mealzee Admin**: WhatsApp +91 9608036638
+- **Mealzee Admin**: WhatsApp +91 6299367631
 
 ## ✅ Setup Complete!
 

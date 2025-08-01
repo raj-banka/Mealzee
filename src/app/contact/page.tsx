@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
+import OrderFlowManager from '@/components/order/OrderFlowManager';
 
 const ContactPage: React.FC = () => {
   const router = useRouter();
@@ -73,11 +74,34 @@ const ContactPage: React.FC = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('🚀 Message automatically sent to admin WhatsApp:', result);
+        console.log('🚀 Message automatically processed for admin WhatsApp:', result);
         console.log('✅ Method used:', result.method);
 
+        if (result.whatsappUrl) {
+          console.log('📱 Opening WhatsApp for admin notification...');
+          console.log('📞 Admin number:', result.whatsappNumber);
+
+          // Automatically open WhatsApp in a new tab to send message to admin
+          // This happens in the background without user interaction
+          const whatsappWindow = window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
+
+          // Close the window after a short delay to make it seamless
+          if (whatsappWindow) {
+            setTimeout(() => {
+              try {
+                whatsappWindow.close();
+              } catch (e) {
+                // Window might already be closed or blocked
+                console.log('📱 WhatsApp window handling completed');
+              }
+            }, 2000);
+          }
+
+          console.log('✅ Admin notification sent via WhatsApp');
+        }
+
         if (result.whatsappMessage) {
-          console.log('📱 Message sent to +91 6299367631:');
+          console.log('📱 Message content sent to admin:');
           console.log('---');
           console.log(result.whatsappMessage);
           console.log('---');
@@ -111,7 +135,7 @@ const ContactPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
       {/* Header */}
-      <div className="bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200 text-gray-900 pt-16">
+      <div className="bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200 text-gray-900 pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center space-x-4">
             <div className="text-center w-full">
@@ -315,7 +339,7 @@ const ContactPage: React.FC = () => {
 
                   <div className="mt-6 p-4 bg-olive-50 rounded-lg">
                     <p className="text-sm text-olive-700">
-                      💡 <strong>Tip:</strong> For faster response, contact us directly via WhatsApp at +91 9608036638
+                      💡 <strong>Tip:</strong> For faster response, contact us directly via WhatsApp at +91 6299367631
                     </p>
                   </div>
                 </>
@@ -383,7 +407,7 @@ const ContactPage: React.FC = () => {
 
                   <div className="bg-olive-200 rounded-xl p-4">
                     <p className="text-sm text-olive-800">
-                      📞 <strong>Urgent inquiry?</strong> Call us directly at +91 9608036638 for immediate assistance.
+                      📞 <strong>Urgent inquiry?</strong> Call us directly at +91 6299367631 for immediate assistance.
                     </p>
                   </div>
 
@@ -401,6 +425,9 @@ const ContactPage: React.FC = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Global Order Flow Manager */}
+      <OrderFlowManager />
     </div>
   );
 };

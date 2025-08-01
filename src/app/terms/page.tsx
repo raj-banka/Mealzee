@@ -234,10 +234,10 @@ const TermsPage: React.FC = () => {
                 📧 legal@mealzee.com
               </a>
               <a
-                href="tel:+919608036638"
+                href="tel:+916299367631"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📞 +91 9608036638
+                📞 +91 6299367631
               </a>
             </div>
           </div>

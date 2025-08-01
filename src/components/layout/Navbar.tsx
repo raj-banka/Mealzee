@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Gift } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { NAV_LINKS, APP_CONFIG } from '@/lib/constants';
+import { NAV_LINKS, APP_CONFIG, Z_INDEX } from '@/lib/constants';
 import Button from '@/components/ui/Button';
 
 import { useApp } from '@/contexts/AppContext';
@@ -41,11 +41,16 @@ const Navbar: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 shadow-lg border-b border-green-700/30 transition-all duration-300"
-      style={{ backgroundColor: '#00430D' }}
+      className={`fixed top-0 left-0 right-0 shadow-lg border-b border-green-700/30 transition-all duration-300 ${
+        isScrolled ? 'backdrop-blur-sm bg-[#00430D]/95' : 'bg-[#00430D]'
+      }`}
+      style={{
+        pointerEvents: 'auto',
+        zIndex: Z_INDEX.navbar
+      }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ pointerEvents: 'auto' }}>
+        <div className="flex items-center justify-between h-16" style={{ pointerEvents: 'auto' }}>
           {/* Logo - Left Corner */}
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -73,12 +78,17 @@ const Navbar: React.FC = () => {
             {NAV_LINKS.map((link) => (
               <motion.button
                 key={link.id}
-                onClick={() => navigateToPage(link.href)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigateToPage(link.href);
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`font-medium transition-all duration-300 hover:text-emerald-300 ${
+                className={`font-medium transition-all duration-300 hover:text-emerald-300 cursor-pointer relative z-10 ${
                   pathname === link.href ? 'text-emerald-300' : 'text-white'
                 }`}
+                style={{ pointerEvents: 'auto' }}
               >
                 {link.name}
               </motion.button>
@@ -91,8 +101,10 @@ const Navbar: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20"
-              onClick={() => {
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20 cursor-pointer relative z-10"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 // Open referral modal
                 if (isLoggedIn()) {
                   setIsReferralModalOpen(true);
@@ -100,6 +112,7 @@ const Navbar: React.FC = () => {
                   dispatch({ type: 'OPEN_AUTH_MODAL' });
                 }
               }}
+              style={{ pointerEvents: 'auto' }}
             >
               <Gift className="w-4 h-4" />
               <span className="text-sm font-medium">Refer & Earn</span>
@@ -110,8 +123,13 @@ const Navbar: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsProfileModalOpen(true);
+                }}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors text-white hover:bg-black/20 cursor-pointer relative z-10"
+                style={{ pointerEvents: 'auto' }}
               >
                 <User className="w-4 h-4" />
                 <span className="text-sm font-medium">
@@ -119,31 +137,40 @@ const Navbar: React.FC = () => {
                 </span>
               </motion.button>
             ) : (
+              <div className="relative z-10" style={{ pointerEvents: 'auto' }}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 shadow-lg cursor-pointer"
+                  onClick={() => dispatch({ type: 'OPEN_AUTH_MODAL' })}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              </div>
+            )}
+
+            <div className="relative z-10" style={{ pointerEvents: 'auto' }}>
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 shadow-lg"
-                onClick={() => dispatch({ type: 'OPEN_AUTH_MODAL' })}
+                className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 shadow-lg cursor-pointer"
+                onClick={() => {
+                  // If on home page, scroll to meal plans section
+                  if (pathname === '/') {
+                    const mealPlansSection = document.getElementById('meal-plans');
+                    if (mealPlansSection) {
+                      mealPlansSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  } else {
+                    // Navigate to home page and then scroll to meal plans
+                    router.push('/#meal-plans');
+                  }
+                }}
               >
-                <User className="w-4 h-4 mr-2" />
-                Sign In
+                Order Now
               </Button>
-            )}
-
-            <Button
-              variant="primary"
-              size="sm"
-              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 shadow-lg"
-              onClick={() => {
-                // Scroll to meal plans section first
-                const mealPlansSection = document.getElementById('meal-plans');
-                if (mealPlansSection) {
-                  mealPlansSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-            >
-              Order Now
-            </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -173,11 +200,16 @@ const Navbar: React.FC = () => {
                 {NAV_LINKS.map((link) => (
                   <motion.button
                     key={link.id}
-                    onClick={() => navigateToPage(link.href)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigateToPage(link.href);
+                    }}
                     whileHover={{ x: 5 }}
-                    className={`block w-full text-left py-3 px-4 font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all ${
+                    className={`block w-full text-left py-3 px-4 font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all cursor-pointer ${
                       pathname === link.href ? 'text-emerald-300 bg-black/20' : 'text-white'
                     }`}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     {link.name}
                   </motion.button>
@@ -186,8 +218,10 @@ const Navbar: React.FC = () => {
                 {/* Mobile Referral Button */}
                 <motion.button
                   whileHover={{ x: 5 }}
-                  className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all"
-                  onClick={() => {
+                  className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     setIsOpen(false);
                     if (isLoggedIn()) {
                       setIsReferralModalOpen(true);
@@ -195,6 +229,7 @@ const Navbar: React.FC = () => {
                       dispatch({ type: 'OPEN_AUTH_MODAL' });
                     }
                   }}
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <div className="flex items-center">
                     <Gift className="w-5 h-5 mr-3" />
@@ -206,11 +241,14 @@ const Navbar: React.FC = () => {
                 {isLoggedIn() ? (
                   <motion.button
                     whileHover={{ x: 5 }}
-                    className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all"
-                    onClick={() => {
+                    className="flex items-center justify-between w-full py-3 px-4 text-white font-medium hover:bg-black/20 hover:text-emerald-300 rounded-lg transition-all cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       setIsOpen(false);
                       setIsProfileModalOpen(true);
                     }}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     <div className="flex items-center">
                       <User className="w-5 h-5 mr-3" />
@@ -218,11 +256,11 @@ const Navbar: React.FC = () => {
                     </div>
                   </motion.button>
                 ) : (
-                  <div className="pt-4 border-t border-green-700">
+                  <div className="pt-4 border-t border-green-700" style={{ pointerEvents: 'auto' }}>
                     <Button
                       variant="primary"
                       size="sm"
-                      className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700"
+                      className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 cursor-pointer"
                       onClick={() => {
                         setIsOpen(false);
                         dispatch({ type: 'OPEN_AUTH_MODAL' });
@@ -234,21 +272,28 @@ const Navbar: React.FC = () => {
                   </div>
                 )}
 
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                  onClick={() => {
-                    setIsOpen(false);
-                    // Scroll to meal plans section first
-                    const mealPlansSection = document.getElementById('meal-plans');
-                    if (mealPlansSection) {
-                      mealPlansSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                >
-                  Order Now
-                </Button>
+                <div style={{ pointerEvents: 'auto' }}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 cursor-pointer"
+                    onClick={() => {
+                      setIsOpen(false);
+                      // If on home page, scroll to meal plans section
+                      if (pathname === '/') {
+                        const mealPlansSection = document.getElementById('meal-plans');
+                        if (mealPlansSection) {
+                          mealPlansSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      } else {
+                        // Navigate to home page and then scroll to meal plans
+                        router.push('/#meal-plans');
+                      }
+                    }}
+                  >
+                    Order Now
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}

@@ -20,7 +20,7 @@ Your WhatsApp integration is implemented but needs configuration to send actual 
   "configuration": {
     "hasAccessToken": false,
     "hasPhoneNumberId": false,
-    "adminPhone": "919608036638"
+    "adminPhone": "916299367631"
   },
   "instructions": {
     "setup": "Follow WHATSAPP_CLOUD_API_SETUP.md for configuration"
@@ -35,7 +35,7 @@ Your WhatsApp integration is implemented but needs configuration to send actual 
   "configuration": {
     "hasAccessToken": true,
     "hasPhoneNumberId": true,
-    "adminPhone": "919608036638",
+    "adminPhone": "916299367631",
     "accessTokenPreview": "EAAxxxxxxx..."
   }
 }
@@ -56,7 +56,7 @@ Your WhatsApp integration is implemented but needs configuration to send actual 
 # In your project root directory
 WHATSAPP_ACCESS_TOKEN=your_access_token_here
 WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id_here
-ADMIN_PHONE_NUMBER=919608036638
+ADMIN_PHONE_NUMBER=916299367631
 ```
 
 3. **Restart development server:**
@@ -92,7 +92,7 @@ curl -X POST http://localhost:3001/api/test-whatsapp
 2. Select any meal plan
 3. Fill order details
 4. Click "Confirm Order"
-5. Check your WhatsApp (9608036638) for message
+5. Check your WhatsApp (6299367631) for message
 
 ---
 
@@ -141,7 +141,7 @@ Please process this order and contact customer for confirmation.
 ```
 🚀 Order automatically sent to admin WhatsApp
 ✅ Method used: WhatsApp Business Cloud API
-📱 Message sent to +91 9608036638
+📱 Message sent to +91 6299367631
 ```
 
 **Not Configured:**
@@ -169,7 +169,7 @@ Required environment variables:
 # Correct format
 WHATSAPP_ACCESS_TOKEN=EAAxxxxxxxxx
 WHATSAPP_PHONE_NUMBER_ID=123456789012345
-ADMIN_PHONE_NUMBER=919608036638
+ADMIN_PHONE_NUMBER=916299367631
 
 # Incorrect (don't use quotes)
 WHATSAPP_ACCESS_TOKEN="EAAxxxxxxxxx"
@@ -186,7 +186,7 @@ npm run dev
 
 #### **Common Errors:**
 - **Invalid token:** Generate new permanent token
-- **Phone not verified:** Add 919608036638 as recipient in Meta Console
+- **Phone not verified:** Add 916299367631 as recipient in Meta Console
 - **Permission denied:** Ensure token has `whatsapp_business_messaging` permission
 
 ---
@@ -197,7 +197,7 @@ npm run dev
 - [ ] `.env.local` file created in project root
 - [ ] `WHATSAPP_ACCESS_TOKEN` set
 - [ ] `WHATSAPP_PHONE_NUMBER_ID` set
-- [ ] `ADMIN_PHONE_NUMBER` set to 919608036638
+- [ ] `ADMIN_PHONE_NUMBER` set to 916299367631
 - [ ] Development server restarted
 
 ### **Testing:**
@@ -207,7 +207,7 @@ npm run dev
 - [ ] Message format matches expected format
 
 ### **Production Ready:**
-- [ ] WhatsApp messages received on 9608036638
+- [ ] WhatsApp messages received on 6299367631
 - [ ] Order details are complete and accurate
 - [ ] No user interference or redirects
 - [ ] Professional success screens working
@@ -239,6 +239,6 @@ npm run dev
 **Current Status**: Integration implemented, needs configuration  
 **Setup Time**: 15 minutes for WhatsApp Cloud API  
 **Alternative**: 5 minutes for webhook services  
-**Result**: Automatic order notifications on WhatsApp 9608036638
+**Result**: Automatic order notifications on WhatsApp 6299367631
 
 Choose your preferred setup method and start receiving orders! 🚀📱✅

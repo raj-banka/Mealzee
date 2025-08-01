@@ -18,12 +18,12 @@ const AboutSection: React.FC = () => {
       description: 'We believe in bringing people together through great food',
       color: 'from-blue-400 to-indigo-500',
     },
-    {
-      icon: Award,
-      title: 'Quality Assured',
-      description: 'Only the finest ingredients make it to your plate',
-      color: 'from-olive-400 to-olive-500',
-    },
+    // {
+    //   icon: Award,
+    //   title: 'Quality Assured',
+    //   description: 'Only the finest ingredients make it to your plate',
+    //   color: 'from-olive-400 to-olive-500',
+    // },
     {
       icon: Clock,
       title: 'Always Fresh',
@@ -45,10 +45,10 @@ const AboutSection: React.FC = () => {
   ];
 
   const stats = [
-    { number: '50K+', label: 'Happy Customers' },
-    { number: '500+', label: 'Dishes Served Daily' },
+    { number: '1000+', label: 'Happy Customers' },
+    { number: '50+', label: 'Dishes Served Daily' },
     { number: '4.8★', label: 'Average Rating' },
-    { number: '30min', label: 'Average Delivery Time' },
+    // { number: '30min', label: 'Average Delivery Time' },
   ];
 
   const containerVariants = {
@@ -106,7 +106,7 @@ const AboutSection: React.FC = () => {
               Our Story
             </h3>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Founded in 2020 with a simple mission: to make delicious, quality food accessible 
+              Founded in 2025 with a simple mission: to make delicious, quality food accessible 
               to everyone. What started as a small kitchen has grown into a community of food 
               lovers who believe that great meals bring people together.
             </p>

@@ -112,7 +112,7 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
 };
 
 const ReviewsMarquee: React.FC = () => {
-  const { startOrderFlow } = useApp();
+  const { startOrderFlow, dispatch, isLoggedIn } = useApp();
 
   // Split reviews into two rows for alternating direction
   const firstRowReviews = reviews.slice(0, 4);
@@ -191,7 +191,18 @@ const ReviewsMarquee: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => startOrderFlow()}
+          onClick={() => {
+            // Always show meal plan selection, regardless of current selection
+            if (!isLoggedIn()) {
+              // If not logged in, start normal auth flow
+              dispatch({ type: 'SET_ORDER_FLOW', payload: 'auth' });
+              dispatch({ type: 'OPEN_AUTH_MODAL' });
+            } else {
+              // If logged in, always show meal plan selection modal
+              dispatch({ type: 'SET_ORDER_FLOW', payload: 'meal-selection' });
+              dispatch({ type: 'OPEN_MEAL_PLAN_SELECTION' });
+            }
+          }}
           className="bg-olive-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-olive-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
         >
           Choose Your Meal Plan

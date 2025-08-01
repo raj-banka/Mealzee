@@ -6,9 +6,10 @@ import { X, Gift, Copy, Check, Share2, Users } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
-import { 
-  getReferralStats, 
-  shareReferralViaWhatsApp, 
+import { Z_INDEX } from '@/lib/constants';
+import {
+  getReferralStats,
+  shareReferralViaWhatsApp,
   copyReferralMessage,
   initializeReferralData
 } from '@/utils/referral';
@@ -68,7 +69,7 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ isOpen, onClose }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 999999
+            zIndex: Z_INDEX.modal
           }}
           onClick={onClose}
         >

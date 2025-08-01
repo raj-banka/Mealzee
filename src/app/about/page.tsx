@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Target, Award, Heart, Truck, Shield, Star } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
+import OrderFlowManager from '@/components/order/OrderFlowManager';
 
 const AboutPage: React.FC = () => {
   const values = [
@@ -31,38 +32,38 @@ const AboutPage: React.FC = () => {
   ];
 
   const stats = [
-    { number: '500+', label: 'Partner Restaurants' },
-    { number: '50K+', label: 'Happy Customers' },
-    { number: '1M+', label: 'Orders Delivered' },
-    { number: '4.8', label: 'Average Rating' },
+    // { number: '500+', label: 'Partner Restaurants' },
+    { number: '500+', label: 'Happy Customers' },
+    { number: '1000+', label: 'Orders Delivered' },
+    { number: '4.8★', label: 'Average Rating' },
   ];
 
-  const team = [
-    {
-      name: 'Sarah Johnson',
-      role: 'CEO & Founder',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face',
-      bio: 'Passionate about connecting people with great food and building amazing experiences.',
-    },
-    {
-      name: 'Michael Chen',
-      role: 'CTO',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
-      bio: 'Tech enthusiast focused on building scalable and reliable delivery solutions.',
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Head of Operations',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face',
-      bio: 'Operations expert ensuring smooth delivery processes and customer satisfaction.',
-    },
-  ];
+  // const team = [
+  //   {
+  //     name: 'Sarah Johnson',
+  //     role: 'CEO & Founder',
+  //     image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face',
+  //     bio: 'Passionate about connecting people with great food and building amazing experiences.',
+  //   },
+  //   {
+  //     name: 'Michael Chen',
+  //     role: 'CTO',
+  //     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+  //     bio: 'Tech enthusiast focused on building scalable and reliable delivery solutions.',
+  //   },
+  //   {
+  //     name: 'Emily Rodriguez',
+  //     role: 'Head of Operations',
+  //     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face',
+  //     bio: 'Operations expert ensuring smooth delivery processes and customer satisfaction.',
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
+      <section className="relative pt-20 pb-20 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -78,7 +79,7 @@ const AboutPage: React.FC = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               We&apos;re on a mission to connect food lovers with their favorite meals,
-              delivering happiness one meal at a time. Founded in 2020, we&apos;ve grown to become
+              delivering happiness one meal at a time. Founded in 2025, we&apos;ve grown to become
               the most trusted tiffin service in Bokaro Steel City.
             </p>
           </motion.div>
@@ -125,17 +126,6 @@ const AboutPage: React.FC = () => {
                 height={400}
                 className="rounded-2xl shadow-lg"
               />
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-olive-500 rounded-full flex items-center justify-center">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">Award Winning</div>
-                    <div className="text-sm text-gray-600">Best Food Delivery 2023</div>
-                  </div>
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -206,7 +196,7 @@ const AboutPage: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -227,7 +217,7 @@ const AboutPage: React.FC = () => {
       </section>
 
       {/* Team */}
-      <section className="py-16 bg-gray-50">
+      {/* <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -273,10 +263,10 @@ const AboutPage: React.FC = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA */}
-      <section className="py-16">
+      {/* <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -310,7 +300,10 @@ const AboutPage: React.FC = () => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
+
+      {/* Global Order Flow Manager */}
+      <OrderFlowManager />
     </div>
   );
 };

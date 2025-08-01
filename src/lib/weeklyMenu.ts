@@ -1,4 +1,4 @@
-// Weekly Menu Data for Mealzee
+// Weekly Menu Data for Mealzee - Updated with exact menu and pricing
 
 export interface MenuItem {
   id: number;
@@ -8,7 +8,7 @@ export interface MenuItem {
   rating: number;
   isVeg: boolean;
   description: string;
-  type: 'breakfast' | 'lunch' | 'dinner' | 'combo';
+  type: 'breakfast' | 'lunch' | 'dinner';
   image?: string;
   ingredients?: string[];
   calories?: number;
@@ -19,7 +19,6 @@ export interface DayMenu {
   breakfast: MenuItem[];
   lunch: MenuItem[];
   dinner: MenuItem[];
-  combo: MenuItem[];
 }
 
 export interface WeeklyMenuData {
@@ -31,263 +30,409 @@ export const WEEKLY_MENU: WeeklyMenuData = {
     breakfast: [
       {
         id: 1,
-        name: 'Masala Dosa',
-        price: 80,
+        name: 'Aloo Paratha & Tomato Ketchup',
+        price: 40,
         time: '15 min',
         rating: 4.5,
         isVeg: true,
         type: 'breakfast',
-        description: 'Crispy dosa with spicy potato filling and coconut chutney',
-        spiceLevel: 'medium',
-        calories: 350
-      },
-      {
-        id: 2,
-        name: 'Poha',
-        price: 60,
-        time: '10 min',
-        rating: 4.3,
-        isVeg: true,
-        type: 'breakfast',
-        description: 'Flattened rice with vegetables, peanuts and spices',
+        description: 'Fresh homemade potato stuffed paratha with tangy tomato ketchup',
         spiceLevel: 'mild',
-        calories: 250
-      },
-      {
-        id: 3,
-        name: 'Upma',
-        price: 50,
-        time: '12 min',
-        rating: 4.2,
-        isVeg: true,
-        type: 'breakfast',
-        description: 'Semolina porridge with vegetables and curry leaves',
-        spiceLevel: 'mild',
-        calories: 200
+        calories: 350,
+        image: '/images/aalu paratha.jpg'
       }
     ],
     lunch: [
       {
-        id: 4,
-        name: 'Dal Rice Combo',
-        price: 120,
+        id: 2,
+        name: 'Roti, Chawal, Dal, Sabji, Achar, Chutney',
+        price: 70,
         time: '20 min',
-        rating: 4.4,
-        isVeg: true,
-        type: 'lunch',
-        description: 'Yellow dal with steamed rice, pickle and papad',
-        spiceLevel: 'mild',
-        calories: 450
-      },
-      {
-        id: 5,
-        name: 'Chicken Curry Rice',
-        price: 180,
-        time: '25 min',
         rating: 4.6,
-        isVeg: false,
-        type: 'lunch',
-        description: 'Spicy chicken curry with basmati rice and salad',
-        spiceLevel: 'spicy',
-        calories: 550
-      },
-      {
-        id: 6,
-        name: 'Rajma Rice',
-        price: 140,
-        time: '22 min',
-        rating: 4.5,
         isVeg: true,
         type: 'lunch',
-        description: 'Kidney beans curry with rice and onion salad',
+        description: 'Complete traditional meal with roti, rice, dal, vegetable curry, pickle and chutney',
         spiceLevel: 'medium',
-        calories: 400
+        calories: 450,
+        image: '/images/vegthali.jpg'
       }
     ],
     dinner: [
       {
-        id: 7,
-        name: 'Paneer Butter Masala',
-        price: 160,
-        time: '20 min',
-        rating: 4.7,
-        isVeg: true,
-        type: 'dinner',
-        description: 'Rich paneer curry with butter naan and rice',
-        spiceLevel: 'medium',
-        calories: 500
-      },
-      {
-        id: 8,
-        name: 'Fish Curry',
-        price: 200,
-        time: '30 min',
-        rating: 4.5,
-        isVeg: false,
-        type: 'dinner',
-        description: 'Bengali style fish curry with steamed rice',
-        spiceLevel: 'spicy',
-        calories: 450
-      },
-      {
-        id: 9,
-        name: 'Aloo Gobi',
-        price: 130,
+        id: 3,
+        name: 'Roti, Sabji, Sweet',
+        price: 60,
         time: '18 min',
-        rating: 4.3,
+        rating: 4.4,
         isVeg: true,
         type: 'dinner',
-        description: 'Potato and cauliflower curry with roti',
+        description: 'Fresh roti with seasonal vegetable curry and traditional sweet',
         spiceLevel: 'mild',
-        calories: 350
-      }
-    ],
-    combo: [
-      {
-        id: 10,
-        name: 'Monday Special Thali',
-        price: 220,
-        time: '25 min',
-        rating: 4.8,
-        isVeg: true,
-        type: 'combo',
-        description: 'Complete meal with dal, sabzi, rice, roti, pickle and dessert',
-        spiceLevel: 'medium',
-        calories: 650
+        calories: 380,
+        image: '/images/roti-mitha.jpg'
       }
     ]
   },
   Tuesday: {
     breakfast: [
       {
-        id: 11,
-        name: 'Idli Sambar',
-        price: 70,
-        time: '12 min',
-        rating: 4.6,
-        isVeg: true,
-        type: 'breakfast',
-        description: 'Steamed rice cakes with lentil curry and coconut chutney',
-        spiceLevel: 'mild',
-        calories: 300
-      },
-      {
-        id: 12,
-        name: 'Aloo Paratha',
-        price: 90,
-        time: '18 min',
-        rating: 4.4,
-        isVeg: true,
-        type: 'breakfast',
-        description: 'Stuffed potato flatbread with curd and pickle',
-        spiceLevel: 'medium',
-        calories: 400
-      },
-      {
-        id: 13,
-        name: 'Bread Omelette',
-        price: 80,
+        id: 4,
+        name: 'Bread Toast & Jam/Ketchup',
+        price: 35,
         time: '10 min',
         rating: 4.2,
-        isVeg: false,
+        isVeg: true,
         type: 'breakfast',
-        description: 'Fluffy omelette with bread slices and ketchup',
+        description: 'Crispy bread toast served with jam or ketchup',
         spiceLevel: 'mild',
-        calories: 350
+        calories: 250,
+        image: '/images/sandwich.jpg'
       }
     ],
     lunch: [
       {
-        id: 14,
-        name: 'Chole Rice',
-        price: 150,
+        id: 5,
+        name: 'Pulao, Tadka, Papad',
+        price: 60,
         time: '22 min',
         rating: 4.5,
         isVeg: true,
         type: 'lunch',
-        description: 'Spicy chickpea curry with rice and onion salad',
-        spiceLevel: 'spicy',
-        calories: 480
-      },
-      {
-        id: 15,
-        name: 'Mutton Curry',
-        price: 220,
-        time: '35 min',
-        rating: 4.7,
-        isVeg: false,
-        type: 'lunch',
-        description: 'Tender mutton curry with basmati rice and raita',
-        spiceLevel: 'spicy',
-        calories: 600
-      },
-      {
-        id: 16,
-        name: 'Palak Paneer',
-        price: 160,
-        time: '20 min',
-        rating: 4.6,
-        isVeg: true,
-        type: 'lunch',
-        description: 'Spinach curry with cottage cheese and rice',
+        description: 'Aromatic pulao rice with spiced tadka and crispy papad',
         spiceLevel: 'medium',
-        calories: 420
+        calories: 400,
+        image: '/images/pulao-papad.jpg'
       }
     ],
     dinner: [
       {
-        id: 17,
-        name: 'Butter Chicken',
-        price: 200,
-        time: '25 min',
-        rating: 4.8,
-        isVeg: false,
+        id: 6,
+        name: 'Paratha, Mix Veg',
+        price: 55,
+        time: '18 min',
+        rating: 4.3,
+        isVeg: true,
         type: 'dinner',
-        description: 'Creamy chicken curry with butter naan and rice',
+        description: 'Soft paratha with mixed vegetable curry',
         spiceLevel: 'medium',
-        calories: 550
+        calories: 360,
+        image: '/images/paratha.jpg'
+      }
+    ]
+  },
+  Wednesday: {
+    breakfast: [
+      {
+        id: 7,
+        name: 'Idli & Chutney',
+        price: 35,
+        time: '12 min',
+        rating: 4.4,
+        isVeg: true,
+        type: 'breakfast',
+        description: 'Steamed rice cakes with coconut chutney',
+        spiceLevel: 'mild',
+        calories: 280,
+        image: '/images/vegthali.jpg'
+      }
+    ],
+    lunch: [
+      {
+        id: 8,
+        name: 'Roti, Jeera Rice, Egg Curry, Chips',
+        price: 85,
+        time: '25 min',
+        rating: 4.7,
+        isVeg: false,
+        type: 'lunch',
+        description: 'Roti with cumin rice, spicy egg curry and crispy chips',
+        spiceLevel: 'spicy',
+        calories: 520,
+        image: '/images/egg-chawal.jpg'
       },
       {
-        id: 18,
-        name: 'Dal Makhani',
-        price: 140,
+        id: 9,
+        name: 'Roti, Jeera Rice, Pakoda, Kadhi',
+        price: 70,
         time: '22 min',
         rating: 4.5,
         isVeg: true,
+        type: 'lunch',
+        description: 'Roti with cumin rice, pakoda and traditional kadhi',
+        spiceLevel: 'medium',
+        calories: 450,
+        image: '/images/kadhi-chawal.jpg'
+      }
+    ],
+    dinner: [
+      {
+        id: 10,
+        name: 'Roti, Chicken Chili',
+        price: 95,
+        time: '28 min',
+        rating: 4.8,
+        isVeg: false,
         type: 'dinner',
-        description: 'Rich black lentil curry with rice and naan',
+        description: 'Fresh roti with spicy chicken chili',
+        spiceLevel: 'spicy',
+        calories: 480,
+        image: '/images/roti-manchuriyan.jpg'
+      },
+      {
+        id: 11,
+        name: 'Roti, Soya Chili',
+        price: 70,
+        time: '20 min',
+        rating: 4.4,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Fresh roti with spicy soya chili',
+        spiceLevel: 'spicy',
+        calories: 400,
+        image: '/images/roti-manchuriyan.jpg'
+      }
+    ]
+  },
+  Thursday: {
+    breakfast: [
+      {
+        id: 12,
+        name: 'Chowmein / Pasta',
+        price: 45,
+        time: '18 min',
+        rating: 4.6,
+        isVeg: true,
+        type: 'breakfast',
+        description: 'Delicious chowmein noodles or pasta with vegetables',
+        spiceLevel: 'medium',
+        calories: 320,
+        image: '/images/chawmin.jpg'
+      }
+    ],
+    lunch: [
+      {
+        id: 13,
+        name: 'Roti, Rajma, Chawal, Sabji, Achar, Chips',
+        price: 75,
+        time: '25 min',
+        rating: 4.7,
+        isVeg: true,
+        type: 'lunch',
+        description: 'Complete meal with roti, rajma curry, rice, vegetable, pickle and chips',
+        spiceLevel: 'medium',
+        calories: 480,
+        image: '/images/vegthali.jpg'
+      }
+    ],
+    dinner: [
+      {
+        id: 14,
+        name: 'Sattu Paratha & Ketchup / Sabji',
+        price: 65,
+        time: '20 min',
+        rating: 4.5,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Nutritious sattu paratha with ketchup or vegetable curry',
         spiceLevel: 'mild',
-        calories: 450
+        calories: 380,
+        image: '/images/ajwainparatha.jpg'
+      }
+    ]
+  },
+  Friday: {
+    breakfast: [
+      {
+        id: 15,
+        name: 'Puri & Sabji',
+        price: 45,
+        time: '15 min',
+        rating: 4.5,
+        isVeg: true,
+        type: 'breakfast',
+        description: 'Crispy puri with flavorful vegetable curry',
+        spiceLevel: 'medium',
+        calories: 340,
+        image: '/images/puri chola.jpg'
+      }
+    ],
+    lunch: [
+      {
+        id: 16,
+        name: 'Roti, Chawal, Fish Curry',
+        price: 95,
+        time: '30 min',
+        rating: 4.8,
+        isVeg: false,
+        type: 'lunch',
+        description: 'Fresh roti with rice and traditional fish curry',
+        spiceLevel: 'spicy',
+        calories: 520,
+        image: '/images/machli chawal.jpg'
+      },
+      {
+        id: 17,
+        name: 'Roti, Chawal, Aloo Dum',
+        price: 70,
+        time: '22 min',
+        rating: 4.6,
+        isVeg: true,
+        type: 'lunch',
+        description: 'Roti with rice and spicy potato curry',
+        spiceLevel: 'medium',
+        calories: 450,
+        image: '/images/vegthali.jpg'
+      }
+    ],
+    dinner: [
+      {
+        id: 18,
+        name: 'Paratha & Paneer',
+        price: 75,
+        time: '25 min',
+        rating: 4.7,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Soft paratha with creamy paneer curry',
+        spiceLevel: 'medium',
+        calories: 420,
+        image: '/images/nan-paner.jpg'
       },
       {
         id: 19,
-        name: 'Egg Curry',
-        price: 120,
+        name: 'Paratha & Sabji',
+        price: 60,
         time: '18 min',
-        rating: 4.3,
-        isVeg: false,
+        rating: 4.4,
+        isVeg: true,
         type: 'dinner',
-        description: 'Spiced egg curry with rice and pickle',
+        description: 'Fresh paratha with seasonal vegetable curry',
         spiceLevel: 'medium',
-        calories: 400
+        calories: 380,
+        image: '/images/paratha.jpg'
       }
-    ],
-    combo: [
+    ]
+  },
+  Saturday: {
+    breakfast: [
       {
         id: 20,
-        name: 'Tuesday Feast',
-        price: 250,
-        time: '30 min',
+        name: 'Sandwich & Ketchup',
+        price: 40,
+        time: '12 min',
+        rating: 4.3,
+        isVeg: true,
+        type: 'breakfast',
+        description: 'Fresh sandwich with tomato ketchup',
+        spiceLevel: 'mild',
+        calories: 280,
+        image: '/images/sandwich.jpg'
+      }
+    ],
+    lunch: [
+      {
+        id: 21,
+        name: 'Khichdi, Chokha, Achar, Chips',
+        price: 65,
+        time: '20 min',
+        rating: 4.5,
+        isVeg: true,
+        type: 'lunch',
+        description: 'Comfort khichdi with chokha, pickle and crispy chips',
+        spiceLevel: 'mild',
+        calories: 400,
+        image: '/images/khicdi.jpg'
+      }
+    ],
+    dinner: [
+      {
+        id: 22,
+        name: 'Roti & Sabji',
+        price: 55,
+        time: '15 min',
+        rating: 4.4,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Fresh roti with seasonal vegetable curry',
+        spiceLevel: 'medium',
+        calories: 350,
+        image: '/images/roti-mitha.jpg'
+      },
+      {
+        id: 23,
+        name: 'Roti & Bhindi',
+        price: 60,
+        time: '18 min',
+        rating: 4.5,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Fresh roti with delicious bhindi (okra) curry',
+        spiceLevel: 'medium',
+        calories: 360,
+        image: '/images/roti=bhujiya.jpg'
+      }
+    ]
+  },
+  Sunday: {
+    breakfast: [
+      {
+        id: 24,
+        name: 'Roti & Mix Veg',
+        price: 45,
+        time: '18 min',
+        rating: 4.6,
+        isVeg: true,
+        type: 'breakfast',
+        description: 'Fresh roti with mixed vegetable curry',
+        spiceLevel: 'medium',
+        calories: 320,
+        image: '/images/vegthali.jpg'
+      }
+    ],
+    lunch: [
+      {
+        id: 25,
+        name: 'Chicken Biryani, Raita & Papad',
+        price: 110,
+        time: '35 min',
         rating: 4.9,
         isVeg: false,
-        type: 'combo',
-        description: 'Non-veg thali with chicken, rice, dal, roti and sides',
+        type: 'lunch',
+        description: 'Aromatic chicken biryani served with cooling raita and crispy papad',
+        spiceLevel: 'spicy',
+        calories: 580,
+        image: '/images/biryani.jpg'
+      },
+      {
+        id: 26,
+        name: 'Veg Biryani, Raita & Papad',
+        price: 85,
+        time: '30 min',
+        rating: 4.7,
+        isVeg: true,
+        type: 'lunch',
+        description: 'Fragrant vegetable biryani with raita and papad',
         spiceLevel: 'medium',
-        calories: 700
+        calories: 480,
+        image: '/images/veg biryani.jpg'
+      }
+    ],
+    dinner: [
+      {
+        id: 27,
+        name: 'Chole Bhature',
+        price: 70,
+        time: '25 min',
+        rating: 4.8,
+        isVeg: true,
+        type: 'dinner',
+        description: 'Spicy chickpea curry with fluffy bhature',
+        spiceLevel: 'spicy',
+        calories: 450,
+        image: '/images/puri chola.jpg'
       }
     ]
   }
-  // Additional days can be added here...
 };
 
 // Helper functions
@@ -305,10 +450,12 @@ export function getMenuItemById(id: number): MenuItem | null {
   return null;
 }
 
-export function getMenuByMealType(mealType: 'breakfast' | 'lunch' | 'dinner' | 'combo'): MenuItem[] {
+export function getMenuByMealType(mealType: 'breakfast' | 'lunch' | 'dinner'): MenuItem[] {
   const items: MenuItem[] = [];
   for (const day of Object.values(WEEKLY_MENU)) {
-    items.push(...day[mealType]);
+    if (day[mealType]) {
+      items.push(...day[mealType]);
+    }
   }
   return items;
 }
@@ -331,4 +478,24 @@ export function getNonVegetarianItems(): MenuItem[] {
     }
   }
   return items;
+}
+
+export function getAllMenuItems(): MenuItem[] {
+  const items: MenuItem[] = [];
+  for (const day of Object.values(WEEKLY_MENU)) {
+    for (const mealType of Object.values(day)) {
+      items.push(...mealType);
+    }
+  }
+  return items;
+}
+
+export function getMenuItemsByPrice(minPrice: number, maxPrice: number): MenuItem[] {
+  const allItems = getAllMenuItems();
+  return allItems.filter(item => item.price >= minPrice && item.price <= maxPrice);
+}
+
+export function getMenuItemsBySpiceLevel(spiceLevel: 'mild' | 'medium' | 'spicy'): MenuItem[] {
+  const allItems = getAllMenuItems();
+  return allItems.filter(item => item.spiceLevel === spiceLevel);
 }

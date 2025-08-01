@@ -48,7 +48,7 @@ Successfully improved the WhatsApp integration to provide a better user experien
 ```typescript
 const handleConfirmOrder = async () => {
   // Process order
-  const whatsappUrl = `https://wa.me/919608036638?text=${message}`;
+  const whatsappUrl = `https://wa.me/916299367631?text=${message}`;
   window.open(whatsappUrl, '_blank'); // ❌ Immediate redirect
   setStep('success');
 };
@@ -65,12 +65,12 @@ const handleConfirmOrder = async () => {
 
 const handleSendToWhatsApp = () => {
   // Prepare message and open WhatsApp only when user chooses
-  const whatsappUrl = `https://wa.me/919608036638?text=${message}`;
+  const whatsappUrl = `https://wa.me/916299367631?text=${message}`;
   window.open(whatsappUrl, '_blank');
 };
 
 const handleCallNow = () => {
-  window.open('tel:+919608036638', '_self');
+  window.open('tel:+916299367631', '_self');
 };
 ```
 
@@ -101,7 +101,7 @@ const handleCallNow = () => {
         Send Order via WhatsApp
       </button>
       <button onClick={handleCallNow}>
-        Call Now: +91 9608036638
+        Call Now: +91 6299367631
       </button>
     </div>
   </motion.div>
@@ -201,7 +201,7 @@ const handleCallNow = () => {
 // Phone Button (Secondary)
 <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-3">
   <Phone className="w-5 h-5" />
-  <span>Call Now: +91 9608036638</span>
+  <span>Call Now: +91 6299367631</span>
 </button>
 
 // Later Button (Tertiary)

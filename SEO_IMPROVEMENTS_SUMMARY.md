@@ -44,7 +44,7 @@
 
 ### 5. Local SEO Focus
 - **Location**: Bokaro Steel City, Jharkhand, India
-- **Contact**: +91-9608036638
+- **Contact**: +91-6299367631
 - **Service Area**: Clearly defined in structured data
 - **Business Type**: Food establishment and local business
 

@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-This guide will help you set up WhatsApp Cloud API to automatically receive order notifications on your WhatsApp (9608036638) without any user interference.
+This guide will help you set up WhatsApp Cloud API to automatically receive order notifications on your WhatsApp (6299367631) without any user interference.
 
 ---
 
@@ -55,7 +55,7 @@ This guide will help you set up WhatsApp Cloud API to automatically receive orde
 
 1. **Add Your Phone Number:**
    - In WhatsApp API setup, find "To" field
-   - Enter: `919608036638`
+   - Enter: `916299367631`
    - Click "Send" to verify
    - Check your WhatsApp for verification code
    - Enter the code to verify
@@ -67,13 +67,13 @@ This guide will help you set up WhatsApp Cloud API to automatically receive orde
 # WhatsApp Cloud API Configuration
 WHATSAPP_ACCESS_TOKEN=your_permanent_access_token_here
 WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id_here
-ADMIN_PHONE_NUMBER=919608036638
+ADMIN_PHONE_NUMBER=916299367631
 ```
 
 2. **Replace the values:**
    - `WHATSAPP_ACCESS_TOKEN`: Your permanent access token from Step 3
    - `WHATSAPP_PHONE_NUMBER_ID`: Your phone number ID from Step 2
-   - `ADMIN_PHONE_NUMBER`: Your WhatsApp number (919608036638)
+   - `ADMIN_PHONE_NUMBER`: Your WhatsApp number (916299367631)
 
 ### **Step 6: Test the Integration**
 
@@ -89,7 +89,7 @@ npm run dev
    - Click "Confirm Order"
 
 3. **Check your WhatsApp:**
-   - You should receive the order message on 9608036638
+   - You should receive the order message on 6299367631
    - Message will be formatted exactly as specified
 
 ---
@@ -108,7 +108,7 @@ WHATSAPP_PHONE_NUMBER_ID=123456789012345
 # This is the Phone Number ID from WhatsApp Business API
 # Found in your Meta Developer Console under WhatsApp > API Setup
 
-ADMIN_PHONE_NUMBER=919608036638
+ADMIN_PHONE_NUMBER=916299367631
 # Your WhatsApp number where you want to receive orders
 # Include country code (91 for India) but no + sign
 ```
@@ -152,7 +152,7 @@ Please process this order and contact customer for confirmation.
 # In your project directory, create .env.local with your actual values
 WHATSAPP_ACCESS_TOKEN=EAAxxxxxxxxx
 WHATSAPP_PHONE_NUMBER_ID=123456789012345
-ADMIN_PHONE_NUMBER=919608036638
+ADMIN_PHONE_NUMBER=916299367631
 ```
 
 2. **Test API Call:**
@@ -161,12 +161,12 @@ ADMIN_PHONE_NUMBER=919608036638
    ```
    🚀 Sending via WhatsApp Cloud API...
    Phone Number ID: 123456789012345
-   Admin Phone: 919608036638
+   Admin Phone: 916299367631
    ✅ WhatsApp Cloud API Success: {...}
    ```
 
 3. **Verify WhatsApp Receipt:**
-   - Check your WhatsApp (9608036638)
+   - Check your WhatsApp (6299367631)
    - You should receive the formatted order message
 
 ### **Common Issues & Solutions:**
@@ -185,7 +185,7 @@ ADMIN_PHONE_NUMBER=919608036638
 
 #### **Issue 3: "Phone number not verified"**
 **Solution:**
-- Add 919608036638 as recipient in Meta Developer Console
+- Add 916299367631 as recipient in Meta Developer Console
 - Verify the number by receiving verification code
 - Make sure number format is correct (no + sign)
 
@@ -285,4 +285,4 @@ Check browser console for these messages:
 **User Experience**: Zero interference  
 **Admin Experience**: Instant WhatsApp notifications
 
-Follow this guide to start receiving all orders automatically on WhatsApp 9608036638! 🚀📱✅
+Follow this guide to start receiving all orders automatically on WhatsApp 6299367631! 🚀📱✅

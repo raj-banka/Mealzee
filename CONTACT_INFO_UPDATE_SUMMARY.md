@@ -6,12 +6,12 @@
 
 **📧 Email Address:** `mealzeeindia@gmail.com`  
 **📱 Phone Number:** `+91 9204 666 105`  
-**💬 WhatsApp:** `9204666105`  
+**💬 WhatsApp:** `6299367631`  
 
 **🔗 Social Media Links:**
 - **Twitter:** `https://x.com/Mealzeeindia?t=zITsF0h84cXd6ph8GDw2Bg&s=08`
 - **Instagram:** `https://www.instagram.com/mealzeeindia/`
-- **WhatsApp:** `https://wa.me/9204666105`
+- **WhatsApp:** `https://wa.me/6299367631`
 
 ---
 
@@ -21,7 +21,7 @@
 - **`src/lib/constants.ts`**
   - ✅ Updated `APP_CONFIG.supportEmail` to `mealzeeindia@gmail.com`
   - ✅ Updated `APP_CONFIG.supportPhone` to `+91 9204 666 105`
-  - ✅ Updated `APP_CONFIG.whatsappNumber` to `9204666105`
+  - ✅ Updated `APP_CONFIG.whatsappNumber` to `6299367631`
   - ✅ Updated `SOCIAL_LINKS.twitter` to new X.com link
   - ✅ Updated `SOCIAL_LINKS.instagram` to `mealzeeindia` handle
   - ✅ Updated `WHATSAPP_CONFIG` phone numbers
@@ -48,7 +48,7 @@
 
 ### **5. WhatsApp Integration**
 - **`src/lib/whatsapp.ts`**
-  - ✅ Updated `ADMIN_PHONE` to `919204666105`
+  - ✅ Updated `ADMIN_PHONE` to `916299367631`
 - **`src/components/order/OrderModal.tsx`**
   - ✅ Updated console logs to show correct number
 - **`src/app/api/auto-whatsapp/route.ts`**
@@ -70,7 +70,7 @@
 ### **Footer Social Links:**
 - **Twitter:** Links to X.com/Mealzeeindia
 - **Instagram:** Links to instagram.com/mealzeeindia
-- **WhatsApp:** Links to wa.me/9204666105
+- **WhatsApp:** Links to wa.me/6299367631
 
 ---
 

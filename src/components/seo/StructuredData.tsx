@@ -19,7 +19,7 @@ const StructuredData: React.FC = () => {
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+91-9608036638",
+      "telephone": "+91-6299367631",
       "contactType": "customer service",
       "availableLanguage": ["English", "Hindi"]
     },
@@ -49,7 +49,7 @@ const StructuredData: React.FC = () => {
       "longitude": 86.1511
     },
     "url": "https://mealzee.in",
-    "telephone": "+91-9608036638",
+    "telephone": "+91-6299367631",
     "servesCuisine": ["Indian", "Vegetarian", "Non-Vegetarian"],
     "priceRange": "₹₹",
     "openingHours": "Mo-Su 06:00-22:00",
@@ -85,7 +85,7 @@ const StructuredData: React.FC = () => {
       "addressRegion": "Jharkhand",
       "addressCountry": "IN"
     },
-    "telephone": "+91-9608036638",
+    "telephone": "+91-6299367631",
     "url": "https://mealzee.in",
     "servesCuisine": ["Indian", "Vegetarian", "Non-Vegetarian"],
     "hasMenu": {

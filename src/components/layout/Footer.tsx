@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
               >
                 <div className="mb-4">
                   <img
-                    src="/footer_logo.jpg"
+                    src="/footer_logo.png"
                     alt="Mealzee Logo"
                     className="h-12 w-auto"
                   />
@@ -46,12 +46,13 @@ const Footer: React.FC = () => {
                 <p className="text-gray-700 leading-relaxed mb-2">
                   Mealzee is your daily dose of homemade food.
                 </p>
-                <p className="text-gray-600 text-sm italic">
+                {/* <p className="text-gray-600 text-sm italic"> */}
+                  <p className="text-gray-700 leading-relaxed mb-2">
                   No stress, just fresh tiffins on time.
                 </p>
 
                 {/* Social Media Icons */}
-                <div className="flex space-x-4 mt-4">
+                <div className="flex space-x-4 mt-8">
                   <motion.a
                     href={SOCIAL_LINKS.twitter}
                     target="_blank"

@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Successfully implemented a truly background WhatsApp integration that sends orders to your restaurant's WhatsApp (9608036638) without any user-visible WhatsApp interaction, redirects, or disruptions.
+Successfully implemented a truly background WhatsApp integration that sends orders to your restaurant's WhatsApp (6299367631) without any user-visible WhatsApp interaction, redirects, or disruptions.
 
 ## ✅ **Problem Solved**
 

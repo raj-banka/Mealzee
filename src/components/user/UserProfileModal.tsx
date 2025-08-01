@@ -6,6 +6,7 @@ import { X, User, Calendar, MapPin, Phone, Cake } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
+import { Z_INDEX } from '@/lib/constants';
 
 
 interface UserProfileModalProps {
@@ -38,7 +39,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 999999
+            zIndex: Z_INDEX.modal
           }}
           onClick={onClose}
         >

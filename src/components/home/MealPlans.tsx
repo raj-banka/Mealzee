@@ -182,7 +182,7 @@ const MealPlans: React.FC = () => {
               >
                 <ShoppingCart className="w-5 h-5" />
                 <span>
-                  {state.selectedMealPlan?.id === plan.id ? 'Order Selected Plan' : 'Select & Order'}
+                  {state.selectedMealPlan?.id === plan.id ? 'Order Selected Plan' : 'subscribe plan'}
                 </span>
               </motion.button>
 

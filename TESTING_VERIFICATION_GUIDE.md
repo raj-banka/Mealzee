@@ -74,7 +74,7 @@
 **✅ WhatsApp Integration**
 - [ ] Order opens web.whatsapp.com
 - [ ] Message pre-filled with order details
-- [ ] Admin number (9608036638) correct
+- [ ] Admin number (6299367631) correct
 - [ ] No paid API calls made
 
 **✅ Order Flow**
