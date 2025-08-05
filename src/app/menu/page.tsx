@@ -216,7 +216,7 @@ export default function MenuPage() {
                       className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-md hover:shadow-lg"
                       onClick={() => handleOrderItem(item)}
                     >
-                      Start Order
+                      Order now
                     </Button>
                   </div>
                 </motion.div>

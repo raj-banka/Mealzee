@@ -50,7 +50,8 @@ const ContactPage: React.FC = () => {
       phone: formData.phone,
       subject: formData.subject,
       message: formData.message,
-      referenceId: referenceId
+      referenceId: referenceId,
+      timestamp: new Date().toISOString()
     };
 
     // Store message data for display
@@ -59,58 +60,29 @@ const ContactPage: React.FC = () => {
       timestamp: new Date().toLocaleString()
     });
 
-    // Automatically send message to admin WhatsApp (no user interference)
+    // Send contact notification email to admin
     try {
-      const response = await fetch('/api/auto-whatsapp', {
+      const response = await fetch('/api/send-contact-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          type: 'contact',
-          data: contactPayload
+          contactData: contactPayload
         })
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        const result = await response.json();
-        console.log('🚀 Message automatically processed for admin WhatsApp:', result);
-        console.log('✅ Method used:', result.method);
-
-        if (result.whatsappUrl) {
-          console.log('📱 Opening WhatsApp for admin notification...');
-          console.log('📞 Admin number:', result.whatsappNumber);
-
-          // Automatically open WhatsApp in a new tab to send message to admin
-          // This happens in the background without user interaction
-          const whatsappWindow = window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
-
-          // Close the window after a short delay to make it seamless
-          if (whatsappWindow) {
-            setTimeout(() => {
-              try {
-                whatsappWindow.close();
-              } catch (e) {
-                // Window might already be closed or blocked
-                console.log('📱 WhatsApp window handling completed');
-              }
-            }, 2000);
-          }
-
-          console.log('✅ Admin notification sent via WhatsApp');
-        }
-
-        if (result.whatsappMessage) {
-          console.log('📱 Message content sent to admin:');
-          console.log('---');
-          console.log(result.whatsappMessage);
-          console.log('---');
-        }
+        console.log('✅ Contact message sent to admin email successfully');
+        console.log('📧 Admin email:', result.adminEmail);
+        console.log('📧 Reference ID:', result.referenceId);
       } else {
-        console.warn('⚠️ Auto WhatsApp failed, but message is still processed');
+        console.warn('⚠️ Contact email failed, but message is still processed');
       }
     } catch (error) {
-      console.error('❌ Auto WhatsApp error:', error);
+      console.error('❌ Contact email error:', error);
       // Continue with success screen - message is still valid
     }
 

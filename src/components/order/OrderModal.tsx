@@ -5,19 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   MapPin,
-  Clock,
   User,
   Phone,
-  Mail,
   CheckCircle,
-  Navigation,
-  Utensils,
-  MessageCircle
+  Utensils
 } from 'lucide-react';
 import { useApp, MenuItem } from '@/contexts/AppContext';
 import { getCurrentLocation, reverseGeocode } from '@/lib/location';
-import { sendOrderToWhatsApp, OrderData } from '@/lib/whatsapp';
-import { getReferralData } from '@/utils/referral';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -56,6 +50,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
   });
   const [isLoading, setIsLoading] = useState(false);
   const [detectedLocation, setDetectedLocation] = useState<string>('');
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (isOpen && state.user) {
@@ -72,6 +67,13 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       });
     }
   }, [isOpen, state.user]);
+
+  // Reset quantity when modal opens or order type changes
+  useEffect(() => {
+    if (isOpen) {
+      setQuantity(1);
+    }
+  }, [isOpen, orderType]);
 
   const handleInputChange = (field: keyof OrderDetails, value: string) => {
     setOrderDetails(prev => ({
@@ -162,7 +164,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       address: orderDetails.address,
       planTitle: orderType === 'meal-plan' ? (selectedPlan?.title || '') : (selectedDish?.name || ''),
       planDuration: orderType === 'meal-plan' ? (selectedPlan?.duration || '') : 'Single Dish Order',
-      planPrice: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice?.toString() || '') : (selectedDish?.price?.toString() || ''),
+      planPrice: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice?.toString() || '') : ((selectedDish?.price || 0) * quantity).toString(),
       startDate: orderType === 'individual-dish' ? new Date().toISOString().split('T')[0] : orderDetails.startDate,
       preferences: orderDetails.preferences,
       orderId: orderId,
@@ -176,7 +178,8 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       dishSpiceLevel: orderType === 'individual-dish' ? selectedDish?.spiceLevel : undefined,
       dishCalories: orderType === 'individual-dish' ? selectedDish?.calories : undefined,
       dishRating: orderType === 'individual-dish' ? selectedDish?.rating : undefined,
-      dishPrepTime: orderType === 'individual-dish' ? selectedDish?.time : undefined
+      dishPrepTime: orderType === 'individual-dish' ? selectedDish?.time : undefined,
+      dishQuantity: orderType === 'individual-dish' ? quantity : undefined
     };
 
     // Store order data for display
@@ -188,18 +191,63 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     // Simulate professional order processing
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Send order to admin WhatsApp using standardized service
+    // Send order notification email to admin (silently in background)
     try {
-      const success = sendOrderToWhatsApp(orderPayload);
+      const emailResponse = await fetch('/api/send-email-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderData: {
+            orderId: orderPayload.orderId,
+            customerName: orderPayload.customerName,
+            customerPhone: orderPayload.phone, // Map phone to customerPhone for email service
+            customerEmail: orderPayload.email || state.user?.email || 'customer@mealzee.com',
+            address: orderPayload.address,
+            orderType: orderPayload.orderType,
+            startDate: orderPayload.startDate,
+            preferences: orderPayload.preferences,
+            timestamp: new Date().toISOString(),
+            totalAmount: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
+            // Additional fields for email template
+            dob: orderPayload.dob,
+            dietaryPreference: orderPayload.dietaryPreference,
+            referralCode: orderPayload.referralCode,
+            referralName: orderPayload.referralName,
+            // Email-specific data structure
+            mealPlan: orderType === 'meal-plan' ? {
+              title: selectedPlan?.title || '',
+              duration: selectedPlan?.duration || '',
+              price: selectedPlan?.discountedPrice || 0,
+              originalPrice: selectedPlan?.originalPrice
+            } : undefined,
+            dish: orderType === 'individual-dish' ? {
+              name: selectedDish?.name || '',
+              price: selectedDish?.price || 0,
+              quantity: quantity,
+              description: selectedDish?.description || '',
+              spiceLevel: selectedDish?.spiceLevel || '',
+              calories: selectedDish?.calories,
+              rating: selectedDish?.rating,
+              preparationTime: selectedDish?.time || '',
+              isVeg: selectedDish?.isVeg
+            } : undefined
+          }
+        }),
+      });
 
-      if (success) {
-        console.log('📱 Order sent to WhatsApp: +91 6299367631');
-        console.log('📄 Order data:', orderPayload);
+      const emailResult = await emailResponse.json();
+
+      if (emailResult.success) {
+        console.log('✅ Order notification email sent successfully to admin');
+        console.log('📧 Email sent to:', emailResult.adminEmail);
       } else {
-        console.warn('⚠️ Failed to send order to WhatsApp');
+        console.warn('⚠️ Failed to send order notification email:', emailResult.error);
       }
     } catch (error) {
-      console.warn('⚠️ WhatsApp error:', error);
+      console.warn('⚠️ Email notification error:', error);
+      // Don't show error to user - fail silently for better UX
     }
 
     setIsLoading(false);
@@ -218,6 +266,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     });
     setDetectedLocation('');
     setIsLoading(false);
+    setQuantity(1);
   };
 
   const handleClose = () => {
@@ -234,7 +283,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
           onClick={handleClose}
         >
           <motion.div
@@ -242,14 +291,14 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-sm sm:max-w-md w-full shadow-2xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {step === 'confirm' && 'Confirm Your Order'}
-                {step === 'success' && 'Order Confirmation'}
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                {step === 'confirm' && 'Confirm Order'}
+                {step === 'success' && 'Order Confirmed'}
               </h2>
               <button
                 onClick={handleClose}
@@ -260,7 +309,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
             </div>
 
             {/* Order Summary */}
-            <div className="bg-green-50 rounded-2xl p-4 mb-6">
+            <div className="bg-green-50 rounded-lg sm:rounded-xl p-2 sm:p-3 mb-3 sm:mb-4">
               <div className="flex items-center space-x-3">
                 <Utensils className="w-6 h-6 text-green-600" />
                 <div className="flex-1">
@@ -277,29 +326,47 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                     </>
                   ) : orderType === 'individual-dish' && selectedDish ? (
                     <>
-                      <h3 className="font-semibold text-gray-800">{selectedDish.name}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{selectedDish.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-sm">
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-800 leading-tight">{selectedDish.name}</h3>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
                           <span className="text-green-600 font-bold">₹{selectedDish.price}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
+                          <span className={`px-1 sm:px-2 py-1 rounded-full text-xs ${
                             selectedDish.isVeg ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                           }`}>
                             {selectedDish.isVeg ? '🟢 Veg' : '🔴 Non-Veg'}
                           </span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            selectedDish.spiceLevel === 'mild' ? 'bg-green-100 text-green-700' :
-                            selectedDish.spiceLevel === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-red-100 text-red-700'
-                          }`}>
-                            {selectedDish.spiceLevel === 'mild' ? '🟢 Mild' : 
-                             selectedDish.spiceLevel === 'medium' ? '🟡 Medium' : '🔴 Spicy'}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ⭐ {selectedDish.rating} • ⏱️ {selectedDish.time}
                         </div>
                       </div>
+
+                      {/* Quantity Controls */}
+                      <div className="mt-2 sm:mt-3 flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Qty:</span>
+                        <div className="flex items-center space-x-1 sm:space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors text-xs sm:text-sm"
+                          >
+                            -
+                          </button>
+                          <span className="w-5 sm:w-6 text-center font-medium text-xs sm:text-sm">{quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => setQuantity(quantity + 1)}
+                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors text-xs sm:text-sm"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Total Price */}
+                      {quantity > 1 && (
+                        <div className="mt-1 sm:mt-2 text-right">
+                          <span className="text-xs sm:text-sm text-gray-600">Total: </span>
+                          <span className="text-sm sm:text-base font-bold text-green-600">₹{selectedDish.price * quantity}</span>
+                        </div>
+                      )}
                     </>
                   ) : null}
                 </div>
@@ -312,56 +379,54 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 {/* Customer Details */}
-                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                  <h3 className="font-semibold text-gray-800 mb-3">Customer Details</h3>
-                  <div className="flex items-center space-x-2">
-                    <User className="w-4 h-4 text-gray-600" />
-                    <span className="font-medium">{orderDetails.customerName}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Phone className="w-4 h-4 text-gray-600" />
-                    <span>{orderDetails.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Mail className="w-4 h-4 text-gray-600" />
-                    <span>{orderDetails.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm">{orderDetails.address}</span>
+                <div className="bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 space-y-1 sm:space-y-2">
+                  <h3 className="font-semibold text-gray-800 text-xs sm:text-sm">Customer Details</h3>
+                  <div className="text-xs sm:text-sm space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <User className="w-3 h-3 text-gray-600 flex-shrink-0" />
+                      <span className="font-medium truncate">{orderDetails.customerName}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Phone className="w-3 h-3 text-gray-600 flex-shrink-0" />
+                      <span className="truncate">{orderDetails.phone}</span>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <MapPin className="w-3 h-3 text-gray-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs leading-tight">{orderDetails.address}</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Order Preferences */}
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-3">
                   {orderType === 'meal-plan' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                         Start Date *
                       </label>
                       <input
                         type="date"
                         value={orderDetails.startDate}
                         onChange={(e) => handleInputChange('startDate', e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors"
+                        className="w-full px-2 sm:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors text-xs sm:text-sm"
                         required
                       />
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                       Special Preferences (Optional)
                     </label>
                     <textarea
                       value={orderDetails.preferences}
                       onChange={(e) => handleInputChange('preferences', e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors"
-                      placeholder="Any dietary preferences or special instructions"
-                      rows={3}
+                      className="w-full px-2 sm:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors text-xs sm:text-sm resize-none"
+                      placeholder="Any dietary preferences"
+                      rows={2}
                     />
                   </div>
                 </div>
@@ -371,7 +436,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                   disabled={isLoading || (orderType === 'meal-plan' && !orderDetails.startDate)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-4 rounded-xl font-semibold transition-colors flex items-center justify-center space-x-2 ${
+                  className={`w-full py-2 sm:py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base ${
                     (orderType === 'individual-dish' || orderDetails.startDate) && !isLoading
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -401,46 +466,70 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center space-y-6"
+                className="text-center space-y-3 sm:space-y-4"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring" }}
-                  className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto"
+                  className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto"
                 >
-                  <CheckCircle className="w-10 h-10 text-green-600" />
+                  <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
                 </motion.div>
 
                 <div>
-                  <h3 className="text-2xl font-bold text-green-600 mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-green-600 mb-1 sm:mb-2">
                     Order Placed Successfully!
                   </h3>
-                  <p className="text-gray-600">
-                    Thank you for choosing Mealzee. Your order has been received and is being processed.
+                  <p className="text-gray-600 text-xs sm:text-sm">
+                    Thank you for choosing Mealzee. Your order is being processed.
                   </p>
                 </div>
 
-                <div className="bg-green-50 rounded-xl p-6 space-y-3">
+                <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-1 sm:space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Order ID:</span>
-                    <span className="text-sm font-bold text-green-700">#{orderData?.orderId}</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">Order ID:</span>
+                    <span className="text-xs sm:text-sm font-bold text-green-700">#{orderData?.orderId}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Plan:</span>
-                    <span className="text-sm text-gray-600">{selectedPlan?.title}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Amount:</span>
-                    <span className="text-sm font-bold text-green-600">₹{selectedPlan?.discountedPrice}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Start Date:</span>
-                    <span className="text-sm text-gray-600">{orderDetails.startDate}</span>
-                  </div>
+
+                  {orderType === 'meal-plan' && selectedPlan ? (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Plan:</span>
+                        <span className="text-xs sm:text-sm text-gray-600 text-right max-w-[60%] truncate" title={selectedPlan.title}>
+                          {selectedPlan.title}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Amount:</span>
+                        <span className="text-xs sm:text-sm font-bold text-green-600">₹{selectedPlan.discountedPrice}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Start Date:</span>
+                        <span className="text-xs sm:text-sm text-gray-600">{orderDetails.startDate}</span>
+                      </div>
+                    </>
+                  ) : orderType === 'individual-dish' && selectedDish ? (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Dish:</span>
+                        <span className="text-xs sm:text-sm text-gray-600 text-right max-w-[60%] truncate" title={selectedDish.name}>
+                          {selectedDish.name}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Quantity:</span>
+                        <span className="text-xs sm:text-sm text-gray-600">{quantity}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm font-medium text-gray-700">Amount:</span>
+                        <span className="text-xs sm:text-sm font-bold text-green-600">₹{selectedDish.price * quantity}</span>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
 
-                <div className="bg-blue-50 rounded-xl p-4">
+                {/* <div className="bg-blue-50 rounded-xl p-4">
                   <h4 className="font-semibold text-blue-800 mb-2">What happens next?</h4>
                   <div className="space-y-2 text-sm text-blue-700">
                     <div className="flex items-center space-x-2">
@@ -460,11 +549,11 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                       <span>Track your order using Order ID: #{orderData?.orderId}</span>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="bg-yellow-50 rounded-xl p-4">
-                  <p className="text-sm text-yellow-700">
-                    📞 <strong>Need help?</strong> Call us at +91 6299367631 for any queries about your order.
+                <div className="bg-yellow-50 rounded-lg p-2 sm:p-3">
+                  <p className="text-xs sm:text-sm text-yellow-700">
+                    📞 <strong>Need help?</strong> Call us at +91 9608036638 for any queries.
                   </p>
                 </div>
 
@@ -476,7 +565,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                  className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm sm:text-base"
                 >
                   Continue Browsing
                 </motion.button>

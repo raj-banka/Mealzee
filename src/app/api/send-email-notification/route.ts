@@ -1,42 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendOrderNotificationEmail, OrderData } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderData, message, adminEmail } = await request.json();
+    const { orderData } = await request.json();
 
     console.log('📧 Email notification request received');
-    console.log('📧 Admin email:', adminEmail);
     console.log('📧 Order ID:', orderData.orderId);
+    console.log('📧 Admin email:', process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com');
 
-    // For now, we'll simulate email sending
-    // In production, you would integrate with:
-    // - SendGrid
-    // - Mailgun  
-    // - AWS SES
-    // - Nodemailer with SMTP
-    
-    console.log('📧 Simulating email send...');
-    
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Log the email content that would be sent
-    console.log('📧 Email content that would be sent:');
-    console.log('---EMAIL START---');
-    console.log(`To: ${adminEmail}`);
-    console.log(`Subject: New Mealzee Order #${orderData.orderId}`);
-    console.log(`Body:\n${message}`);
-    console.log('---EMAIL END---');
-    
-    // Return success (in production, check actual email service response)
-    return NextResponse.json({
-      success: true,
-      method: 'email',
-      message: 'Order notification email sent successfully',
-      adminEmail: adminEmail,
-      orderId: orderData.orderId,
-      timestamp: new Date().toISOString()
-    });
+    // Send actual email using nodemailer
+    const emailSent = await sendOrderNotificationEmail(orderData as OrderData);
+
+    if (emailSent) {
+      console.log('✅ Order notification email sent successfully');
+      return NextResponse.json({
+        success: true,
+        method: 'email',
+        message: 'Order notification email sent successfully',
+        adminEmail: process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com',
+        orderId: orderData.orderId,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      console.error('❌ Failed to send email notification');
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to send email notification'
+      }, { status: 500 });
+    }
 
   } catch (error) {
     console.error('❌ Email notification error:', error);

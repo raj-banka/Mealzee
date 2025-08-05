@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
+import { X, Phone, ArrowRight, Check, User, Calendar, Mail } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
 import LocationInput from '@/components/location/LocationInput';
@@ -24,6 +24,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [phoneError, setPhoneError] = useState('');
   const [userDetails, setUserDetails] = useState({
     fullName: '',
+    email: '',
     address: '',
     dietaryPreference: 'vegetarian' as 'vegetarian' | 'non-vegetarian',
     dateOfBirth: ''
@@ -136,7 +137,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userDetails.fullName.trim() || !userDetails.address.trim()) return;
+    if (!userDetails.fullName.trim() || !userDetails.email.trim() || !userDetails.address.trim()) return;
 
     setIsLoading(true);
 
@@ -171,7 +172,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Login the user with collected data
     login({
       fullName: userDetails.fullName,
-      email: '',
+      email: userDetails.email,
       phone: phoneNumber,
       address: userDetails.address,
       dietaryPreference: userDetails.dietaryPreference,
@@ -198,10 +199,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
       // Continue with the order flow based on current state
       if (state.orderFlow === 'auth') {
-        if (state.selectedMealPlan) {
+        if (state.selectedMealPlan || state.selectedDish) {
+          // User has selected either a meal plan or individual dish - go to order confirmation
           dispatch({ type: 'SET_ORDER_FLOW', payload: 'order-confirmation' });
           dispatch({ type: 'OPEN_ORDER_MODAL' });
         } else {
+          // No selection made - go to meal plan selection
           dispatch({ type: 'SET_ORDER_FLOW', payload: 'meal-selection' });
           dispatch({ type: 'OPEN_MEAL_PLAN_SELECTION' });
         }
@@ -532,6 +535,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         placeholder="Enter your full name"
                         value={userDetails.fullName}
                         onChange={(e) => setUserDetails(prev => ({ ...prev, fullName: e.target.value }))}
+                        className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base"
+                        required
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="email"
+                        placeholder="Enter your email address"
+                        value={userDetails.email}
+                        onChange={(e) => setUserDetails(prev => ({ ...prev, email: e.target.value }))}
                         className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base"
                         required
                       />

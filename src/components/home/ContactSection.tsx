@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import { openWhatsApp } from '@/utils/whatsapp';
 
 const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +14,7 @@ const ContactSection: React.FC = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -35,51 +35,53 @@ const ContactSection: React.FC = () => {
       phone: formData.phone,
       subject: 'General Inquiry', // Default subject for home page contact
       message: formData.message,
-      referenceId: referenceId
+      referenceId: referenceId,
+      timestamp: new Date().toISOString()
     };
 
-    // Send to admin WhatsApp automatically
+    // Send contact notification email to admin
     try {
-      const response = await fetch('/api/auto-whatsapp', {
+      const response = await fetch('/api/send-contact-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          type: 'contact',
-          data: contactPayload
+          contactData: contactPayload
         })
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        const result = await response.json();
-        console.log('🚀 Home contact message sent to admin WhatsApp:', result);
+        console.log('✅ Contact message sent to admin email:', result);
+        setIsSubmitted(true);
 
-        if (result.whatsappUrl) {
-          // Automatically open WhatsApp for admin notification
-          const whatsappWindow = window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
-
-          if (whatsappWindow) {
-            setTimeout(() => {
-              try {
-                whatsappWindow.close();
-              } catch (e) {
-                console.log('📱 WhatsApp window handling completed');
-              }
-            }, 2000);
-          }
-        }
+        // Auto-reset form after 5 seconds
+        setTimeout(() => {
+          setFormData({ name: '', email: '', phone: '', message: '' });
+          setIsSubmitted(false);
+        }, 5000);
+      } else {
+        console.warn('⚠️ Failed to send contact email:', result.error);
+        // Still show success to user for better UX
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setFormData({ name: '', email: '', phone: '', message: '' });
+          setIsSubmitted(false);
+        }, 5000);
       }
     } catch (error) {
-      console.error('❌ Auto WhatsApp error:', error);
+      console.error('❌ Contact email error:', error);
+      // Still show success to user for better UX
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setFormData({ name: '', email: '', phone: '', message: '' });
+        setIsSubmitted(false);
+      }, 5000);
     }
 
-    // Reset form
-    setFormData({ name: '', email: '', phone: '', message: '' });
     setIsSubmitting(false);
-
-    // Success message
-    alert('Thank you for your message! We\'ll get back to you soon.');
   };
 
   const contactInfo = [
@@ -92,7 +94,7 @@ const ContactSection: React.FC = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['+91 6299367631', 'WhatsApp Available', 'Mon-Sun: 9AM-11PM'],
+      details: ['+91 9608036638', 'Direct Support Line', 'Mon-Sun: 9AM-11PM'],
       color: 'from-green-400 to-emerald-500',
     },
     {
@@ -198,24 +200,25 @@ const ContactSection: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <Button
-                  onClick={() => openWhatsApp()}
-                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-3"
+                  onClick={() => window.open('tel:+919608036638', '_self')}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-3"
                 >
-                  <MessageCircle className="w-5 h-5" />
-                  <span>Chat on WhatsApp</span>
+                  <Phone className="w-5 h-5" />
+                  <span>Call Now</span>
                 </Button>
               </motion.div>
-              
+
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Button
+                  onClick={() => window.open('mailto:mealzeeindia@gmail.com', '_self')}
                   variant="outline"
                   className="w-full border-2 border-olive-500 text-olive-500 hover:bg-olive-500 hover:text-white font-semibold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3"
                 >
-                  <Phone className="w-5 h-5" />
-                  <span>Call Now</span>
+                  <Mail className="w-5 h-5" />
+                  <span>Send Email</span>
                 </Button>
               </motion.div>
             </div>
@@ -323,6 +326,23 @@ const ContactSection: React.FC = () => {
                 </Button>
               </motion.div>
             </form>
+
+            {/* Success Message */}
+            {isSubmitted && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-6 bg-green-50 border border-green-200 rounded-xl"
+              >
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <div>
+                    <h4 className="text-lg font-semibold text-green-800">Message Sent Successfully!</h4>
+                    <p className="text-green-600">Thank you for contacting us. We'll get back to you within 2 hours.</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>

@@ -30,6 +30,7 @@ export interface OrderData {
   dishCalories?: number;
   dishRating?: number;
   dishPrepTime?: string;
+  dishQuantity?: number;
 }
 
 export interface ContactData {
@@ -42,7 +43,7 @@ export interface ContactData {
 }
 
 // Admin WhatsApp number for order notifications (normal WhatsApp account)
-const ADMIN_PHONE = '916299367631';
+const ADMIN_PHONE = '919608036638';
 
 /**
  * Opens WhatsApp with a pre-filled message (supports both personal and business accounts)
@@ -128,7 +129,7 @@ async function sendOrderToAdmin(orderData: OrderData, message: string) {
   // Show success message to user
   showUserSuccessMessage(orderData);
 
-  console.log('✅ Order sent to WhatsApp +91 6299367631');
+  console.log('✅ Order sent to WhatsApp +91 9608036638');
 }
 
 /**
@@ -136,7 +137,7 @@ async function sendOrderToAdmin(orderData: OrderData, message: string) {
  */
 function sendToWhatsAppDirectly(message: string, phoneNumber: string) {
   console.log('📱 Opening normal WhatsApp with order details...');
-  console.log('📱 Target number: +91 6299367631');
+  console.log('📱 Target number: +91 9608036638');
 
   // Encode the message for URL (normal WhatsApp handles this better)
   const encodedMessage = encodeURIComponent(message);
@@ -296,23 +297,7 @@ export const openWhatsAppBusiness = ({ message, phoneNumber }: WhatsAppOptions =
   }
 };
 
-/**
- * Send contact message to admin WhatsApp using free method
- */
-export function sendContactToWhatsApp(contactData: ContactData): boolean {
-  try {
-    const message = formatContactMessage(contactData);
-    openWhatsApp({
-      message,
-      phoneNumber: ADMIN_PHONE
-    });
-
-    return true;
-  } catch (error) {
-    console.error('Failed to send contact message to WhatsApp:', error);
-    return false;
-  }
-}
+// Contact functionality removed - now using email service
 
 
 
@@ -321,7 +306,7 @@ export function sendContactToWhatsApp(contactData: ContactData): boolean {
  */
 export function formatOrderMessage(orderData: OrderData): string {
   const isIndividualDish = orderData.orderType === 'individual-dish';
-  
+
   // Create a clean message that works well with WhatsApp URL encoding
   const message = `*New ${isIndividualDish ? 'Individual Dish' : 'Meal Plan'} Order from Mealzee Website*
 
@@ -333,6 +318,7 @@ Dietary Preference: ${orderData.dietaryPreference}
 
 *Order Details:*
 ${isIndividualDish ? 'Dish' : 'Plan'}: ${orderData.planTitle}
+${isIndividualDish && orderData.dishQuantity && orderData.dishQuantity > 1 ? `Quantity: ${orderData.dishQuantity}` : ''}
 ${isIndividualDish ? '' : `Duration: ${orderData.planDuration}`}
 Price: Rs.${orderData.planPrice}
 ${isIndividualDish ? `Order Date: ${new Date().toLocaleDateString()}` : `Start Date: ${orderData.startDate}`}
@@ -341,7 +327,7 @@ ${isIndividualDish && orderData.dishDescription ? `*Dish Description:*
 ${orderData.dishDescription}
 ` : ''}${isIndividualDish ? `*Dish Details:*
 ${orderData.dishSpiceLevel ? `Spice Level: ${orderData.dishSpiceLevel}` : ''}
-${orderData.dishCalories ? `Calories: ${orderData.dishCalories} cal` : ''}
+${orderData.dishCalories ? `Calories: ${orderData.dishCalories} cal${orderData.dishQuantity && orderData.dishQuantity > 1 ? ` (${orderData.dishCalories * orderData.dishQuantity} cal total)` : ''}` : ''}
 ${orderData.dishRating ? `Rating: ${orderData.dishRating}⭐` : ''}
 ${orderData.dishPrepTime ? `Prep Time: ${orderData.dishPrepTime}` : ''}
 
@@ -366,25 +352,4 @@ Thank you!`;
   return message;
 }
 
-/**
- * Format contact data for WhatsApp message
- */
-export function formatContactMessage(contactData: ContactData): string {
-  return `📞 *Contact Form Submission - Mealzee Website*
-
-👤 *Contact Details:*
-Name: ${contactData.name}
-Email: ${contactData.email}
-Phone: ${contactData.phone}
-Subject: ${contactData.subject}
-
-💬 *Message:*
-${contactData.message}
-
-🆔 *Reference ID:* #${contactData.referenceId}
-⏰ *Timestamp:* ${new Date().toLocaleString()}
-
-Please respond to this inquiry.
-
-Thank you! 🙏`;
-}
+// Contact message formatting removed - now using email service
