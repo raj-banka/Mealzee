@@ -1,5 +1,6 @@
+
 import { NextRequest, NextResponse } from 'next/server';
-import { testEmailConfiguration, sendOrderNotificationEmail } from '@/lib/email';
+import { testEmailConfiguration, sendOrderNotificationEmail, OrderData } from '@/lib/email';
 
 export async function GET() {
   try {
@@ -18,7 +19,7 @@ export async function GET() {
     // Test both meal plan and individual dish orders
     const testOrderType = Math.random() > 0.5 ? 'meal-plan' : 'individual-dish';
 
-    const testOrderData = {
+    const testOrderData: OrderData = {
       orderId: 'TEST-' + Date.now(),
       customerName: 'Test Customer',
       customerPhone: '9876543210',

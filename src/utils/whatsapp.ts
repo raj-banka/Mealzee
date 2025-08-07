@@ -100,7 +100,9 @@ export const sendMenuItemOrderToWhatsApp = (orderData: {
     planPrice: orderData.totalPrice,
     startDate: new Date().toLocaleDateString(),
     preferences: orderData.specialInstructions,
-    orderId: orderId
+    orderId: orderId,
+    dietaryPreference: 'vegetarian', // default or dummy value
+    dob: '' // default or dummy value
   };
 
   return sendOrderToWhatsApp(whatsappOrderData);

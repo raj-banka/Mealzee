@@ -31,7 +31,7 @@ interface OrderModalProps {
 interface OrderDetails {
   customerName: string;
   phone: string;
-  email: string;
+  // email removed
   address: string;
   preferences: string;
   startDate: string;
@@ -43,7 +43,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
   const [orderDetails, setOrderDetails] = useState<OrderDetails>({
     customerName: state.user?.fullName || '',
     phone: state.user?.phone || '',
-    email: state.user?.email || '',
+    // email removed
     address: state.user?.address || '',
     preferences: '',
     startDate: ''
@@ -60,7 +60,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       setOrderDetails({
         customerName: state.user.fullName,
         phone: state.user.phone,
-        email: state.user.email,
+        // email removed
         address: state.user.address,
         preferences: '',
         startDate: tomorrow.toISOString().split('T')[0]
@@ -160,7 +160,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     const orderPayload = {
       customerName: orderDetails.customerName,
       phone: orderDetails.phone,
-      email: orderDetails.email,
+      // email removed
       address: orderDetails.address,
       planTitle: orderType === 'meal-plan' ? (selectedPlan?.title || '') : (selectedDish?.name || ''),
       planDuration: orderType === 'meal-plan' ? (selectedPlan?.duration || '') : 'Single Dish Order',
@@ -203,7 +203,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
             orderId: orderPayload.orderId,
             customerName: orderPayload.customerName,
             customerPhone: orderPayload.phone, // Map phone to customerPhone for email service
-            customerEmail: orderPayload.email || state.user?.email || 'customer@mealzee.com',
+            // customerEmail removed
             address: orderPayload.address,
             orderType: orderPayload.orderType,
             startDate: orderPayload.startDate,
@@ -259,7 +259,9 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     setOrderDetails({
       customerName: state.user?.fullName || '',
       phone: state.user?.phone || '',
-      email: state.user?.email || '',
+      // email removed
+      // email removed
+            // customerEmail removed
       address: state.user?.address || '',
       preferences: '',
       startDate: ''
