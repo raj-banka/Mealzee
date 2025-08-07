@@ -294,6 +294,21 @@ export interface LocationData {
   city: string;
   state: string;
   country: string;
+  pincode?: string;
+  sector?: string;
+  landmark?: string;
+  isServiceable: boolean;
+}
+
+export interface ServiceAreaInfo {
+  isServiceable: boolean;
+  nearestServiceSector: string | null;
+  distanceToNearestService: number;
+  allDistances: Array<{
+    sector: string;
+    distance: number;
+    withinRadius: boolean;
+  }>;
 }
 
 // API Response Types

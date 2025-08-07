@@ -8,6 +8,12 @@ import { useRouter } from 'next/navigation';
 import LocationInput from '@/components/location/LocationInput';
 import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
 import { isValidReferralCode } from '@/utils/referral';
+import { 
+  sendSMSOTP, 
+  verifySMSOTP, 
+  cleanupAuth,
+  onAuthStateChange 
+} from '@/lib/sms-auth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -33,8 +39,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [referralName, setReferralName] = useState('');
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpError, setOtpError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
   // Auto-detect referral code from URL on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,6 +50,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setHasReferralCode(true);
       console.log('✅ Auto-applied referral code from URL:', refParam.toUpperCase());
     }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupAuth();
+    };
   }, []);
 
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -66,14 +79,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         return;
       }
 
-      console.log('✅ Location is serviceable, proceeding to OTP');
+      console.log('✅ Location is serviceable, proceeding to user details');
       // Pre-fill address if location is serviceable
       const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
       setUserDetails(prev => ({ ...prev, address: addressString }));
 
-      // Show fake OTP in console for testing
-      console.log('🔧 DEMO MODE: Use OTP 123456 to login');
-      setAuthStep('otp');
+      // Go to details step after location verification
+      setAuthStep('details');
     } catch (error) {
       console.error('Location check failed:', error);
       // If location check fails, still proceed to details step
@@ -125,11 +137,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Check location first before proceeding to OTP
-    setAuthStep('location-check');
+    try {
+      // Send SMS OTP via Fast2SMS
+      const success = await sendSMSOTP(phoneNumber);
+      
+      if (success) {
+        console.log('✅ OTP sent successfully to:', phoneNumber);
+        console.log('📱 Please check your SMS for the 6-digit verification code');
+        // Go directly to OTP verification step
+        setAuthStep('otp');
+      } else {
+        alert('Failed to send OTP. Please try again or contact support if the issue persists.');
+      }
+    } catch (error: any) {
+      console.error('❌ Error sending OTP:', error);
+      alert('Failed to send OTP. Please check your phone number and try again.');
+    }
 
     setIsLoading(false);
   };
@@ -219,6 +242,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     newOtp[index] = value;
     setOtp(newOtp);
 
+    // Clear error when user starts typing
+    if (otpError) {
+      setOtpError('');
+    }
+
     // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
@@ -232,18 +260,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     if (otpValue.length !== 6) return;
 
     setIsLoading(true);
+    setOtpError('');
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Check for demo OTP
-    if (otpValue === '123456') {
-      console.log('✅ Demo OTP verified successfully');
-      setAuthStep('details'); // Go directly to details since location is already verified
-    } else {
-      alert('Invalid OTP. Use 123456 for demo mode.');
+    try {
+      // Verify SMS OTP via Fast2SMS
+      const success = await verifySMSOTP(otpValue, phoneNumber);
+      
+      if (success) {
+        console.log('✅ OTP verified successfully');
+        // Now check location after OTP verification
+        setAuthStep('location-check');
+      } else {
+        setOtpError('Invalid OTP code. Please try again.');
+        // Reset OTP inputs
+        setOtp(['', '', '', '', '', '']);
+        // Focus first input
+        const firstInput = document.getElementById('otp-0');
+        firstInput?.focus();
+      }
+    } catch (error) {
+      console.error('❌ Error verifying OTP:', error);
+      setOtpError('Failed to verify OTP. Please try again.');
       // Reset OTP inputs
       setOtp(['', '', '', '', '', '']);
+      // Focus first input
+      const firstInput = document.getElementById('otp-0');
+      firstInput?.focus();
     }
 
     setIsLoading(false);
@@ -253,27 +295,40 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     if (resendCooldown > 0) return;
 
     setIsLoading(true);
+    setOtpError('');
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Reset OTP inputs
-    setOtp(['', '', '', '', '', '']);
-
-    // Start 60-second cooldown for resend
-    setResendCooldown(60);
-    const timer = setInterval(() => {
-      setResendCooldown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    console.log('🔧 DEMO MODE: Use OTP 123456 to login');
-    alert('Demo Mode: Use OTP 123456 to login');
+    try {
+      // Resend SMS OTP via Fast2SMS
+      const success = await sendSMSOTP(phoneNumber);
+      
+      if (success) {
+        console.log('✅ OTP resent successfully to:', phoneNumber);
+        
+        // Reset OTP inputs
+        setOtp(['', '', '', '', '', '']);
+        
+        // Start 60-second cooldown for resend
+        setResendCooldown(60);
+        const timer = setInterval(() => {
+          setResendCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        
+        // Focus first input
+        const firstInput = document.getElementById('otp-0');
+        firstInput?.focus();
+      } else {
+        alert('Failed to resend OTP. Please try again or contact support if the issue persists.');
+      }
+    } catch (error: any) {
+      console.error('❌ Error resending OTP:', error);
+      alert('Failed to resend OTP. Please try again.');
+    }
 
     setIsLoading(false);
   };
@@ -289,8 +344,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setReferralCode('');
     setReferralName('');
     setOtp(['', '', '', '', '', '']);
+    setOtpError('');
     setIsLoading(false);
     setResendCooldown(0);
+    setIsRecaptchaInitialized(false);
+    cleanupFirebaseAuth();
   };
 
   const handleClose = () => {
@@ -344,6 +402,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                   Enter your phone number to get started
                 </p>
+                
+
 
                 <form onSubmit={handleContactSubmit}>
                   <div className="relative mb-2">
@@ -418,7 +478,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </p>
 
                 <form onSubmit={handleOtpSubmit}>
-                  <div className="flex space-x-2 sm:space-x-3 mb-4 sm:mb-6 justify-center">
+                  <div className="flex space-x-2 sm:space-x-3 mb-2 justify-center">
                     {otp.map((digit, index) => (
                       <input
                         key={index}
@@ -427,10 +487,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
-                        className="w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-green-500 focus:outline-none transition-colors"
+                        className={`w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 rounded-lg sm:rounded-xl focus:outline-none transition-colors ${
+                          otpError
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-gray-200 focus:border-green-500'
+                        }`}
                       />
                     ))}
                   </div>
+
+                  {/* OTP Error Message */}
+                  {otpError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-4 text-red-500 text-sm text-center flex items-center justify-center space-x-1"
+                    >
+                      <span>⚠️</span>
+                      <span>{otpError}</span>
+                    </motion.div>
+                  )}
+
+                  <div className="mb-4 sm:mb-6"></div>
 
                   <motion.button
                     type="submit"
@@ -725,6 +803,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </p>
               </motion.div>
             )}
+
+
+
           </motion.div>
         </motion.div>
       )}

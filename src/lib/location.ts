@@ -52,42 +52,111 @@ export function calculateDistance(
 }
 
 /**
- * Check if coordinates are within service area (Sector 4 and nearby sectors only)
+ * Check if coordinates are within service area (radius-based checking for Sectors 3, 4, and 5)
  */
 export function isLocationServiceable(coordinates: LocationCoordinates): boolean {
-  // Define allowed sectors (Sector 4 and immediately adjacent sectors)
-  const allowedSectors = ['Sector 4', 'Sector 3', 'Sector 5'];
-
-  // Find the nearest sector
-  const nearestSector = findNearestSector(coordinates);
-
-  // Check if the nearest sector is in our allowed list
-  const isSectorAllowed = nearestSector ? allowedSectors.includes(nearestSector) : false;
-
-  // Also check distance from Sector 4 center (stricter validation)
-  const sector4Coords = SERVICE_AREA.sectors.find(s => s.name === 'Sector 4')?.coordinates;
-  if (!sector4Coords) return false;
-
-  const distanceFromSector4 = calculateDistance(
-    coordinates.lat,
-    coordinates.lng,
-    sector4Coords.lat,
-    sector4Coords.lng
-  );
-
-  // Allow only within 3km of Sector 4 center AND in allowed sectors
-  const isWithinRange = distanceFromSector4 <= 3; // 3km radius from Sector 4
-
-  console.log(`📍 Nearest sector: ${nearestSector}`);
-  console.log(`📍 Distance from Sector 4: ${distanceFromSector4.toFixed(2)} km`);
-  console.log(`📍 Sector allowed: ${isSectorAllowed}`);
-  console.log(`📍 Within range: ${isWithinRange}`);
-
-  return isSectorAllowed && isWithinRange;
+  // Check if location is within radius of any of our service sectors
+  const serviceableAreas = SERVICE_AREA.serviceSectors;
+  
+  let isServiceable = false;
+  let nearestServiceSector = null;
+  let minDistanceToService = Infinity;
+  
+  // Check distance from each service sector
+  for (const sector of serviceableAreas) {
+    const distance = calculateDistance(
+      coordinates.lat,
+      coordinates.lng,
+      sector.coordinates.lat,
+      sector.coordinates.lng
+    );
+    
+    console.log(`📍 Distance from ${sector.name}: ${distance.toFixed(2)} km (radius: ${sector.radius} km)`);
+    
+    // Check if within this sector's service radius
+    if (distance <= sector.radius) {
+      isServiceable = true;
+      if (distance < minDistanceToService) {
+        minDistanceToService = distance;
+        nearestServiceSector = sector.name;
+      }
+    }
+  }
+  
+  // Additional check: if not in any sector radius, check if within overall Bokaro Steel City area
+  if (!isServiceable) {
+    const distanceFromCenter = calculateDistance(
+      coordinates.lat,
+      coordinates.lng,
+      SERVICE_AREA.coordinates.lat,
+      SERVICE_AREA.coordinates.lng
+    );
+    
+    console.log(`📍 Distance from BSC center: ${distanceFromCenter.toFixed(2)} km`);
+    
+    // If within 5km of BSC center, might be serviceable (manual review needed)
+    if (distanceFromCenter <= 5) {
+      console.log(`📍 Within BSC area but outside service sectors - potential service area`);
+    }
+  }
+  
+  console.log(`📍 Location serviceable: ${isServiceable}`);
+  if (nearestServiceSector) {
+    console.log(`📍 Nearest service sector: ${nearestServiceSector} (${minDistanceToService.toFixed(2)} km)`);
+  }
+  
+  return isServiceable;
 }
 
 /**
- * Find nearest sector based on coordinates
+ * Get detailed service area information for coordinates
+ */
+export function getServiceAreaInfo(coordinates: LocationCoordinates): {
+  isServiceable: boolean;
+  nearestServiceSector: string | null;
+  distanceToNearestService: number;
+  allDistances: Array<{ sector: string; distance: number; withinRadius: boolean }>;
+} {
+  const serviceableAreas = SERVICE_AREA.serviceSectors;
+  let nearestServiceSector = null;
+  let minDistanceToService = Infinity;
+  let isServiceable = false;
+  
+  const allDistances = serviceableAreas.map(sector => {
+    const distance = calculateDistance(
+      coordinates.lat,
+      coordinates.lng,
+      sector.coordinates.lat,
+      sector.coordinates.lng
+    );
+    
+    const withinRadius = distance <= sector.radius;
+    
+    if (withinRadius) {
+      isServiceable = true;
+      if (distance < minDistanceToService) {
+        minDistanceToService = distance;
+        nearestServiceSector = sector.name;
+      }
+    }
+    
+    return {
+      sector: sector.name,
+      distance: parseFloat(distance.toFixed(2)),
+      withinRadius
+    };
+  });
+  
+  return {
+    isServiceable,
+    nearestServiceSector,
+    distanceToNearestService: parseFloat(minDistanceToService.toFixed(2)),
+    allDistances
+  };
+}
+
+/**
+ * Find nearest sector based on coordinates (checks all sectors)
  */
 export function findNearestSector(coordinates: LocationCoordinates): string | null {
   let nearestSector = null;
@@ -108,6 +177,40 @@ export function findNearestSector(coordinates: LocationCoordinates): string | nu
   }
   
   return nearestSector;
+}
+
+/**
+ * Find nearest serviceable sector based on coordinates (checks only service sectors)
+ */
+export function findNearestServiceSector(coordinates: LocationCoordinates): {
+  sector: string | null;
+  distance: number;
+  isWithinRadius: boolean;
+} {
+  let nearestSector = null;
+  let minDistance = Infinity;
+  let isWithinRadius = false;
+  
+  for (const sector of SERVICE_AREA.serviceSectors) {
+    const distance = calculateDistance(
+      coordinates.lat,
+      coordinates.lng,
+      sector.coordinates.lat,
+      sector.coordinates.lng
+    );
+    
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestSector = sector.name;
+      isWithinRadius = distance <= sector.radius;
+    }
+  }
+  
+  return {
+    sector: nearestSector,
+    distance: parseFloat(minDistance.toFixed(2)),
+    isWithinRadius
+  };
 }
 
 /**
@@ -303,52 +406,80 @@ export async function getLocationSuggestions(query: string): Promise<LocationDat
 }
 
 /**
- * Validate if an address is within service area
+ * Validate if an address is within service area using geocoding and radius checking
  */
 export async function validateServiceArea(address: string): Promise<{ isValid: boolean; message: string; suggestions?: LocationData[] }> {
   try {
     console.log('🏠 Validating service area for:', address);
 
-    // Check if address contains allowed sectors
-    const addressLower = address.toLowerCase();
-    const allowedSectorPatterns = [
-      'sector 4', 'sec 4', 'sector-4', 'sec-4',
-      'sector 3', 'sec 3', 'sector-3', 'sec-3',
-      'sector 5', 'sec 5', 'sector-5', 'sec-5'
-    ];
+    // First, try to geocode the address to get coordinates
+    const geocodeResults = await forwardGeocode(address);
+    
+    if (geocodeResults.length === 0) {
+      // Fallback to text-based validation for basic checks
+      const addressLower = address.toLowerCase();
+      const allowedSectorPatterns = [
+        'sector 4', 'sec 4', 'sector-4', 'sec-4',
+        'sector 3', 'sec 3', 'sector-3', 'sec-3',
+        'sector 5', 'sec 5', 'sector-5', 'sec-5'
+      ];
 
-    const isAllowedSector = allowedSectorPatterns.some(pattern =>
-      addressLower.includes(pattern)
-    );
+      const isAllowedSector = allowedSectorPatterns.some(pattern =>
+        addressLower.includes(pattern)
+      );
 
-    // Also check for Bokaro Steel City or BSC
-    const isBokaro = addressLower.includes('bokaro') ||
-                     addressLower.includes('bsc') ||
-                     addressLower.includes('bokaro steel city');
+      const isBokaro = addressLower.includes('bokaro') ||
+                       addressLower.includes('bsc') ||
+                       addressLower.includes('bokaro steel city');
 
-    if (isAllowedSector && isBokaro) {
+      if (isAllowedSector && isBokaro) {
+        return {
+          isValid: true,
+          message: 'Address appears to be in our service area. Location will be verified during delivery.',
+          suggestions: []
+        };
+      } else if (isAllowedSector && !isBokaro) {
+        return {
+          isValid: false,
+          message: 'Please specify the complete address including Bokaro Steel City, Jharkhand.',
+          suggestions: []
+        };
+      } else {
+        return {
+          isValid: false,
+          message: 'Sorry, we currently only deliver to areas within 2.5km radius of Sector 3, 4, and 5 in Bokaro Steel City.',
+          suggestions: []
+        };
+      }
+    }
+
+    // Use the first (most relevant) geocoded result
+    const primaryResult = geocodeResults[0];
+    const serviceInfo = getServiceAreaInfo(primaryResult.coordinates);
+    
+    if (serviceInfo.isServiceable) {
       return {
         isValid: true,
-        message: 'Great! We deliver to your area in Bokaro Steel City.',
-        suggestions: []
-      };
-    } else if (isAllowedSector && !isBokaro) {
-      return {
-        isValid: false,
-        message: 'Please specify the complete address including Bokaro Steel City.',
-        suggestions: []
+        message: `Great! We deliver to your area. You're ${serviceInfo.distanceToNearestService}km from ${serviceInfo.nearestServiceSector}.`,
+        suggestions: geocodeResults.filter(result => result.isServiceable)
       };
     } else {
+      // Find the closest service sector for better messaging
+      const closestSector = serviceInfo.allDistances.reduce((closest, current) => 
+        current.distance < closest.distance ? current : closest
+      );
+      
       return {
         isValid: false,
-        message: 'Sorry, we currently only deliver to Sector 3, 4, and 5 in Bokaro Steel City. Please enter a valid address.',
-        suggestions: []
+        message: `Sorry, this location is ${closestSector.distance}km from ${closestSector.sector}. We deliver within 2.5km radius of Sectors 3, 4, and 5 in Bokaro Steel City.`,
+        suggestions: geocodeResults.filter(result => result.isServiceable)
       };
     }
   } catch (error) {
+    console.error('Address validation error:', error);
     return {
       isValid: false,
-      message: 'Unable to validate address. Please try again.'
+      message: 'Unable to validate address. Please try again or contact support.'
     };
   }
 }

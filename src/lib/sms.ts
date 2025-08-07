@@ -58,18 +58,18 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
     }
 
     // Try multiple routes to find one that works
-    const message = `Your Mealzee OTP: ${otp}. Valid for 5 minutes.`;
+    const message = `Your Mealzee OTP is ${otp}. Valid for 5 minutes. Do not share with anyone.`;
 
-    // First try: Basic SMS route (route 'v3')
+    // First try: OTP route (route 'otp') - most reliable for OTP messages
     let requestBody: SMSRequestBody = {
-      sender_id: 'TXTLCL',
+      sender_id: 'FSTSMS',
       message: message,
       language: 'english',
-      route: 'v3',
+      route: 'otp',
       numbers: cleanPhone
     };
 
-    console.log('📤 Sending SMS request to Fast2SMS (Route v3)...');
+    console.log('📤 Sending SMS request to Fast2SMS (Route OTP)...');
     console.log('📤 Request URL:', FAST2SMS_API_URL);
     console.log('📤 Request body:', requestBody);
 
@@ -83,38 +83,11 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
       body: new URLSearchParams(requestBody).toString()
     });
 
-    console.log('📥 Response status (v3):', response.status);
+    console.log('📥 Response status (OTP):', response.status);
     let data = await response.json();
-    console.log('📥 Response data (v3):', data);
+    console.log('📥 Response data (OTP):', data);
 
-    // If v3 fails, try route 'p' (promotional)
-    if (!data.return || !response.ok) {
-      console.log('📤 Trying route p (promotional)...');
-
-      requestBody = {
-        sender_id: 'TXTLCL',
-        message: message,
-        language: 'english',
-        route: 'p',
-        numbers: cleanPhone
-      };
-
-      response = await fetch(FAST2SMS_API_URL, {
-        method: 'POST',
-        headers: {
-          'authorization': apiKey,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'cache-control': 'no-cache'
-        },
-        body: new URLSearchParams(requestBody).toString()
-      });
-
-      console.log('📥 Response status (p):', response.status);
-      data = await response.json();
-      console.log('📥 Response data (p):', data);
-    }
-
-    // If both fail, try route 'q' (quick)
+    // If OTP route fails, try route 'q' (quick)
     if (!data.return || !response.ok) {
       console.log('📤 Trying route q (quick)...');
 
@@ -141,8 +114,36 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
       console.log('📥 Response data (q):', data);
     }
 
-    console.log('📥 Response status:', response.status);
-    console.log('📥 Response ok:', response.ok);
+    // If both fail, try route 'p' (promotional)
+    if (!data.return || !response.ok) {
+      console.log('📤 Trying route p (promotional)...');
+
+      requestBody = {
+        sender_id: 'TXTLCL',
+        message: message,
+        language: 'english',
+        route: 'p',
+        numbers: cleanPhone
+      };
+
+      response = await fetch(FAST2SMS_API_URL, {
+        method: 'POST',
+        headers: {
+          'authorization': apiKey,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'cache-control': 'no-cache'
+        },
+        body: new URLSearchParams(requestBody).toString()
+      });
+
+      console.log('📥 Response status (p):', response.status);
+      data = await response.json();
+      console.log('📥 Response data (p):', data);
+    }
+
+    console.log('📥 Final response status:', response.status);
+    console.log('📥 Final response ok:', response.ok);
+    console.log('📥 Final response data:', JSON.stringify(data, null, 2));
 
     // Final response handling
     if (data.return && response.ok) {
@@ -152,16 +153,24 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
       console.error('❌ All routes failed to send OTP. Status:', response.status);
       console.error('❌ Final error details:', data.message || data);
       console.error('❌ Status code:', data.status_code);
+      console.error('❌ Full response:', JSON.stringify(data, null, 2));
 
       // Provide helpful error messages based on status code
       if (data.status_code === 996) {
         console.error('💡 Error 996: Website verification required for OTP route');
+        console.error('💡 Solution: Verify your website in Fast2SMS dashboard');
       } else if (data.status_code === 400) {
         console.error('💡 Error 400: Bad request - check API parameters');
       } else if (data.status_code === 401) {
         console.error('💡 Error 401: Invalid API key');
+        console.error('💡 Solution: Check your Fast2SMS API key in .env.local');
       } else if (data.status_code === 402) {
         console.error('💡 Error 402: Insufficient balance');
+        console.error('💡 Solution: Recharge your Fast2SMS account');
+      } else if (data.status_code === 403) {
+        console.error('💡 Error 403: Forbidden - API access denied');
+      } else if (data.status_code === 429) {
+        console.error('💡 Error 429: Too many requests - rate limited');
       }
 
       return false;
@@ -200,19 +209,34 @@ export function formatPhoneNumber(phone: string): string {
 
 /**
  * Store OTP in memory (for development - use Redis/database in production)
+ * Using a global variable to persist across hot reloads in development
  */
-const otpStore = new Map<string, { otp: string; timestamp: number; attempts: number }>();
+declare global {
+  var __otpStore: Map<string, { otp: string; timestamp: number; attempts: number }> | undefined;
+}
+
+const otpStore = globalThis.__otpStore ?? new Map<string, { otp: string; timestamp: number; attempts: number }>();
+globalThis.__otpStore = otpStore;
 
 /**
  * Store OTP for verification
  */
 export function storeOTP(phone: string, otp: string): void {
   const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
+  
+  console.log('💾 Storing OTP Debug:');
+  console.log('📱 Input phone:', phone);
+  console.log('📱 Cleaned phone:', cleanPhone);
+  console.log('🔢 OTP to store:', otp, '(type:', typeof otp, ')');
+  
   otpStore.set(cleanPhone, {
     otp,
     timestamp: Date.now(),
     attempts: 0
   });
+  
+  console.log('💾 OTP stored successfully');
+  console.log('🗂️ Current OTP store:', Array.from(otpStore.entries()));
   
   // Clean up expired OTPs (5 minutes)
   setTimeout(() => {
@@ -227,38 +251,68 @@ export function verifyOTP(phone: string, otp: string): boolean {
   const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
   const stored = otpStore.get(cleanPhone);
   
+  console.log('🔍 OTP Verification Debug:');
+  console.log('📱 Input phone:', phone);
+  console.log('📱 Cleaned phone:', cleanPhone);
+  console.log('🔢 Input OTP:', otp);
+  console.log('💾 Stored data:', stored);
+  console.log('🗂️ All stored OTPs:', Array.from(otpStore.entries()));
+  
   if (!stored) {
+    console.log('❌ No OTP found for phone:', cleanPhone);
     return false;
   }
   
   // Check if OTP is expired (5 minutes)
-  if (Date.now() - stored.timestamp > 5 * 60 * 1000) {
+  const timeElapsed = Date.now() - stored.timestamp;
+  const isExpired = timeElapsed > 5 * 60 * 1000;
+  console.log('⏰ Time elapsed:', Math.floor(timeElapsed / 1000), 'seconds');
+  console.log('⏰ Is expired:', isExpired);
+  
+  if (isExpired) {
+    console.log('❌ OTP expired, deleting...');
     otpStore.delete(cleanPhone);
     return false;
   }
   
   // Check attempts limit (3 attempts)
+  console.log('🔄 Current attempts:', stored.attempts);
   if (stored.attempts >= 3) {
+    console.log('❌ Too many attempts, deleting...');
     otpStore.delete(cleanPhone);
     return false;
   }
   
   // Increment attempts
   stored.attempts++;
+  console.log('🔄 Incremented attempts to:', stored.attempts);
   
   // Verify OTP
+  console.log('🔍 Comparing OTPs:');
+  console.log('🔍 Stored OTP:', stored.otp, '(type:', typeof stored.otp, ')');
+  console.log('🔍 Input OTP:', otp, '(type:', typeof otp, ')');
+  console.log('🔍 Are equal:', stored.otp === otp);
+  
   if (stored.otp === otp) {
+    console.log('✅ OTP verified successfully, deleting...');
     otpStore.delete(cleanPhone);
     return true;
   }
   
+  console.log('❌ OTP mismatch');
   return false;
 }
 
 /**
  * Check if OTP can be resent (rate limiting)
+ * Using a global variable to persist across hot reloads in development
  */
-const resendStore = new Map<string, number>();
+declare global {
+  var __resendStore: Map<string, number> | undefined;
+}
+
+const resendStore = globalThis.__resendStore ?? new Map<string, number>();
+globalThis.__resendStore = resendStore;
 
 export function canResendOTP(phone: string): boolean {
   const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
@@ -283,4 +337,11 @@ export function markOTPSent(phone: string): void {
   setTimeout(() => {
     resendStore.delete(cleanPhone);
   }, 10 * 60 * 1000);
+}
+
+/**
+ * Debug function to get current OTP store state
+ */
+export function getOTPStoreDebug(): Array<[string, { otp: string; timestamp: number; attempts: number }]> {
+  return Array.from(otpStore.entries());
 }

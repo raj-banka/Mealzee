@@ -5,8 +5,13 @@ export async function POST(request: NextRequest) {
   try {
     const { phone, otp } = await request.json();
 
+    console.log('🔍 OTP Verification API called:');
+    console.log('📱 Phone:', phone);
+    console.log('🔢 OTP:', otp);
+
     // Validate input
     if (!phone || !otp) {
+      console.log('❌ Missing phone or OTP');
       return NextResponse.json(
         { success: false, error: 'Phone number and OTP are required' },
         { status: 400 }
@@ -15,6 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Validate phone number format
     if (!validatePhoneNumber(phone)) {
+      console.log('❌ Invalid phone number format:', phone);
       return NextResponse.json(
         { success: false, error: 'Invalid phone number format' },
         { status: 400 }
@@ -23,22 +29,29 @@ export async function POST(request: NextRequest) {
 
     // Validate OTP format
     if (!validateOTP(otp)) {
+      console.log('❌ Invalid OTP format:', otp);
       return NextResponse.json(
         { success: false, error: 'Invalid OTP format' },
         { status: 400 }
       );
     }
 
+    console.log('✅ Input validation passed, verifying OTP...');
+
     // Verify OTP
     const isValid = verifyOTP(phone, otp);
 
+    console.log('🔍 OTP verification result:', isValid);
+
     if (!isValid) {
+      console.log('❌ OTP verification failed');
       return NextResponse.json(
         { success: false, error: 'Invalid or expired OTP' },
         { status: 400 }
       );
     }
 
+    console.log('✅ OTP verification successful');
     return NextResponse.json({
       success: true,
       message: 'OTP verified successfully'

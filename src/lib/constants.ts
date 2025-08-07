@@ -19,15 +19,39 @@ export const SERVICE_AREA = {
   district: 'Bokaro',
   pincode: '827004',
   coordinates: {
-    lat: 23.6693,
-    lng: 86.1511
+    lat: 23.671203, // Updated to Sector 4 center
+    lng: 86.1573709
   },
+  // Service radius in kilometers for each sector
+  serviceRadius: 2.5, // 2.5km radius from each sector center
+  // Sectors we deliver to with accurate coordinates
+  serviceSectors: [
+    { 
+      name: 'Sector 3', 
+      pincode: '827003', 
+      coordinates: { lat: 23.669296, lng: 86.151115 },
+      radius: 2.5 // km
+    },
+    { 
+      name: 'Sector 4', 
+      pincode: '827004', 
+      coordinates: { lat: 23.671203, lng: 86.1573709 },
+      radius: 2.5 // km
+    },
+    { 
+      name: 'Sector 5', 
+      pincode: '827005', 
+      coordinates: { lat: 23.6655, lng: 86.1675 },
+      radius: 2.5 // km
+    }
+  ],
+  // All sectors for reference (including non-service areas)
   sectors: [
     { name: 'Sector 1', pincode: '827001', coordinates: { lat: 23.6693, lng: 86.1511 } },
     { name: 'Sector 2', pincode: '827002', coordinates: { lat: 23.6703, lng: 86.1521 } },
-    { name: 'Sector 3', pincode: '827003', coordinates: { lat: 23.6713, lng: 86.1531 } },
-    { name: 'Sector 4', pincode: '827004', coordinates: { lat: 23.6723, lng: 86.1541 } },
-    { name: 'Sector 5', pincode: '827005', coordinates: { lat: 23.6733, lng: 86.1551 } },
+    { name: 'Sector 3', pincode: '827003', coordinates: { lat: 23.669296, lng: 86.151115 } },
+    { name: 'Sector 4', pincode: '827004', coordinates: { lat: 23.671203, lng: 86.1573709 } },
+    { name: 'Sector 5', pincode: '827005', coordinates: { lat: 23.6655, lng: 86.1675 } },
     { name: 'Sector 6', pincode: '827006', coordinates: { lat: 23.6743, lng: 86.1561 } },
     { name: 'Sector 7', pincode: '827007', coordinates: { lat: 23.6753, lng: 86.1571 } },
     { name: 'Sector 8', pincode: '827008', coordinates: { lat: 23.6763, lng: 86.1581 } },

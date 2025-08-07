@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Navigation, Search, CheckCircle, AlertCircle, Loader } from 'lucide-react';
-import { getCurrentLocation, reverseGeocode, getLocationSuggestions, validateServiceArea, LocationData } from '@/lib/location';
+import { getCurrentLocation, reverseGeocode, getLocationSuggestions, validateServiceArea, LocationData, getServiceAreaInfo, findNearestServiceSector } from '@/lib/location';
 
 interface LocationInputProps {
   value: string;
@@ -96,17 +96,21 @@ const LocationInput: React.FC<LocationInputProps> = ({
       const coordinates = await getCurrentLocation();
       const locationData = await reverseGeocode(coordinates);
 
-      // Check if the detected location is serviceable
+      // Get detailed service area information
+      const serviceInfo = getServiceAreaInfo(locationData.coordinates);
       const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
 
-      if (locationData.isServiceable) {
+      if (serviceInfo.isServiceable) {
         onChange(addressString, locationData);
         setValidationStatus('valid');
-        setValidationMessage('Location detected and verified!');
+        setValidationMessage(`Location detected! You're ${serviceInfo.distanceToNearestService}km from ${serviceInfo.nearestServiceSector}.`);
       } else {
         onChange(addressString, locationData);
         setValidationStatus('invalid');
-        setValidationMessage('Location detected but not in our service area. We serve Sector 3, 4, and 5 in Bokaro Steel City.');
+        const closestSector = serviceInfo.allDistances.reduce((closest, current) => 
+          current.distance < closest.distance ? current : closest
+        );
+        setValidationMessage(`Location detected but ${closestSector.distance}km from ${closestSector.sector}. We deliver within 2.5km radius of Sectors 3, 4, and 5.`);
       }
       setShowSuggestions(false);
     } catch (error) {

@@ -47,37 +47,43 @@ export async function POST(request: NextRequest) {
 
     // Send OTP SMS
     console.log('📤 Attempting to send SMS...');
-    const smsSent = await sendOTPSMS(phone, otp);
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    try {
+      const smsSent = await sendOTPSMS(phone, otp);
 
-    if (!smsSent) {
-      console.log('❌ SMS sending failed, using development fallback');
-
-      // Development fallback: Log OTP to console for testing
-      console.log('🔧 DEVELOPMENT MODE: OTP for', phone, 'is:', otp);
-      console.log('🔧 Use this OTP to test the verification flow');
-
-      // Store OTP for verification even if SMS failed
+      // Store OTP for verification regardless of SMS success in development mode
+      console.log('💾 Storing OTP for phone:', phone, 'OTP:', otp);
       storeOTP(phone, otp);
       markOTPSent(phone);
 
+      if (!smsSent && !isDevelopment) {
+        console.log('❌ SMS sending failed - sendOTPSMS returned false');
+        return NextResponse.json(
+          { success: false, error: 'Failed to send SMS. Please check your Fast2SMS account balance and API key.' },
+          { status: 500 }
+        );
+      }
+
+      console.log('✅ OTP processed successfully for:', phone);
+      
+      // Return response with development mode info
       return NextResponse.json({
         success: true,
-        message: 'OTP generated (check console for development OTP)',
-        development_mode: true,
-        note: 'SMS service configuration needed - using console OTP for testing'
+        message: smsSent ? 'OTP sent successfully' : 'OTP generated (SMS failed but stored for development)',
+        development_mode: isDevelopment,
+        otp: isDevelopment ? otp : undefined,
+        note: isDevelopment ? 'Development mode - OTP shown for testing' : undefined,
+        sms_sent: smsSent
       });
+
+    } catch (smsError) {
+      console.error('❌ SMS sending error:', smsError);
+      return NextResponse.json(
+        { success: false, error: 'SMS service error: ' + (smsError as Error).message },
+        { status: 500 }
+      );
     }
-
-    // Store OTP for verification
-    storeOTP(phone, otp);
-    markOTPSent(phone);
-
-    console.log('✅ OTP sent successfully to:', phone);
-    return NextResponse.json({
-      success: true,
-      message: 'OTP sent successfully',
-      // Don't send OTP in response for security
-    });
 
   } catch (error) {
     console.error('❌ Error in send-otp API:', error);
