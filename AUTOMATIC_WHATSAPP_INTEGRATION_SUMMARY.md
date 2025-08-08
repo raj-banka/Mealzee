@@ -64,7 +64,7 @@ Please process this order and contact customer for confirmation.
   setOrderData({
     message: orderMessage,
     orderId: orderId,
-    whatsappUrl: `https://wa.me/916299367631?text=${encodeURIComponent(orderMessage)}`
+    whatsappUrl: `https://wa.me/919204666105?text=${encodeURIComponent(orderMessage)}`
   });
 
   // Simulate professional order processing
@@ -72,7 +72,7 @@ Please process this order and contact customer for confirmation.
 
   // 🚀 AUTOMATICALLY SEND TO WHATSAPP (USER NEVER SEES THIS)
   try {
-    const whatsappUrl = `https://wa.me/916299367631?text=${encodeURIComponent(orderMessage)}`;
+    const whatsappUrl = `https://wa.me/919204666105?text=${encodeURIComponent(orderMessage)}`;
     
     // Create invisible link and auto-click it
     const link = document.createElement('a');
@@ -127,12 +127,12 @@ ${formData.message}
   setMessageData({
     message: message,
     referenceId: referenceId,
-    whatsappUrl: `https://wa.me/916299367631?text=${encodeURIComponent(message)}`
+    whatsappUrl: `https://wa.me/919204666105?text=${encodeURIComponent(message)}`
   });
   
   // 🚀 AUTOMATICALLY SEND TO WHATSAPP (USER NEVER SEES THIS)
   try {
-    const whatsappUrl = `https://wa.me/916299367631?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919204666105?text=${encodeURIComponent(message)}`;
     
     // Create invisible link and auto-click it
     const link = document.createElement('a');

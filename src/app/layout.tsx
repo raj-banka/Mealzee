@@ -20,6 +20,33 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   creator: "Mealzee Team",
   publisher: "Mealzee",
+  icons: {
+    icon: [
+      { url: '/favicon-64x64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48 64x64', type: 'image/x-icon' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/favicon-192x192.png', sizes: '180x180', type: 'image/png' },
+      { url: '/favicon-192x192.png', sizes: '152x152', type: 'image/png' },
+      { url: '/favicon-128x128.png', sizes: '144x144', type: 'image/png' },
+      { url: '/favicon-128x128.png', sizes: '120x120', type: 'image/png' },
+      { url: '/favicon-128x128.png', sizes: '114x114', type: 'image/png' },
+      { url: '/favicon-64x64.png', sizes: '76x76', type: 'image/png' },
+      { url: '/favicon-64x64.png', sizes: '72x72', type: 'image/png' },
+      { url: '/favicon-64x64.png', sizes: '60x60', type: 'image/png' },
+      { url: '/favicon-64x64.png', sizes: '57x57', type: 'image/png' }
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/favicon-192x192.png',
+      },
+    ],
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -88,18 +115,33 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Mealzee" />
         <link rel="canonical" href="https://mealzee.in" />
-        {/* Favicon */}
-        <link rel="icon" type="image/png" sizes="32x32" href="/footer_logo.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/footer_logo.png" />
-        <link rel="shortcut icon" href="/footer_logo.png" />
-        <link rel="apple-touch-icon" href="/footer_logo.png" />
+        {/* Optimized Favicon - Multiple Sizes for Better Display */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64x64.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/favicon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="/favicon-128x128.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/favicon-128x128.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/favicon-128x128.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="/favicon-64x64.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/favicon-64x64.png" />
+        <link rel="apple-touch-icon" sizes="60x60" href="/favicon-64x64.png" />
+        <link rel="apple-touch-icon" sizes="57x57" href="/favicon-64x64.png" />
+        <meta name="msapplication-square70x70logo" content="/favicon-64x64.png" />
+        <meta name="msapplication-square150x150logo" content="/favicon-128x128.png" />
+        <meta name="msapplication-square310x310logo" content="/favicon-256x256.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta property="business:contact_data:street_address" content="Bokaro Steel City" />
         <meta property="business:contact_data:locality" content="Bokaro" />
         <meta property="business:contact_data:region" content="Jharkhand" />
         <meta property="business:contact_data:postal_code" content="827004" />
         <meta property="business:contact_data:country_name" content="India" />
-        <meta property="business:contact_data:phone_number" content="+91-6299367631" />
+        <meta property="business:contact_data:phone_number" content="+91-9204666105" />
       </head>
       <body className="font-sans antialiased bg-olive-50">
         <AppProvider>

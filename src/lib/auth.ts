@@ -1,5 +1,5 @@
 // SMS-based Authentication Service using Fast2SMS
-// Replaces Firebase authentication with Fast2SMS OTP service
+// Provides OTP authentication using Fast2SMS API service
 
 interface AuthUser {
   phone: string;
@@ -55,10 +55,9 @@ export async function sendSMSOTP(phoneNumber: string): Promise<boolean> {
       console.log('✅ SMS OTP sent successfully via Fast2SMS');
       console.log('📱 OTP sent to phone number');
       
-      // If in development mode, show OTP to user
+      // Log OTP in development mode only (no alert popup)
       if (result.development_mode && result.otp) {
         console.log('🧪 DEVELOPMENT MODE - OTP:', result.otp);
-        alert(`Development Mode: Your OTP is ${result.otp}\n\nNote: ${result.note}`);
       }
       
       return true;

@@ -22,7 +22,7 @@ The current implementation logs to console but doesn't actually send to WhatsApp
 ```
 📱 MANUAL WHATSAPP OPTION:
 Click this link to send to WhatsApp manually:
-https://wa.me/916299367631?text=...
+https://wa.me/919204666105?text=...
 ```
 5. Click the link to send to your WhatsApp
 
@@ -42,7 +42,7 @@ https://wa.me/916299367631?text=...
 ### **Step 3: Add WhatsApp Module**
 1. Add "WhatsApp Business" module after webhook
 2. Connect your WhatsApp Business account
-3. Set recipient: +916299367631
+3. Set recipient: +919204666105
 4. Set message: `{{1.message}}` (from webhook data)
 
 ### **Step 4: Update Your Website**
@@ -55,7 +55,7 @@ NEXT_PUBLIC_WEBHOOK_URL=https://hook.eu1.make.com/your-webhook-id
 ### **Step 5: Test**
 1. Place order on your website
 2. Check Make.com scenario runs
-3. Receive WhatsApp message on 6299367631
+3. Receive WhatsApp message on 9204666105
 
 ---
 
@@ -104,7 +104,7 @@ to_email: 'your-actual-email@gmail.com'
 1. Copy the WhatsApp URL from console
 2. Open in new tab
 3. Click "Send" in WhatsApp Web
-4. Message sent to 6299367631
+4. Message sent to 9204666105
 ```
 
 ---
@@ -130,7 +130,7 @@ to_email: 'your-actual-email@gmail.com'
 
 ## 📱 **Expected WhatsApp Message Format**
 
-When you receive the message on 6299367631, it will look like:
+When you receive the message on 9204666105, it will look like:
 
 ```
 🍽️ *New Order from Mealzee Website*
@@ -202,6 +202,6 @@ Please process this order and contact customer for confirmation.
 
 **Current Status**: Manual WhatsApp links working  
 **Next Step**: Set up Make.com webhook for automation  
-**Result**: 100% order delivery to WhatsApp 6299367631
+**Result**: 100% order delivery to WhatsApp 9204666105
 
 Choose the solution that works best for you - manual links work immediately, while Make.com provides full automation! 🚀📱

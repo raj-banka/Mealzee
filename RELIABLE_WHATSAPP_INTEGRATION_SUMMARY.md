@@ -81,7 +81,7 @@ Please process this order and contact customer for confirmation.
   setOrderData({
     message: orderMessage,
     orderId: orderId,
-    whatsappUrl: `https://wa.me/916299367631?text=${encodeURIComponent(orderMessage)}`
+    whatsappUrl: `https://wa.me/919204666105?text=${encodeURIComponent(orderMessage)}`
   });
 
   setIsLoading(false);
@@ -187,7 +187,7 @@ ${formData.message}
   setMessageData({
     message: message,
     referenceId: referenceId,
-    whatsappUrl: `https://wa.me/916299367631?text=${encodeURIComponent(message)}`
+    whatsappUrl: `https://wa.me/919204666105?text=${encodeURIComponent(message)}`
   });
   
   setIsSubmitted(true);

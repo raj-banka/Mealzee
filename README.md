@@ -14,7 +14,7 @@ A modern, responsive tiffin service website built with Next.js, TypeScript, and 
   - Breakfast + Lunch (₹2899/month)
   - Lunch + Dinner (₹2899/month)
 - **OTP-based Authentication** for email/phone
-- **WhatsApp Integration** for order placement (Admin: 6299367631)
+- **WhatsApp Integration** for order placement (Admin: 9204666105)
 - **Location-based Service** with geolocation support
 - **Customer Reviews Marquee** with alternating animations
 
@@ -174,7 +174,7 @@ The website is fully responsive and optimized for:
 ## 🔗 WhatsApp Integration
 
 The website integrates with WhatsApp for order management:
-- **Admin Number**: 6299367631
+- **Admin Number**: 9204666105
 - **Order Details**: Automatically formatted messages
 - **Customer Info**: Name, phone, email, address
 - **Meal Plan**: Selected plan with pricing
@@ -235,8 +235,8 @@ This project is licensed under the MIT License.
 
 For support and queries:
 - **Email**: hello@mealzee.com
-- **Phone**: +91 6299367631
-- **WhatsApp**: [Chat with us](https://wa.me/916299367631)
+- **Phone**: +91 9204666105
+- **WhatsApp**: [Chat with us](https://wa.me/919204666105)
 
 ## 🙏 Acknowledgments
 

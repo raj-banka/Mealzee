@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyOTP, validateOTP, validatePhoneNumber } from '@/lib/sms';
+import { verifyOTP, validateOTP, validatePhoneNumber, checkBruteForceProtection } from '@/lib/sms';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,10 +36,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check brute-force protection
+    const bruteForceCheck = checkBruteForceProtection(phone);
+    if (!bruteForceCheck.allowed) {
+      console.log('🚫 Brute-force protection triggered for phone:', phone);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many failed attempts. Please try again in ${bruteForceCheck.remainingTime} minutes.`
+        },
+        { status: 429 }
+      );
+    }
+
     console.log('✅ Input validation passed, verifying OTP...');
 
-    // Verify OTP
-    const isValid = verifyOTP(phone, otp);
+    // Verify OTP (now async)
+    const isValid = await verifyOTP(phone, otp);
 
     console.log('🔍 OTP verification result:', isValid);
 

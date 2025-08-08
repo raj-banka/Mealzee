@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/layout/Navbar';
-import OrderFlowManager from '@/components/order/OrderFlowManager';
+import MainLayout from '@/components/layout/MainLayout';
 
 const ContactPage: React.FC = () => {
   const router = useRouter();
@@ -104,10 +103,9 @@ const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
+    <MainLayout className="bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200 text-gray-900 pt-20">
+      <div className="bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200 text-gray-900 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center space-x-4">
             <div className="text-center w-full">
@@ -311,7 +309,7 @@ const ContactPage: React.FC = () => {
 
                   <div className="mt-6 p-4 bg-olive-50 rounded-lg">
                     <p className="text-sm text-olive-700">
-                      💡 <strong>Tip:</strong> For faster response, contact us directly via WhatsApp at +91 6299367631
+                      💡 <strong>Tip:</strong> For faster response, contact us directly via WhatsApp at +91 9204666105
                     </p>
                   </div>
                 </>
@@ -379,7 +377,7 @@ const ContactPage: React.FC = () => {
 
                   <div className="bg-olive-200 rounded-xl p-4">
                     <p className="text-sm text-olive-800">
-                      📞 <strong>Urgent inquiry?</strong> Call us directly at +91 6299367631 for immediate assistance.
+                      📞 <strong>Urgent inquiry?</strong> Call us directly at +91 9204666105 for immediate assistance.
                     </p>
                   </div>
 
@@ -399,8 +397,7 @@ const ContactPage: React.FC = () => {
       </div>
 
       {/* Global Order Flow Manager */}
-      <OrderFlowManager />
-    </div>
+    </MainLayout>
   );
 };
 

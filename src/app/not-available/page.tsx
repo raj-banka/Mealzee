@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Clock, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import MainLayout from '@/components/layout/MainLayout';
 
 const NotAvailablePage: React.FC = () => {
   const router = useRouter();
@@ -14,10 +15,11 @@ const NotAvailablePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-olive-100 via-olive-50 to-olive-200 flex items-center justify-center px-4">
-      <div className="max-w-2xl mx-auto text-center">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <MainLayout className="bg-gradient-to-br from-olive-100 via-olive-50 to-olive-200" showOrderFlow={false} showFooter={false}>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             animate={{
               y: [0, -20, 0],
@@ -195,8 +197,9 @@ const NotAvailablePage: React.FC = () => {
             Currently serving: <span className="font-semibold text-olive-600">Sector 3, 4 & 5, Bokaro Steel City</span>
           </motion.p>
         </motion.div>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

@@ -41,12 +41,13 @@ const Navbar: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 shadow-lg border-b border-green-700/30 transition-all duration-300 ${
-        isScrolled ? 'backdrop-blur-sm bg-[#00430D]/95' : 'bg-[#00430D]'
+      className={`fixed top-0 left-0 right-0 w-full shadow-lg border-b border-green-700/30 transition-all duration-300 ${
+        isScrolled ? 'backdrop-blur-md bg-[#00430D]/95' : 'bg-[#00430D]'
       }`}
       style={{
         pointerEvents: 'auto',
-        zIndex: Z_INDEX.navbar
+        zIndex: Z_INDEX.navbar,
+        position: 'fixed'
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ pointerEvents: 'auto' }}>

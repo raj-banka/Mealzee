@@ -367,3 +367,19 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* Favicon Square Shape Enforcement */
+link[rel="icon"],
+link[rel="shortcut icon"],
+link[rel="apple-touch-icon"] {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Ensure favicon displays properly in all browsers */
+head link[rel="icon"] {
+  width: auto;
+  height: auto;
+  aspect-ratio: 1/1;
+}

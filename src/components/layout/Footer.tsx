@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                     <Instagram className="w-4 h-4" />
                   </motion.a>
                   <motion.a
-                    href="https://wa.me/916299367631"
+                    href="https://wa.me/919204666105"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}

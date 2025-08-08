@@ -62,7 +62,7 @@ Successfully created a comprehensive tiffin service website called **Mealzee** w
   - Customer details collection
   - Location detection with geolocation API
   - Order confirmation and review
-  - WhatsApp integration to admin number 6299367631
+  - WhatsApp integration to admin number 9204666105
   - Formatted order messages
 
 ### 7. **Footer with Navigation** ✅
@@ -126,7 +126,7 @@ Successfully created a comprehensive tiffin service website called **Mealzee** w
 
 ## 🔗 WhatsApp Integration
 
-- **Admin Number**: 6299367631
+- **Admin Number**: 9204666105
 - **Order Flow**: Automatic message formatting
 - **Customer Details**: Name, phone, email, address
 - **Meal Plans**: Selected plan with pricing
@@ -200,7 +200,7 @@ src/
 
 ## 📞 Support & Contact
 
-- **WhatsApp**: +91 6299367631
+- **WhatsApp**: +91 9204666105
 - **Email**: hello@mealzee.com
 - **Website**: Running on http://localhost:3001
 

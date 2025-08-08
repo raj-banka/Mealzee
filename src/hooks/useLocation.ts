@@ -5,9 +5,9 @@ import { LocationData, Address } from '@/types';
 import {
   getCurrentLocation as getGeoLocation,
   reverseGeocode,
-  forwardGeocode,
   getLocationSuggestions,
-  validateServiceArea
+  validateServiceArea,
+  isLocationServiceable
 } from '@/lib/location';
 
 interface UseLocationReturn {
@@ -112,12 +112,14 @@ export function useLocation(): UseLocationReturn {
     setSelectedAddressState(address);
     
     // Also update current location based on the selected address
+    const coordinates = address.coordinates || { lat: 0, lng: 0 };
     const locationData: LocationData = {
       address: `${address.street}, ${address.city}`,
-      coordinates: address.coordinates || { lat: 0, lng: 0 },
+      coordinates,
       city: address.city,
       state: address.state,
       country: address.country,
+      isServiceable: isLocationServiceable(coordinates),
     };
     
     setCurrentLocation(locationData);

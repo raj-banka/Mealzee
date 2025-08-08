@@ -10,7 +10,7 @@
 
 ### 📱 **Direct WhatsApp Integration**
 - **Automatic order sending**: Opens WhatsApp with order details
-- **Admin number**: 6299367631 (as requested)
+- **Admin number**: 9204666105 (as requested)
 - **Complete order info**: Customer details, meal plan, preferences
 - **Professional format**: Formatted message with emojis
 
@@ -35,7 +35,7 @@
 2. Fill order details (start date required)
 3. Click "Confirm Order"
 4. ✅ **WhatsApp opens automatically** with order details
-5. Order sent to admin: +91 6299367631
+5. Order sent to admin: +91 9204666105
 
 ## 📱 **WhatsApp Message Format**
 
@@ -80,7 +80,7 @@ Thank you! 🙏
 ### **WhatsApp Integration**
 - **File**: `src/components/order/OrderModal.tsx`
 - **Method**: Direct `wa.me` URL opening
-- **Admin**: 916299367631
+- **Admin**: 919204666105
 - **Format**: Professional order message
 
 ### **Image Assets**

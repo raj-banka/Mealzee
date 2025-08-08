@@ -4,12 +4,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Shield, Eye, Lock, Database } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import MainLayout from '@/components/layout/MainLayout';
 
 const PrivacyPage: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <MainLayout className="bg-gray-50" showOrderFlow={false}>
       {/* Header */}
       <div className="bg-green-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -165,13 +166,13 @@ const PrivacyPage: React.FC = () => {
                 📧 mealzeeindia@gmail.com
               </a>
               <a
-                href="tel:+916299367631"
+                href="tel:+919204666105"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📞 +91 6299367631
+                📞 +91 9204666105
               </a>
               <a
-                href="https://wa.me/916299367631"
+                href="https://wa.me/919204666105"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -182,7 +183,7 @@ const PrivacyPage: React.FC = () => {
           </div>
         </motion.div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

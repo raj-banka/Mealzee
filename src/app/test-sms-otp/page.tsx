@@ -7,7 +7,7 @@ import {
   cleanupAuth,
   getCurrentUser,
   signOutUser
-} from '@/lib/sms-auth';
+} from '@/lib/auth';
 
 export default function TestSMSOTP() {
   const [phoneNumber, setPhoneNumber] = useState('');

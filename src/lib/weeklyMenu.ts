@@ -36,7 +36,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.5,
         isVeg: true,
         type: 'breakfast',
-        description: 'Fresh homemade potato stuffed paratha with tangy tomato ketchup',
+        description: 'Fresh homemade 3-potato stuffed paratha with tangy tomato ketchup',
         spiceLevel: 'mild',
         calories: 350,
         image: '/images/aalu paratha.jpg'
@@ -51,10 +51,10 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.6,
         isVeg: true,
         type: 'lunch',
-        description: 'Complete traditional meal with roti, rice, dal, vegetable curry, pickle and chutney',
+        description: 'Complete traditional meal with 2-roti, rice, dal, vegetable curry, pickle and chutney',
         spiceLevel: 'medium',
         calories: 450,
-        image: '/images/vegthali.jpg'
+        image: '/images/monday_lunch.jpg'
       }
     ],
     dinner: [
@@ -66,7 +66,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.4,
         isVeg: true,
         type: 'dinner',
-        description: 'Fresh roti with seasonal vegetable curry and traditional sweet',
+        description: 'Fresh 3-roti with seasonal vegetable curry and traditional sweet',
         spiceLevel: 'mild',
         calories: 380,
         image: '/images/roti-mitha.jpg'
@@ -86,7 +86,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         description: 'Crispy bread toast served with jam or ketchup',
         spiceLevel: 'mild',
         calories: 250,
-        image: '/images/sandwich.jpg'
+        image: '/images/tuesday_break.jpg'
       }
     ],
     lunch: [
@@ -133,7 +133,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         description: 'Steamed rice cakes with coconut chutney',
         spiceLevel: 'mild',
         calories: 280,
-        image: '/images/vegthali.jpg'
+        image: '/images/wed_break.jpg'
       }
     ],
     lunch: [
@@ -145,7 +145,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.7,
         isVeg: false,
         type: 'lunch',
-        description: 'Roti with cumin rice, spicy egg curry and crispy chips',
+        description: '2-Roti with cumin rice, spicy egg curry and crispy chips',
         spiceLevel: 'spicy',
         calories: 520,
         image: '/images/egg-chawal.jpg'
@@ -158,7 +158,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.5,
         isVeg: true,
         type: 'lunch',
-        description: 'Roti with cumin rice, pakoda and traditional kadhi',
+        description: '2-Roti with cumin rice, pakoda and traditional kadhi',
         spiceLevel: 'medium',
         calories: 450,
         image: '/images/kadhi-chawal.jpg'
@@ -173,10 +173,10 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.8,
         isVeg: false,
         type: 'dinner',
-        description: 'Fresh roti with spicy chicken chili',
+        description: 'Fresh 3-roti with spicy chicken chili',
         spiceLevel: 'spicy',
         calories: 480,
-        image: '/images/roti-manchuriyan.jpg'
+        image: '/images/wed_dinner.jpg'
       },
       {
         id: 11,
@@ -186,10 +186,10 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.4,
         isVeg: true,
         type: 'dinner',
-        description: 'Fresh roti with spicy soya chili',
+        description: 'Fresh 3-roti with spicy soya chili',
         spiceLevel: 'spicy',
         calories: 400,
-        image: '/images/roti-manchuriyan.jpg'
+        image: '/images/wed_dinner2.jpg'
       }
     ]
   },
@@ -218,7 +218,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.7,
         isVeg: true,
         type: 'lunch',
-        description: 'Complete meal with roti, rajma curry, rice, vegetable, pickle and chips',
+        description: 'Complete meal with 2-roti, rajma curry, rice, vegetable, pickle and chips',
         spiceLevel: 'medium',
         calories: 480,
         image: '/images/vegthali.jpg'
@@ -233,7 +233,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.5,
         isVeg: true,
         type: 'dinner',
-        description: 'Nutritious sattu paratha with ketchup or vegetable curry',
+        description: 'Nutritious 3-sattu paratha with ketchup or vegetable curry',
         spiceLevel: 'mild',
         calories: 380,
         image: '/images/ajwainparatha.jpg'
@@ -253,7 +253,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         description: 'Crispy puri with flavorful vegetable curry',
         spiceLevel: 'medium',
         calories: 340,
-        image: '/images/puri chola.jpg'
+        image: '/images/fri_break.jpg'
       }
     ],
     lunch: [
@@ -265,7 +265,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.8,
         isVeg: false,
         type: 'lunch',
-        description: 'Fresh roti with rice and traditional fish curry',
+        description: 'Fresh 2-roti with rice and traditional fish curry',
         spiceLevel: 'spicy',
         calories: 520,
         image: '/images/machli chawal.jpg'
@@ -278,10 +278,10 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.6,
         isVeg: true,
         type: 'lunch',
-        description: 'Roti with rice and spicy potato curry',
+        description: '2-Roti with rice and spicy potato curry',
         spiceLevel: 'medium',
         calories: 450,
-        image: '/images/vegthali.jpg'
+        image: '/images/fri_lunch.jpg'
       }
     ],
     dinner: [
@@ -296,7 +296,7 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         description: 'Soft paratha with creamy paneer curry',
         spiceLevel: 'medium',
         calories: 420,
-        image: '/images/nan-paner.jpg'
+        image: '/images/fri_dinner.jpg'
       },
       {
         id: 19,
@@ -353,23 +353,23 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.4,
         isVeg: true,
         type: 'dinner',
-        description: 'Fresh roti with seasonal vegetable curry',
+        description: 'Fresh 3-roti with seasonal vegetable curry',
         spiceLevel: 'medium',
         calories: 350,
-        image: '/images/roti-mitha.jpg'
+        image: '/images/sat_dinner.jpg'
       },
       {
         id: 23,
-        name: 'Roti & Bhindi',
+        name: 'Roti & Bhujiya',
         price: 60,
         time: '18 min',
         rating: 4.5,
         isVeg: true,
         type: 'dinner',
-        description: 'Fresh roti with delicious bhindi (okra) curry',
+        description: 'Fresh 3-roti with delicious bhindi (okra) curry',
         spiceLevel: 'medium',
         calories: 360,
-        image: '/images/roti=bhujiya.jpg'
+        image: '/images/sat_dinner2.jpg'
       }
     ]
   },
@@ -383,10 +383,10 @@ export const WEEKLY_MENU: WeeklyMenuData = {
         rating: 4.6,
         isVeg: true,
         type: 'breakfast',
-        description: 'Fresh roti with mixed vegetable curry',
+        description: 'Fresh 3-roti with mixed vegetable curry',
         spiceLevel: 'medium',
         calories: 320,
-        image: '/images/vegthali.jpg'
+        image: '/images/sun_break.jpg'
       }
     ],
     lunch: [

@@ -8,8 +8,7 @@ import Image from 'next/image';
 import { MEAL_CATEGORIES } from '@/lib/constants';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
-import Navbar from '@/components/layout/Navbar';
-import OrderFlowManager from '@/components/order/OrderFlowManager';
+import MainLayout from '@/components/layout/MainLayout';
 import { WEEKLY_MENU, MenuItem } from '@/lib/weeklyMenu';
 
 
@@ -57,11 +56,9 @@ export default function MenuPage() {
   };
 
   return (
-    <div className="min-h-screen bg-olive-50">
-      <Navbar />
-
+    <MainLayout className="bg-olive-50">
       {/* Page Header */}
-      <div className="bg-gradient-to-r from-olive-500 to-olive-600 text-white pt-20">
+      <div className="bg-gradient-to-r from-olive-500 to-olive-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">Our Weekly Menu</h1>
@@ -377,8 +374,6 @@ export default function MenuPage() {
         )}
       </AnimatePresence>
 
-      {/* Global Order Flow Manager */}
-      <OrderFlowManager />
-    </div>
+    </MainLayout>
   );
 }

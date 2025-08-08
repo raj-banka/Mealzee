@@ -4,14 +4,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, FileText, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/layout/Navbar';
+import MainLayout from '@/components/layout/MainLayout';
 
 const TermsPage: React.FC = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <MainLayout className="bg-gray-50" showOrderFlow={false}>
       {/* Header */}
       <div className="bg-green-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -228,22 +227,22 @@ const TermsPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
               <a
-                href="mailto:legal@mealzee.com"
+                href="mailto:mealzeeindia@gmail.com"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📧 legal@mealzee.com
+                📧 mealzeeindia@gmail.com
               </a>
               <a
-                href="tel:+916299367631"
+                href="tel:+919204666105"
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                📞 +91 6299367631
+                📞 +91 9204666105
               </a>
             </div>
           </div>
         </motion.div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

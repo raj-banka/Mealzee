@@ -1,11 +1,13 @@
-// Free SMS OTP Service using Fast2SMS
-// Provides ₹50 free credit after signup
+// New SMS Gateway Service for OTP Authentication
+// Replaces Fast2SMS with custom SMS gateway
 
-interface SMSResponse {
-  return: boolean;
-  request_id?: string;
-  message?: string[];
-  status_code?: number;
+import { createClient } from 'redis';
+
+interface MessageCentralResponse {
+  responseCode: number;
+  message: string;
+  verificationId?: string;
+  error?: string;
 }
 
 interface OTPData {
@@ -13,16 +15,23 @@ interface OTPData {
   otp: string;
 }
 
-interface SMSRequestBody extends Record<string, string> {
-  sender_id: string;
-  message: string;
-  language: string;
-  route: string;
-  numbers: string;
+interface MessageCentralRequestBody {
+  countryCode: string;
+  customerId: string;
+  flowType: string;
+  mobileNumber: string;
+  otpLength: number;
+  otpExpiry: number;
+  templateId?: string;
+  senderId?: string;
+  message?: string;
 }
 
-// Fast2SMS Configuration
-const FAST2SMS_API_URL = 'https://www.fast2sms.com/dev/bulkV2';
+// Message Central Configuration
+const MESSAGECENTRAL_BASE_URL = process.env.MESSAGECENTRAL_BASE_URL;
+const MESSAGECENTRAL_VALIDATE_URL = process.env.MESSAGECENTRAL_VALIDATE_URL;
+const MESSAGECENTRAL_TOKEN = process.env.MESSAGECENTRAL_TOKEN;
+const MESSAGECENTRAL_CLIENT_ID = process.env.MESSAGECENTRAL_CLIENT_ID;
 
 /**
  * Generate a 6-digit OTP
@@ -32,18 +41,18 @@ export function generateOTP(): string {
 }
 
 /**
- * Send OTP SMS using Fast2SMS free API
+ * Send OTP SMS using Message Central Verification API
  */
 export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
   try {
-    // Get API key from environment variables
-    const apiKey = process.env.FAST2SMS_API_KEY;
-
-    console.log('🔑 API Key configured:', apiKey ? 'Yes' : 'No');
-    console.log('🔑 API Key length:', apiKey?.length || 0);
-
-    if (!apiKey) {
-      console.error('❌ Fast2SMS API key not configured in environment variables');
+    // Validate environment variables
+    if (!MESSAGECENTRAL_BASE_URL || !MESSAGECENTRAL_TOKEN || !MESSAGECENTRAL_CLIENT_ID) {
+      console.error('❌ Message Central configuration missing in environment variables');
+      console.error('Missing:', {
+        MESSAGECENTRAL_BASE_URL: !MESSAGECENTRAL_BASE_URL,
+        MESSAGECENTRAL_TOKEN: !MESSAGECENTRAL_TOKEN,
+        MESSAGECENTRAL_CLIENT_ID: !MESSAGECENTRAL_CLIENT_ID
+      });
       return false;
     }
 
@@ -57,126 +66,57 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<boolean> {
       return false;
     }
 
-    // Try multiple routes to find one that works
-    const message = `Your Mealzee OTP is ${otp}. Valid for 5 minutes. Do not share with anyone.`;
+    // Format phone number with country code for Message Central
+    const formattedPhone = `91${cleanPhone}`; // Message Central typically expects without +
 
-    // First try: OTP route (route 'otp') - most reliable for OTP messages
-    let requestBody: SMSRequestBody = {
-      sender_id: 'FSTSMS',
-      message: message,
-      language: 'english',
-      route: 'otp',
-      numbers: cleanPhone
+    // Message Central verification API request body
+    const requestBody = {
+      countryCode: "91",
+      customerId: MESSAGECENTRAL_CLIENT_ID,
+      flowType: "SMS",
+      mobileNumber: cleanPhone,
+      // Message Central generates OTP automatically, but we can send custom message
+      otpLength: 6,
+      otpExpiry: 300, // 5 minutes in seconds
+      templateId: "MEALZEE_OTP", // You may need to create this template
+      senderId: "MEALZE", // 6-character sender ID
+      message: `Mealzee OTP: {#var#}. Valid for 5 minutes. Do not share.`
     };
 
-    console.log('📤 Sending SMS request to Fast2SMS (Route OTP)...');
-    console.log('📤 Request URL:', FAST2SMS_API_URL);
+    console.log('📤 Sending OTP request to Message Central Verification API...');
+    console.log('📤 Request URL:', MESSAGECENTRAL_BASE_URL);
     console.log('📤 Request body:', requestBody);
 
-    let response = await fetch(FAST2SMS_API_URL, {
+    const response = await fetch(MESSAGECENTRAL_BASE_URL, {
       method: 'POST',
       headers: {
-        'authorization': apiKey,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'cache-control': 'no-cache'
+        'Authorization': `Bearer ${MESSAGECENTRAL_TOKEN}`,
+        'Content-Type': 'application/json'
       },
-      body: new URLSearchParams(requestBody).toString()
+      body: JSON.stringify(requestBody)
     });
 
-    console.log('📥 Response status (OTP):', response.status);
-    let data = await response.json();
-    console.log('📥 Response data (OTP):', data);
+    console.log('📥 Response status:', response.status);
 
-    // If OTP route fails, try route 'q' (quick)
-    if (!data.return || !response.ok) {
-      console.log('📤 Trying route q (quick)...');
-
-      requestBody = {
-        sender_id: 'FSTSMS',
-        message: message,
-        language: 'english',
-        route: 'q',
-        numbers: cleanPhone
-      };
-
-      response = await fetch(FAST2SMS_API_URL, {
-        method: 'POST',
-        headers: {
-          'authorization': apiKey,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'cache-control': 'no-cache'
-        },
-        body: new URLSearchParams(requestBody).toString()
-      });
-
-      console.log('📥 Response status (q):', response.status);
-      data = await response.json();
-      console.log('📥 Response data (q):', data);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Message Central Verification API error:', response.status, errorText);
+      return false;
     }
 
-    // If both fail, try route 'p' (promotional)
-    if (!data.return || !response.ok) {
-      console.log('📤 Trying route p (promotional)...');
+    const data = await response.json();
+    console.log('📥 Response data:', data);
 
-      requestBody = {
-        sender_id: 'TXTLCL',
-        message: message,
-        language: 'english',
-        route: 'p',
-        numbers: cleanPhone
-      };
-
-      response = await fetch(FAST2SMS_API_URL, {
-        method: 'POST',
-        headers: {
-          'authorization': apiKey,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'cache-control': 'no-cache'
-        },
-        body: new URLSearchParams(requestBody).toString()
-      });
-
-      console.log('📥 Response status (p):', response.status);
-      data = await response.json();
-      console.log('📥 Response data (p):', data);
-    }
-
-    console.log('📥 Final response status:', response.status);
-    console.log('📥 Final response ok:', response.ok);
-    console.log('📥 Final response data:', JSON.stringify(data, null, 2));
-
-    // Final response handling
-    if (data.return && response.ok) {
-      console.log('✅ OTP sent successfully! Request ID:', data.request_id);
+    // Message Central verification API typically returns verificationId on success
+    if (data.responseCode === 200 || data.verificationId) {
+      console.log('✅ OTP sent successfully via Message Central. Verification ID:', data.verificationId);
       return true;
     } else {
-      console.error('❌ All routes failed to send OTP. Status:', response.status);
-      console.error('❌ Final error details:', data.message || data);
-      console.error('❌ Status code:', data.status_code);
-      console.error('❌ Full response:', JSON.stringify(data, null, 2));
-
-      // Provide helpful error messages based on status code
-      if (data.status_code === 996) {
-        console.error('💡 Error 996: Website verification required for OTP route');
-        console.error('💡 Solution: Verify your website in Fast2SMS dashboard');
-      } else if (data.status_code === 400) {
-        console.error('💡 Error 400: Bad request - check API parameters');
-      } else if (data.status_code === 401) {
-        console.error('💡 Error 401: Invalid API key');
-        console.error('💡 Solution: Check your Fast2SMS API key in .env.local');
-      } else if (data.status_code === 402) {
-        console.error('💡 Error 402: Insufficient balance');
-        console.error('💡 Solution: Recharge your Fast2SMS account');
-      } else if (data.status_code === 403) {
-        console.error('💡 Error 403: Forbidden - API access denied');
-      } else if (data.status_code === 429) {
-        console.error('💡 Error 429: Too many requests - rate limited');
-      }
-
+      console.error('❌ Message Central returned error:', data.message || data.error || 'Unknown error');
       return false;
     }
   } catch (error) {
-    console.error('❌ Error sending OTP SMS:', error);
+    console.error('❌ Error sending OTP via Message Central:', error);
     return false;
   }
 }
@@ -207,37 +147,153 @@ export function formatPhoneNumber(phone: string): string {
   return phone;
 }
 
+// Redis client for production
+let redisClient: any = null;
+
 /**
- * Store OTP in memory (for development - use Redis/database in production)
+ * Initialize Redis client for production
+ */
+async function getRedisClient() {
+  if (process.env.NODE_ENV === 'production' && !redisClient) {
+    try {
+      redisClient = createClient({
+        url: process.env.REDIS_URL,
+        password: process.env.REDIS_PASSWORD
+      });
+      await redisClient.connect();
+      console.log('✅ Redis connected for production OTP storage');
+    } catch (error) {
+      console.error('❌ Redis connection failed:', error);
+      redisClient = null;
+    }
+  }
+  return redisClient;
+}
+
+/**
+ * Store OTP in memory (for development) or Redis (for production)
  * Using a global variable to persist across hot reloads in development
  */
 declare global {
   var __otpStore: Map<string, { otp: string; timestamp: number; attempts: number }> | undefined;
+  var __bruteForceStore: Map<string, { attempts: number; firstAttempt: number; blockedUntil?: number }> | undefined;
 }
 
 const otpStore = globalThis.__otpStore ?? new Map<string, { otp: string; timestamp: number; attempts: number }>();
 globalThis.__otpStore = otpStore;
 
+// Brute-force protection store
+const bruteForceStore = globalThis.__bruteForceStore ?? new Map<string, { attempts: number; firstAttempt: number; blockedUntil?: number }>();
+globalThis.__bruteForceStore = bruteForceStore;
+
+/**
+ * Check brute-force protection (max 5 attempts per phone per hour)
+ */
+export function checkBruteForceProtection(phone: string): { allowed: boolean; remainingTime?: number } {
+  const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+
+  const bruteForceData = bruteForceStore.get(cleanPhone);
+
+  if (!bruteForceData) {
+    return { allowed: true };
+  }
+
+  // Check if blocked period has expired
+  if (bruteForceData.blockedUntil && now < bruteForceData.blockedUntil) {
+    const remainingTime = Math.ceil((bruteForceData.blockedUntil - now) / 1000 / 60); // minutes
+    console.log(`🚫 Phone ${cleanPhone} is blocked for ${remainingTime} more minutes`);
+    return { allowed: false, remainingTime };
+  }
+
+  // Reset if more than an hour has passed since first attempt
+  if (now - bruteForceData.firstAttempt > oneHour) {
+    bruteForceStore.delete(cleanPhone);
+    return { allowed: true };
+  }
+
+  // Check if already reached max attempts
+  if (bruteForceData.attempts >= 5) {
+    const remainingTime = Math.ceil((bruteForceData.firstAttempt + oneHour - now) / 1000 / 60);
+    console.log(`🚫 Phone ${cleanPhone} has exceeded max attempts, blocked for ${remainingTime} more minutes`);
+    return { allowed: false, remainingTime };
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Record failed OTP attempt for brute-force protection
+ */
+export function recordFailedAttempt(phone: string): void {
+  const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+
+  const existing = bruteForceStore.get(cleanPhone);
+
+  if (!existing) {
+    bruteForceStore.set(cleanPhone, {
+      attempts: 1,
+      firstAttempt: now
+    });
+  } else {
+    // Reset if more than an hour has passed
+    if (now - existing.firstAttempt > oneHour) {
+      bruteForceStore.set(cleanPhone, {
+        attempts: 1,
+        firstAttempt: now
+      });
+    } else {
+      existing.attempts++;
+
+      // Block for remaining time if reached max attempts
+      if (existing.attempts >= 5) {
+        existing.blockedUntil = existing.firstAttempt + oneHour;
+      }
+    }
+  }
+
+  console.log(`⚠️ Failed attempt recorded for ${cleanPhone}. Total attempts: ${bruteForceStore.get(cleanPhone)?.attempts}`);
+}
+
 /**
  * Store OTP for verification
  */
-export function storeOTP(phone: string, otp: string): void {
+export async function storeOTP(phone: string, otp: string): Promise<void> {
   const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
-  
+
   console.log('💾 Storing OTP Debug:');
   console.log('📱 Input phone:', phone);
   console.log('📱 Cleaned phone:', cleanPhone);
   console.log('🔢 OTP to store:', otp, '(type:', typeof otp, ')');
-  
-  otpStore.set(cleanPhone, {
+
+  const otpData = {
     otp,
     timestamp: Date.now(),
     attempts: 0
-  });
-  
-  console.log('💾 OTP stored successfully');
+  };
+
+  // Use Redis in production, memory in development
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const redis = await getRedisClient();
+      if (redis) {
+        await redis.setEx(`otp:${cleanPhone}`, 300, JSON.stringify(otpData)); // 5 minutes expiry
+        console.log('💾 OTP stored in Redis');
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Redis storage failed, falling back to memory:', error);
+    }
+  }
+
+  // Fallback to memory storage
+  otpStore.set(cleanPhone, otpData);
+  console.log('💾 OTP stored in memory');
   console.log('🗂️ Current OTP store:', Array.from(otpStore.entries()));
-  
+
   // Clean up expired OTPs (5 minutes)
   setTimeout(() => {
     otpStore.delete(cleanPhone);
@@ -245,62 +301,140 @@ export function storeOTP(phone: string, otp: string): void {
 }
 
 /**
- * Verify OTP
+ * Verify OTP with Redis support and enhanced brute-force protection
  */
-export function verifyOTP(phone: string, otp: string): boolean {
+export async function verifyOTP(phone: string, otp: string): Promise<boolean> {
   const cleanPhone = phone.replace(/^\+91/, '').replace(/\D/g, '');
-  const stored = otpStore.get(cleanPhone);
-  
+
   console.log('🔍 OTP Verification Debug:');
   console.log('📱 Input phone:', phone);
   console.log('📱 Cleaned phone:', cleanPhone);
   console.log('🔢 Input OTP:', otp);
-  console.log('💾 Stored data:', stored);
-  console.log('🗂️ All stored OTPs:', Array.from(otpStore.entries()));
-  
-  if (!stored) {
-    console.log('❌ No OTP found for phone:', cleanPhone);
+
+  // Check brute-force protection first
+  const bruteForceCheck = checkBruteForceProtection(cleanPhone);
+  if (!bruteForceCheck.allowed) {
+    console.log('🚫 Brute-force protection triggered');
     return false;
   }
-  
+
+  let stored: { otp: string; timestamp: number; attempts: number } | null = null;
+
+  // Try to get from Redis in production
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const redis = await getRedisClient();
+      if (redis) {
+        const redisData = await redis.get(`otp:${cleanPhone}`);
+        if (redisData) {
+          stored = JSON.parse(redisData);
+          console.log('💾 OTP retrieved from Redis');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Redis retrieval failed, falling back to memory:', error);
+    }
+  }
+
+  // Fallback to memory storage
+  if (!stored) {
+    stored = otpStore.get(cleanPhone) || null;
+    console.log('💾 OTP retrieved from memory');
+  }
+
+  console.log('💾 Stored data:', stored);
+
+  if (!stored) {
+    console.log('❌ No OTP found for phone:', cleanPhone);
+    recordFailedAttempt(cleanPhone);
+    return false;
+  }
+
   // Check if OTP is expired (5 minutes)
   const timeElapsed = Date.now() - stored.timestamp;
   const isExpired = timeElapsed > 5 * 60 * 1000;
   console.log('⏰ Time elapsed:', Math.floor(timeElapsed / 1000), 'seconds');
   console.log('⏰ Is expired:', isExpired);
-  
+
   if (isExpired) {
     console.log('❌ OTP expired, deleting...');
-    otpStore.delete(cleanPhone);
+    await deleteOTP(cleanPhone);
+    recordFailedAttempt(cleanPhone);
     return false;
   }
-  
-  // Check attempts limit (3 attempts)
+
+  // Check attempts limit (3 attempts per OTP)
   console.log('🔄 Current attempts:', stored.attempts);
   if (stored.attempts >= 3) {
-    console.log('❌ Too many attempts, deleting...');
-    otpStore.delete(cleanPhone);
+    console.log('❌ Too many attempts for this OTP, deleting...');
+    await deleteOTP(cleanPhone);
+    recordFailedAttempt(cleanPhone);
     return false;
   }
-  
+
   // Increment attempts
   stored.attempts++;
   console.log('🔄 Incremented attempts to:', stored.attempts);
-  
+
+  // Update stored data with new attempt count
+  await updateOTPAttempts(cleanPhone, stored);
+
   // Verify OTP
   console.log('🔍 Comparing OTPs:');
   console.log('🔍 Stored OTP:', stored.otp, '(type:', typeof stored.otp, ')');
   console.log('🔍 Input OTP:', otp, '(type:', typeof otp, ')');
   console.log('🔍 Are equal:', stored.otp === otp);
-  
+
   if (stored.otp === otp) {
     console.log('✅ OTP verified successfully, deleting...');
-    otpStore.delete(cleanPhone);
+    await deleteOTP(cleanPhone);
     return true;
   }
-  
+
   console.log('❌ OTP mismatch');
+  recordFailedAttempt(cleanPhone);
   return false;
+}
+
+/**
+ * Delete OTP from storage (Redis or memory)
+ */
+async function deleteOTP(cleanPhone: string): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const redis = await getRedisClient();
+      if (redis) {
+        await redis.del(`otp:${cleanPhone}`);
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Redis deletion failed:', error);
+    }
+  }
+
+  otpStore.delete(cleanPhone);
+}
+
+/**
+ * Update OTP attempts in storage
+ */
+async function updateOTPAttempts(cleanPhone: string, otpData: { otp: string; timestamp: number; attempts: number }): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const redis = await getRedisClient();
+      if (redis) {
+        const ttl = await redis.ttl(`otp:${cleanPhone}`);
+        if (ttl > 0) {
+          await redis.setEx(`otp:${cleanPhone}`, ttl, JSON.stringify(otpData));
+        }
+        return;
+      }
+    } catch (error) {
+      console.error('❌ Redis update failed:', error);
+    }
+  }
+
+  otpStore.set(cleanPhone, otpData);
 }
 
 /**
@@ -322,8 +456,8 @@ export function canResendOTP(phone: string): boolean {
     return true;
   }
   
-  // Allow resend after 60 seconds
-  return Date.now() - lastSent > 60 * 1000;
+  // Allow resend after 30 seconds
+  return Date.now() - lastSent > 30 * 1000;
 }
 
 /**

@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-This guide explains how to set up the background WhatsApp integration that sends orders to your restaurant's WhatsApp (6299367631) without disrupting the user experience.
+This guide explains how to set up the background WhatsApp integration that sends orders to your restaurant's WhatsApp (9204666105) without disrupting the user experience.
 
 ## 🎯 **What This Achieves**
 
@@ -133,13 +133,13 @@ RESTAURANT_EMAIL=orders@mealzee.com
 ```bash
 # Copy from .env.example and fill in your values
 NEXT_PUBLIC_WEBHOOK_URL=https://hook.eu1.make.com/your-webhook-id
-RESTAURANT_PHONE=916299367631
+RESTAURANT_PHONE=919204666105
 ```
 
 2. **Test the integration:**
    - Place a test order on your website
    - Check if webhook receives the data
-   - Verify WhatsApp message is sent to 6299367631
+   - Verify WhatsApp message is sent to 9204666105
 
 3. **Monitor the logs:**
    - Check browser console for success/error messages
@@ -294,7 +294,7 @@ Sent from Mealzee Contact Form
    # In your hosting platform (Vercel, Netlify, etc.)
    NEXT_PUBLIC_WEBHOOK_URL=your_production_webhook_url
    WHATSAPP_TOKEN=your_production_token
-   RESTAURANT_PHONE=916299367631
+   RESTAURANT_PHONE=919204666105
    ```
 
 3. **Monitor Performance:**
@@ -314,7 +314,7 @@ Sent from Mealzee Contact Form
 - [ ] Environment variables configured
 - [ ] Webhook service setup (Make.com/Zapier)
 - [ ] Test order placed successfully
-- [ ] WhatsApp message received on 6299367631
+- [ ] WhatsApp message received on 9204666105
 - [ ] Contact form tested
 - [ ] No user redirects to WhatsApp
 - [ ] Professional success screens working

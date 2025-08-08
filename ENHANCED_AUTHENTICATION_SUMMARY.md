@@ -212,7 +212,7 @@ interface AppState {
 ### **WhatsApp Integration**
 - Order details include user information from context
 - Formatted messages with meal plan details
-- Admin number: 6299367631
+- Admin number: 9204666105
 
 ### **Local Storage**
 - User data persistence

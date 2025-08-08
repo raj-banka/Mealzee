@@ -1,19 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, ArrowRight, Check, User, Calendar, Mail } from 'lucide-react';
+import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
 import LocationInput from '@/components/location/LocationInput';
 import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
 import { isValidReferralCode } from '@/utils/referral';
-import { 
-  sendSMSOTP, 
-  verifySMSOTP, 
-  cleanupAuth,
-  onAuthStateChange 
-} from '@/lib/sms-auth';
+import {
+  sendSMSOTP,
+  verifySMSOTP,
+  cleanupAuth
+} from '@/lib/auth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -55,11 +54,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (resendTimerRef.current) {
+        clearInterval(resendTimerRef.current);
+      }
       cleanupAuth();
     };
   }, []);
 
   const [resendCooldown, setResendCooldown] = useState(0);
+  const resendTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper function to start the resend timer
+  const startResendTimer = () => {
+    // Clear any existing timer
+    if (resendTimerRef.current) {
+      clearInterval(resendTimerRef.current);
+    }
+
+    setResendCooldown(30);
+    resendTimerRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (resendTimerRef.current) {
+            clearInterval(resendTimerRef.current);
+            resendTimerRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const handleLocationCheck = useCallback(async () => {
     try {
@@ -142,10 +167,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       const success = await sendSMSOTP(phoneNumber);
       
       if (success) {
-        console.log('✅ OTP sent successfully to:', phoneNumber);
-        console.log('📱 Please check your SMS for the 6-digit verification code');
         // Go directly to OTP verification step
         setAuthStep('otp');
+
+        // Start initial 30-second cooldown for resend
+        startResendTimer();
       } else {
         alert('Failed to send OTP. Please try again or contact support if the issue persists.');
       }
@@ -237,7 +263,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) return;
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -250,6 +276,94 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Clear error when user starts typing
+    if (otpError) {
+      setOtpError('');
+    }
+
+    // Handle Ctrl+A or Ctrl+Backspace to clear all fields
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'Backspace')) {
+      e.preventDefault();
+      setOtp(['', '', '', '', '', '']);
+      const firstInput = document.getElementById('otp-0');
+      firstInput?.focus();
+      return;
+    }
+
+    // Handle backspace
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      const newOtp = [...otp];
+
+      if (newOtp[index]) {
+        // If current field has value, clear it
+        newOtp[index] = '';
+        setOtp(newOtp);
+      } else if (index > 0) {
+        // If current field is empty, go to previous field and clear it
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        const prevInput = document.getElementById(`otp-${index - 1}`);
+        prevInput?.focus();
+      }
+      return;
+    }
+
+    // Handle delete key
+    if (e.key === 'Delete') {
+      e.preventDefault();
+      const newOtp = [...otp];
+      newOtp[index] = '';
+      setOtp(newOtp);
+      return;
+    }
+
+    // Handle arrow keys
+    if (e.key === 'ArrowLeft' && index > 0) {
+      e.preventDefault();
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+      return;
+    }
+
+    if (e.key === 'ArrowRight' && index < 5) {
+      e.preventDefault();
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+      return;
+    }
+
+    // Handle paste
+    if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+      // Let the paste event handle this
+      return;
+    }
+
+    // Only allow numbers
+    if (!/^\d$/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+
+    if (pastedData.length > 0) {
+      const newOtp = ['', '', '', '', '', ''];
+      for (let i = 0; i < pastedData.length && i < 6; i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtp(newOtp);
+
+      // Focus the next empty field or the last field
+      const nextEmptyIndex = Math.min(pastedData.length, 5);
+      const nextInput = document.getElementById(`otp-${nextEmptyIndex}`);
       nextInput?.focus();
     }
   };
@@ -267,7 +381,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       const success = await verifySMSOTP(otpValue, phoneNumber);
       
       if (success) {
-        console.log('✅ OTP verified successfully');
         // Now check location after OTP verification
         setAuthStep('location-check');
       } else {
@@ -302,23 +415,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       const success = await sendSMSOTP(phoneNumber);
       
       if (success) {
-        console.log('✅ OTP resent successfully to:', phoneNumber);
-        
         // Reset OTP inputs
         setOtp(['', '', '', '', '', '']);
-        
-        // Start 60-second cooldown for resend
-        setResendCooldown(60);
-        const timer = setInterval(() => {
-          setResendCooldown((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-        
+
+        // Start 30-second cooldown for resend
+        startResendTimer();
+
         // Focus first input
         const firstInput = document.getElementById('otp-0');
         firstInput?.focus();
@@ -347,8 +449,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setOtpError('');
     setIsLoading(false);
     setResendCooldown(0);
-    setIsRecaptchaInitialized(false);
-    cleanupFirebaseAuth();
+
+    // Clear the resend timer
+    if (resendTimerRef.current) {
+      clearInterval(resendTimerRef.current);
+      resendTimerRef.current = null;
+    }
+
+    cleanupAuth();
   };
 
   const handleClose = () => {
@@ -484,9 +592,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         key={index}
                         id={`otp-${index}`}
                         type="text"
+                        inputMode="numeric"
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                        onPaste={handleOtpPaste}
                         className={`w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 rounded-lg sm:rounded-xl focus:outline-none transition-colors ${
                           otpError
                             ? 'border-red-500 focus:border-red-500'
@@ -507,6 +618,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       <span>{otpError}</span>
                     </motion.div>
                   )}
+
+
 
                   <div className="mb-4 sm:mb-6"></div>
 
@@ -544,7 +657,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     className={`text-sm font-medium ${
                       resendCooldown > 0 || isLoading
                         ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-green-600 hover:text-green-700'
+                        : 'text-green-600 hover:text-green-700 cursor-pointer'
                     }`}
                   >
                     {resendCooldown > 0

@@ -4,8 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Target, Award, Heart, Truck, Shield, Star } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
-import OrderFlowManager from '@/components/order/OrderFlowManager';
+import MainLayout from '@/components/layout/MainLayout';
 
 const AboutPage: React.FC = () => {
   const values = [
@@ -60,10 +59,9 @@ const AboutPage: React.FC = () => {
   // ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
+    <MainLayout className="bg-white">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-20 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
+      <section className="relative py-20 bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -302,9 +300,7 @@ const AboutPage: React.FC = () => {
         </div>
       </section> */}
 
-      {/* Global Order Flow Manager */}
-      <OrderFlowManager />
-    </div>
+    </MainLayout>
   );
 };
 

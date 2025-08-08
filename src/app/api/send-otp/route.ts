@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  generateOTP, 
-  sendOTPSMS, 
-  storeOTP, 
-  validatePhoneNumber, 
-  canResendOTP, 
-  markOTPSent 
+import {
+  generateOTP,
+  sendOTPSMS,
+  storeOTP,
+  validatePhoneNumber,
+  canResendOTP,
+  markOTPSent,
+  checkBruteForceProtection
 } from '@/lib/sms';
 
 export async function POST(request: NextRequest) {
@@ -32,18 +33,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check rate limiting
+    // Check brute-force protection (max 5 attempts per hour)
+    const bruteForceCheck = checkBruteForceProtection(phone);
+    if (!bruteForceCheck.allowed) {
+      console.log('🚫 Brute-force protection triggered for phone:', phone);
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many failed attempts. Please try again in ${bruteForceCheck.remainingTime} minutes.`
+        },
+        { status: 429 }
+      );
+    }
+
+    // Check rate limiting (30 seconds between requests)
     if (!canResendOTP(phone)) {
       console.log('⏰ Rate limit hit for phone:', phone);
       return NextResponse.json(
-        { success: false, error: 'Please wait 60 seconds before requesting another OTP' },
+        { success: false, error: 'Please wait 30 seconds before requesting another OTP' },
         { status: 429 }
       );
     }
 
     // Generate OTP
     const otp = generateOTP();
-    console.log('🔢 Generated OTP for phone:', phone, '- OTP:', otp);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔢 Generated OTP for phone:', phone, '- OTP:', otp);
+    }
 
     // Send OTP SMS
     console.log('📤 Attempting to send SMS...');
@@ -53,14 +69,16 @@ export async function POST(request: NextRequest) {
       const smsSent = await sendOTPSMS(phone, otp);
 
       // Store OTP for verification regardless of SMS success in development mode
-      console.log('💾 Storing OTP for phone:', phone, 'OTP:', otp);
-      storeOTP(phone, otp);
+      if (isDevelopment) {
+        console.log('💾 Storing OTP for phone:', phone, 'OTP:', otp);
+      }
+      await storeOTP(phone, otp);
       markOTPSent(phone);
 
       if (!smsSent && !isDevelopment) {
         console.log('❌ SMS sending failed - sendOTPSMS returned false');
         return NextResponse.json(
-          { success: false, error: 'Failed to send SMS. Please check your Fast2SMS account balance and API key.' },
+          { success: false, error: 'Failed to send SMS. Please check your SMS gateway configuration.' },
           { status: 500 }
         );
       }
