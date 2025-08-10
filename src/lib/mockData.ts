@@ -393,7 +393,7 @@ export const popularMealCategories = [
 export const tiffinTestimonials = [
   {
     id: 1,
-    name: 'Rajesh Kumar',
+    name: 'Aarohi Sharma',
     role: 'Working Professional',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     rating: 5,
@@ -411,7 +411,7 @@ export const tiffinTestimonials = [
   },
   {
     id: 3,
-    name: 'Amit Sharma',
+    name: 'Isha Gupta',
     role: 'College Student',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     rating: 5,
@@ -429,7 +429,7 @@ export const tiffinTestimonials = [
   },
   {
     id: 5,
-    name: 'Deepak Verma',
+    name: 'Meera Joshi',
     role: 'IT Professional',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
     rating: 5,

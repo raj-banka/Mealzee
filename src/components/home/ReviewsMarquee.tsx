@@ -25,11 +25,11 @@ const reviews: Review[] = [
   },
   {
     id: '2',
-    name: 'Rahul Kumar',
+    name: 'Riya Verma',
     rating: 5,
     comment: 'Mealzee has made my life so much easier. Healthy and delicious meals every day!',
     location: 'Sector 4/B',
-    avatar: '👨‍💻'
+    avatar: '�‍💻'
   },
   {
     id: '3',
@@ -41,11 +41,11 @@ const reviews: Review[] = [
   },
   {
     id: '4',
-    name: 'Vikram Singh',
+    name: 'Meena Singh',
     rating: 5,
     comment: 'Best tiffin service in the city. Fresh food delivered on time, every time.',
     location: 'Sector 4/D',
-    avatar: '👨‍🏭'
+    avatar: '�‍🏭'
   },
   {
     id: '5',
@@ -57,11 +57,11 @@ const reviews: Review[] = [
   },
   {
     id: '6',
-    name: 'Arjun Mehta',
+    name: 'Asha Mehta',
     rating: 4,
     comment: 'Great value for money and the food tastes just like home-cooked meals.',
     location: 'Sector 4/F',
-    avatar: '👨‍🎨'
+    avatar: '�‍🎨'
   },
   {
     id: '7',
@@ -73,11 +73,11 @@ const reviews: Review[] = [
   },
   {
     id: '8',
-    name: 'Rohit Jain',
+    name: 'Neha Jain',
     rating: 5,
     comment: 'Switched to Mealzee 6 months ago and never looked back. Excellent service!',
     location: 'Sector 4/B',
-    avatar: '👨‍🚀'
+    avatar: '�‍🚀'
   }
 ];
 
