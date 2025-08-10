@@ -94,7 +94,7 @@ const ContactSection: React.FC = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['+91 9608036638', 'Direct Support Line', 'Mon-Sun: 9AM-11PM'],
+      details: ['+91 9204666105', 'Direct Support Line', 'Mon-Sun: 9AM-11PM'],
       color: 'from-green-400 to-emerald-500',
     },
     {
@@ -200,7 +200,7 @@ const ContactSection: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <Button
-                  onClick={() => window.open('tel:+919608036638', '_self')}
+                  onClick={() => window.open('tel:+919204666105', '_self')}
                   className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-3"
                 >
                   <Phone className="w-5 h-5" />

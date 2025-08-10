@@ -1,5 +1,6 @@
-// SMS-based Authentication Service using Fast2SMS
-// Provides OTP authentication using Fast2SMS API service
+
+// WhatsApp-based Authentication Service using Message Central
+// Provides OTP authentication using WhatsApp via Message Central API service
 
 interface AuthUser {
   phone: string;
@@ -33,53 +34,49 @@ function notifyAuthStateChange() {
 }
 
 /**
- * Send OTP to phone number using Fast2SMS
+ * Send OTP to phone number using WhatsApp via Message Central
  */
-export async function sendSMSOTP(phoneNumber: string): Promise<boolean> {
+export async function sendWhatsAppOTP(phoneNumber: string): Promise<{ success: boolean; message?: string; error?: string }> {
   try {
-    console.log('📱 Sending OTP to:', phoneNumber);
-    
-    // Send OTP via Fast2SMS API
-    console.log('🚀 Sending OTP via Fast2SMS...');
-    const response = await fetch('/api/send-otp', {
+    console.log('📱 Sending WhatsApp OTP to:', phoneNumber);
+    // Send OTP via WhatsApp using Message Central API
+    console.log('🚀 Sending OTP via WhatsApp (Message Central)...');
+    const response = await fetch('/api/whatsapp-otp/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ phone: phoneNumber }),
     });
-
     const result = await response.json();
-    
     if (result.success) {
-      console.log('✅ SMS OTP sent successfully via Fast2SMS');
-      console.log('📱 OTP sent to phone number');
-      
-      // Log OTP in development mode only (no alert popup)
-      if (result.development_mode && result.otp) {
-        console.log('🧪 DEVELOPMENT MODE - OTP:', result.otp);
-      }
-      
-      return true;
+      console.log('✅ WhatsApp OTP sent successfully via Message Central');
+      return { success: true, message: result.message };
     } else {
-      console.log('❌ Fast2SMS API failed:', result.error);
-      return false;
+      // Only log error if not a weird 'SUCCESS' string
+      if (!result.error || result.error === 'SUCCESS') {
+        // Treat as success, but log a warning
+        console.warn('⚠️ WhatsApp OTP API returned ambiguous success:', result);
+        return { success: true, message: result.message || 'OTP sent (ambiguous response)' };
+      }
+      console.log('❌ WhatsApp OTP API failed:', result.error);
+      return { success: false, error: result.error || 'Failed to send OTP' };
     }
   } catch (error: any) {
-    console.error('❌ Fast2SMS OTP send failed:', error);
-    return false;
+    console.error('❌ WhatsApp OTP send failed:', error);
+    return { success: false, error: 'Service unavailable. Please try again.' };
   }
 }
 
 /**
- * Verify OTP using Fast2SMS
+ * Verify OTP using WhatsApp via Message Central
  */
-export async function verifySMSOTP(otp: string, phoneNumber: string): Promise<boolean> {
+export async function verifyWhatsAppOTP(otp: string, phoneNumber: string): Promise<boolean> {
   try {
-    console.log('🔢 Verifying OTP:', otp, 'for phone:', phoneNumber);
+    console.log('🔢 Verifying WhatsApp OTP:', otp, 'for phone:', phoneNumber);
 
-    // Verify OTP with Fast2SMS API
-    const response = await fetch('/api/verify-otp', {
+    // Verify OTP with WhatsApp Message Central API
+    const response = await fetch('/api/whatsapp-otp/verify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +87,7 @@ export async function verifySMSOTP(otp: string, phoneNumber: string): Promise<bo
     const result = await response.json();
     
     if (result.success) {
-      console.log('✅ SMS OTP verified successfully');
+      console.log('✅ WhatsApp OTP verified successfully');
       
       // Set current user as authenticated
       currentUser = {
@@ -103,11 +100,11 @@ export async function verifySMSOTP(otp: string, phoneNumber: string): Promise<bo
       
       return true;
     } else {
-      console.error('❌ SMS OTP verification failed:', result.error);
+      console.error('❌ WhatsApp OTP verification failed:', result.error);
       return false;
     }
   } catch (error: any) {
-    console.error('❌ SMS OTP verification error:', error);
+    console.error('❌ WhatsApp OTP verification error:', error);
     return false;
   }
 }

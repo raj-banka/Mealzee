@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  sendSMSOTP, 
-  verifySMSOTP, 
   cleanupAuth,
   getCurrentUser,
   signOutUser
@@ -37,13 +35,8 @@ export default function TestSMSOTP() {
     setMessage('');
 
     try {
-      const success = await sendSMSOTP(phoneNumber);
-      if (success) {
-        setMessage('✅ OTP sent successfully to ' + phoneNumber);
-        setStep('otp');
-      } else {
-        setMessage('❌ Failed to send OTP');
-      }
+  // TODO: Implement sendSMSOTP or use WhatsApp OTP functions if needed
+  setMessage('❌ sendSMSOTP is not implemented.');
     } catch (error) {
       setMessage('❌ Error: ' + error);
     }
@@ -59,14 +52,8 @@ export default function TestSMSOTP() {
     setMessage('');
 
     try {
-      const success = await verifySMSOTP(otp, phoneNumber);
-      if (success) {
-        setMessage('✅ OTP verified successfully!');
-        setStep('success');
-        setUser(getCurrentUser());
-      } else {
-        setMessage('❌ Invalid OTP code');
-      }
+  // TODO: Implement verifySMSOTP or use WhatsApp OTP functions if needed
+  setMessage('❌ verifySMSOTP is not implemented.');
     } catch (error) {
       setMessage('❌ Error: ' + error);
     }
@@ -165,14 +152,14 @@ export default function TestSMSOTP() {
               <input
                 type="text"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="123456"
-                maxLength={6}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="1234"
+                maxLength={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <p className="text-xs text-gray-500 mt-1">
-                Enter the 6-digit OTP sent to {phoneNumber}
+                Enter the 4-digit OTP sent to {phoneNumber}
               </p>
             </div>
             <button
@@ -216,7 +203,7 @@ export default function TestSMSOTP() {
           <h3 className="text-sm font-semibold text-blue-800 mb-2">Instructions:</h3>
           <ul className="text-xs text-blue-700 space-y-1">
             <li>• Enter your 10-digit Indian mobile number</li>
-            <li>• You will receive an SMS with a 6-digit OTP via Fast2SMS</li>
+            <li>• You will receive an SMS with a 4-digit OTP via WhatsApp</li>
             <li>• Enter the OTP to complete authentication</li>
             <li>• Make sure Fast2SMS API key is configured in .env.local</li>
             <li>• Ensure you have sufficient balance in your Fast2SMS account</li>

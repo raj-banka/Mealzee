@@ -9,8 +9,8 @@ import LocationInput from '@/components/location/LocationInput';
 import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
 import { isValidReferralCode } from '@/utils/referral';
 import {
-  sendSMSOTP,
-  verifySMSOTP,
+  sendWhatsAppOTP,
+  verifyWhatsAppOTP,
   cleanupAuth
 } from '@/lib/auth';
 
@@ -37,7 +37,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [referralCode, setReferralCode] = useState('');
   const [referralName, setReferralName] = useState('');
   const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '']); // 4-digit WhatsApp OTP
   const [otpError, setOtpError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // Auto-detect referral code from URL on component mount
@@ -161,25 +161,33 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     setIsLoading(true);
-
     try {
-      // Send SMS OTP via Fast2SMS
-      const success = await sendSMSOTP(phoneNumber);
-      
-      if (success) {
-        // Go directly to OTP verification step
+      // Send WhatsApp OTP via Message Central
+      const result = await sendWhatsAppOTP(phoneNumber);
+      if (result.success) {
         setAuthStep('otp');
-
+        setOtpError('');
+        setPhoneError('');
+        // Optionally show a message somewhere in the modal
         // Start initial 30-second cooldown for resend
         startResendTimer();
+      } else if (
+        result.error &&
+        (result.error.toLowerCase().includes('already pending') ||
+         result.error.toLowerCase().includes('already exists') ||
+         result.error.toLowerCase().includes('wait'))
+      ) {
+        setAuthStep('otp');
+        setOtpError('OTP already sent to your WhatsApp. Please check your messages.');
+        setPhoneError('');
+        startResendTimer();
       } else {
-        alert('Failed to send OTP. Please try again or contact support if the issue persists.');
+        setPhoneError(result.error || 'Failed to send OTP. Please try again or contact support if the issue persists.');
       }
     } catch (error: any) {
       console.error('❌ Error sending OTP:', error);
-      alert('Failed to send OTP. Please check your phone number and try again.');
+      setPhoneError('Failed to send OTP. Please check your phone number and try again.');
     }
-
     setIsLoading(false);
   };
 
@@ -274,7 +282,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     // Auto-focus next input
-    if (value && index < 5) {
+    if (value && index < 3) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
     }
@@ -289,7 +297,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Handle Ctrl+A or Ctrl+Backspace to clear all fields
     if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'Backspace')) {
       e.preventDefault();
-      setOtp(['', '', '', '', '', '']);
+      setOtp(['', '', '', '']);
       const firstInput = document.getElementById('otp-0');
       firstInput?.focus();
       return;
@@ -331,7 +339,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    if (e.key === 'ArrowRight' && index < 5) {
+    if (e.key === 'ArrowRight' && index < 3) {
       e.preventDefault();
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
@@ -352,17 +360,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
 
     if (pastedData.length > 0) {
-      const newOtp = ['', '', '', '', '', ''];
-      for (let i = 0; i < pastedData.length && i < 6; i++) {
+      const newOtp = ['', '', '', ''];
+      for (let i = 0; i < pastedData.length && i < 4; i++) {
         newOtp[i] = pastedData[i];
       }
       setOtp(newOtp);
 
       // Focus the next empty field or the last field
-      const nextEmptyIndex = Math.min(pastedData.length, 5);
+      const nextEmptyIndex = Math.min(pastedData.length, 3);
       const nextInput = document.getElementById(`otp-${nextEmptyIndex}`);
       nextInput?.focus();
     }
@@ -371,22 +379,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpValue = otp.join('');
-    if (otpValue.length !== 6) return;
+    if (otpValue.length !== 4) return;
 
     setIsLoading(true);
     setOtpError('');
 
     try {
-      // Verify SMS OTP via Fast2SMS
-      const success = await verifySMSOTP(otpValue, phoneNumber);
+      // Verify WhatsApp OTP via Message Central
+      const success = await verifyWhatsAppOTP(otpValue, phoneNumber);
       
       if (success) {
         // Now check location after OTP verification
         setAuthStep('location-check');
       } else {
         setOtpError('Invalid OTP code. Please try again.');
-        // Reset OTP inputs
-        setOtp(['', '', '', '', '', '']);
+        // Reset OTP inputs (4-digit)
+        setOtp(['', '', '', '']);
         // Focus first input
         const firstInput = document.getElementById('otp-0');
         firstInput?.focus();
@@ -394,8 +402,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error('❌ Error verifying OTP:', error);
       setOtpError('Failed to verify OTP. Please try again.');
-      // Reset OTP inputs
-      setOtp(['', '', '', '', '', '']);
+      // Reset OTP inputs (4-digit)
+      setOtp(['', '', '', '']);
       // Focus first input
       const firstInput = document.getElementById('otp-0');
       firstInput?.focus();
@@ -411,12 +419,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setOtpError('');
 
     try {
-      // Resend SMS OTP via Fast2SMS
-      const success = await sendSMSOTP(phoneNumber);
+      // Resend WhatsApp OTP via Message Central
+      const success = await sendWhatsAppOTP(phoneNumber);
       
       if (success) {
         // Reset OTP inputs
-        setOtp(['', '', '', '', '', '']);
+        setOtp(['', '', '', '']);
 
         // Start 30-second cooldown for resend
         startResendTimer();
@@ -445,7 +453,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setHasReferralCode(false);
     setReferralCode('');
     setReferralName('');
-    setOtp(['', '', '', '', '', '']);
+    setOtp(['', '', '', '']);
     setOtpError('');
     setIsLoading(false);
     setResendCooldown(0);
@@ -581,7 +589,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 exit={{ opacity: 0, x: -20 }}
               >
                 <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
-                  We&apos;ve sent a 6-digit code to{' '}
+                  We&apos;ve sent a 4-digit code to{' '}
                   <span className="font-semibold text-green-600">{phoneNumber}</span>
                 </p>
 
@@ -625,11 +633,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                   <motion.button
                     type="submit"
-                    disabled={otp.join('').length !== 6 || isLoading}
+                    disabled={otp.join('').length !== 4 || isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 text-sm sm:text-base ${
-                      otp.join('').length === 6 && !isLoading
+                      otp.join('').length === 4 && !isLoading
                         ? 'bg-green-600 text-white hover:bg-green-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}

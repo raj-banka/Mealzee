@@ -555,7 +555,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
                 <div className="bg-yellow-50 rounded-lg p-2 sm:p-3">
                   <p className="text-xs sm:text-sm text-yellow-700">
-                    📞 <strong>Need help?</strong> Call us at +91 9608036638 for any queries.
+                    📞 <strong>Need help?</strong> Call us at +91 9204666105 for any queries.
                   </p>
                 </div>
 

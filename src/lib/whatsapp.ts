@@ -43,7 +43,7 @@ export interface ContactData {
 }
 
 // Admin WhatsApp number for order notifications (normal WhatsApp account)
-const ADMIN_PHONE = '919608036638';
+const ADMIN_PHONE = '919204666105';
 
 /**
  * Opens WhatsApp with a pre-filled message (supports both personal and business accounts)
@@ -129,7 +129,7 @@ async function sendOrderToAdmin(orderData: OrderData, message: string) {
   // Show success message to user
   showUserSuccessMessage(orderData);
 
-  console.log('✅ Order sent to WhatsApp +91 9608036638');
+  console.log('✅ Order sent to WhatsApp +91 9204666105');
 }
 
 /**
@@ -137,7 +137,7 @@ async function sendOrderToAdmin(orderData: OrderData, message: string) {
  */
 function sendToWhatsAppDirectly(message: string, phoneNumber: string) {
   console.log('📱 Opening normal WhatsApp with order details...');
-  console.log('📱 Target number: +91 9608036638');
+  console.log('📱 Target number: +91 9204666105');
 
   // Encode the message for URL (normal WhatsApp handles this better)
   const encodedMessage = encodeURIComponent(message);

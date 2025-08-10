@@ -4,20 +4,20 @@
  */
 
 /**
- * Generate a secure 6-digit OTP
- * @returns {string} 6-digit OTP string
+ * Generate a secure 4-digit OTP
+ * @returns {string} 4-digit OTP string
  */
 export function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 /**
- * Validate OTP format (6 digits)
+ * Validate OTP format (4 digits)
  * @param {string} otp - OTP to validate
  * @returns {boolean} True if valid format
  */
 export function validateOTPFormat(otp: string): boolean {
-  return /^\d{6}$/.test(otp);
+  return /^\d{4}$/.test(otp);
 }
 
 /**
@@ -142,16 +142,15 @@ export function getRemainingCooldown(lastActionTime: number, cooldownSeconds: nu
 }
 
 /**
- * Validate environment variables for SMS service
+ * Validate environment variables for Message Central service
  * @returns {object} Validation result with missing variables
  */
-export function validateSMSConfig(): { valid: boolean; missing: string[] } {
-  const required = ['SMS_API_BASE_URL', 'SMS_API_TOKEN', 'SMS_CLIENT_ID'];
-  const missing = required.filter(key => !process.env[key]);
-  
+export function validateMessageCentralConfig(): { valid: boolean; missing: string[] } {
+  // Message Central configuration is hardcoded in the message-central.ts file
+  // This function is kept for compatibility with existing code
   return {
-    valid: missing.length === 0,
-    missing
+    valid: true,
+    missing: []
   };
 }
 
@@ -168,4 +167,18 @@ export function logOTPOperation(operation: string, phone: string, data: any = {}
     timestamp: new Date().toISOString(),
     ...data
   });
+}
+
+/**
+ * Validate environment variables for SMS service
+ * @returns {object} Validation result with missing variables
+ */
+export function validateSMSConfig(): { valid: boolean; missing: string[] } {
+  const required = ['SMS_API_BASE_URL', 'SMS_API_TOKEN', 'SMS_CLIENT_ID'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  return {
+    valid: missing.length === 0,
+    missing
+  };
 }

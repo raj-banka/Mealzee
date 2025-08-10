@@ -173,7 +173,7 @@ dish: {
 5. **Quick Processing**: Admin has all context needed
 
 ### **Dual Notification**
-- **WhatsApp**: Order sent to 9608036638 with same format
+- **WhatsApp**: Order sent to 9204666105 with same format
 - **Email**: Order sent to mealzeeindia@gmail.com with rich HTML
 
 ## ✅ **Testing Results**
