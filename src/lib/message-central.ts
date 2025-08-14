@@ -20,7 +20,7 @@ export async function sendWhatsAppOTP(phoneNumber: string, countryCode: string =
     const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
     
     // Construct the URL with query parameters
-    const url = `${BASE_URL}?countryCode=${countryCode}&customerId=${CUSTOMER_ID}&flowType=WHATSAPP&mobileNumber=${cleanPhoneNumber}`;
+    const url = `${BASE_URL}?countryCode=${countryCode}&customerId=${CUSTOMER_ID}&flowType=SMS&mobileNumber=${cleanPhoneNumber}`;
     
     console.log('📤 Sending WhatsApp OTP request to:', url);
     
