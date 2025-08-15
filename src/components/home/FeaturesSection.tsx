@@ -202,7 +202,7 @@ const FeaturesSection: React.FC = () => {
                 viewport={{ once: true }}
                 className="w-full"
               >
-                <div className="relative h-[220px] sm:h-[240px] md:h-[260px] lg:h-[240px] xl:h-[260px]" style={{ perspective: '1000px' }}>
+                <div className="relative h-[200px] sm:h-[220px] md:h-[240px] lg:h-[220px] xl:h-[240px]" style={{ perspective: '1000px' }}>
                   <div
                     role="button"
                     tabIndex={0}
