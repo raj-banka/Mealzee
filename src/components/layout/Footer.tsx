@@ -11,7 +11,7 @@ import {
   ShoppingCart,
   LogOut,
   Facebook,
-  Instagram
+  Instagram,
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -94,7 +94,7 @@ const Footer: React.FC = () => {
                     whileHover={{ scale: 1.1 }}
                     className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
                   >
-                    <span className="text-xs font-bold"><MessageCircle/></span>
+                    <span className="text-xs font-bold"><MessageCircle className="w-4 h-4" /></span>
                   </motion.a>
                 </div>
               </motion.div>
