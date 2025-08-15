@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
         position: 'fixed'
       }}
     >
-      <div className="max-w-7xl  px-4 sm:px-6 lg:px-8" style={{ pointerEvents: 'auto' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ pointerEvents: 'auto' }}>
         <div className="flex items-center justify-between h-16" style={{ pointerEvents: 'auto' }}>
           {/* Logo - Left Corner */}
           <motion.div
@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
               <img
                 src="/mealzee_logo.png"
                 alt="Mealzee Logo"
-                className="w-45 h-35 object-contain"
+                className="w-40 h-34"
               />
             {/* </div> */}
             {/* <div className="flex flex-col">
