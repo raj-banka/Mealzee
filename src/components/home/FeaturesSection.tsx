@@ -105,7 +105,7 @@ const features: Feature[] = [
   },
   {
     id: 'joining-gift',
-    title: 'Welcome Bonus',
+    title: 'Joining Gift',
     subtitle: 'New Member Perks',
     icon: (
       <div className="relative">
@@ -222,7 +222,7 @@ const FeaturesSection: React.FC = () => {
                     >
                       <div className="w-full aspect-square rounded-xl bg-white flex items-center justify-center overflow-hidden">
                         {feature.image ? (
-                          <img src={feature.image} alt={feature.title} className="max-h-[70%] max-w-[70%] object-contain" />
+                          <img src={feature.image} alt={feature.title} className="max-h-[100%] max-w-[100%] object-contain" />
                         ) : (
                           <div className="text-4xl">🍽️</div>
                         )}
@@ -237,8 +237,8 @@ const FeaturesSection: React.FC = () => {
                       className="absolute inset-0 rounded-2xl bg-white/95 border-2 border-green-800 shadow-[0_6px_0_#0f3e18] p-4 flex flex-col justify-center"
                       style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
                     >
-                      <h4 className="text-center text-base md:text-lg font-bold text-green-900 mb-2">{feature.title}</h4>
-                      <p className="text-center text-sm md:text-base text-gray-700 leading-relaxed">
+                      <h4 className="text-center text-sm md:text-base font-bold text-green-900 mb-2">{feature.title}</h4>
+                      <p className="text-center text-xs md:text-sm text-gray-700 leading-relaxed">
                         {feature.description}
                       </p>
                     </div>

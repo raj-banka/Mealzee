@@ -83,7 +83,7 @@ const reviews: Review[] = [
 
 const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 min-w-[300px] mx-3">
+    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow  min-w-[300px] mx-3">
       <div className="flex items-center mb-4">
         <div className="text-3xl mr-3">{review.avatar}</div>
         <div>
@@ -112,11 +112,29 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
 };
 
 const ReviewsMarquee: React.FC = () => {
+  // Pause state for each row
+  const [pauseFirstRow, setPauseFirstRow] = React.useState(false);
+  const [pauseSecondRow, setPauseSecondRow] = React.useState(false);
   const { startOrderFlow, dispatch, isLoggedIn } = useApp();
 
   // Split reviews into two rows for alternating direction
   const firstRowReviews = reviews.slice(0, 4);
   const secondRowReviews = reviews.slice(4, 8);
+
+  // Refs and state for dynamic scroll width
+  const firstRowRef = React.useRef<HTMLDivElement>(null);
+  const secondRowRef = React.useRef<HTMLDivElement>(null);
+  const [firstRowWidth, setFirstRowWidth] = React.useState(0);
+  const [secondRowWidth, setSecondRowWidth] = React.useState(0);
+
+  React.useEffect(() => {
+    if (firstRowRef.current) {
+      setFirstRowWidth(firstRowRef.current.scrollWidth / 2); // Only one set of reviews
+    }
+    if (secondRowRef.current) {
+      setSecondRowWidth(secondRowRef.current.scrollWidth / 2);
+    }
+  }, []);
 
   return (
     <section className="py-16 bg-gradient-to-br from-olive-50 to-olive-100 overflow-x-auto scrollbar-hide md:overflow-hidden">
@@ -137,18 +155,17 @@ const ReviewsMarquee: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* First Row - Moving Right */}
+      {/* First Row - Moving Right (first 4 reviews) */}
       <div className="relative mb-8 overflow-x-auto scrollbar-hide">
         <motion.div
-          animate={{
-            x: ['-100%', '0%']
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'linear'
-          }}
+          ref={firstRowRef}
+          animate={pauseFirstRow ? { x: -firstRowWidth } : { x: [ -firstRowWidth, 0 ] }}
+          transition={pauseFirstRow ? { duration: 0 } : { duration: 20, repeat: Infinity, ease: "linear" }}
           className="flex"
+          onMouseEnter={() => setPauseFirstRow(true)}
+          onMouseLeave={() => setPauseFirstRow(false)}
+          onTouchStart={() => setPauseFirstRow(true)}
+          onTouchEnd={() => setPauseFirstRow(false)}
         >
           {/* Duplicate the reviews for seamless loop */}
           {[...firstRowReviews, ...firstRowReviews].map((review, index) => (
@@ -157,18 +174,17 @@ const ReviewsMarquee: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Second Row - Moving Left */}
+      {/* Second Row - Moving Left (next 4 reviews) */}
       <div className="relative overflow-x-auto scrollbar-hide">
         <motion.div
-          animate={{
-            x: ['0%', '-100%']
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: 'linear'
-          }}
+          ref={secondRowRef}
+          animate={pauseSecondRow ? { x: -secondRowWidth } : { x: [0, -secondRowWidth] }}
+          transition={pauseSecondRow ? { duration: 0 } : { duration: 25, repeat: Infinity, ease: "linear" }}
           className="flex"
+          onMouseEnter={() => setPauseSecondRow(true)}
+          onMouseLeave={() => setPauseSecondRow(false)}
+          onTouchStart={() => setPauseSecondRow(true)}
+          onTouchEnd={() => setPauseSecondRow(false)}
         >
           {/* Duplicate the reviews for seamless loop */}
           {[...secondRowReviews, ...secondRowReviews].map((review, index) => (
