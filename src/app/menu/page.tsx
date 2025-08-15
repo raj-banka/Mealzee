@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Clock, Star, Download, X } from 'lucide-react';
 import Image from 'next/image';
-import { MEAL_CATEGORIES } from '@/lib/constants';
+import { MEAL_CATEGORIES, Z_INDEX } from '@/lib/constants';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import MainLayout from '@/components/layout/MainLayout';
@@ -56,7 +56,7 @@ export default function MenuPage() {
   };
 
   return (
-    <MainLayout className="bg-olive-50">
+    <MainLayout className="bg-olive-50" hideNavbar={!!selectedImage}>
       {/* Page Header */}
       <div className="bg-gradient-to-r from-olive-500 to-olive-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -252,7 +252,8 @@ export default function MenuPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            style={{ zIndex: Z_INDEX.modal }}
             onClick={() => setSelectedImage(null)}
           >
             <motion.div

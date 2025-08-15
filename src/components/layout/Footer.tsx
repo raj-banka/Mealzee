@@ -10,8 +10,7 @@ import {
   ShoppingCart,
   LogOut,
   Facebook,
-  Instagram,
-  Twitter
+  Instagram
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -53,15 +52,18 @@ const Footer: React.FC = () => {
 
                 {/* Social Media Icons */}
                 <div className="flex space-x-4 mt-8">
+                  {/* Facebook */}
                   <motion.a
-                    href={SOCIAL_LINKS.twitter}
+                    href={SOCIAL_LINKS.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
                     className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
                   >
-                    <Twitter className="w-4 h-4" />
+                    <Facebook className="w-4 h-4" />
                   </motion.a>
+
+                  {/* Instagram */}
                   <motion.a
                     href={SOCIAL_LINKS.instagram}
                     target="_blank"
@@ -71,8 +73,21 @@ const Footer: React.FC = () => {
                   >
                     <Instagram className="w-4 h-4" />
                   </motion.a>
+
+                  {/* X (formerly Twitter) */}
                   <motion.a
-                    href="https://wa.me/919204666105"
+                    href={SOCIAL_LINKS.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
+                  >
+                    <span className="text-sm font-extrabold">X</span>
+                  </motion.a>
+
+                  {/* WhatsApp */}
+                  <motion.a
+                    href={SOCIAL_LINKS.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}

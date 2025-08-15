@@ -43,7 +43,8 @@ const features: Feature[] = [
     ),
     bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-50',
     iconColor: 'text-green-600',
-    description: 'Carefully crafted meals with fresh ingredients and balanced nutrition for your healthy lifestyle'
+    description: 'Carefully crafted meals with fresh ingredients and balanced nutrition for your healthy lifestyle',
+    image: '/images/healthy_nutritious.jpg'
   },
   {
     id: 'birthday-surprise',
@@ -61,7 +62,8 @@ const features: Feature[] = [
     ),
     bgColor: 'bg-gradient-to-br from-pink-50 via-pink-100 to-rose-50',
     iconColor: 'text-pink-600',
-    description: 'Special birthday treats and personalized surprises to make your day extra memorable'
+    description: 'Special birthday treats and personalized surprises to make your day extra memorable',
+    image: '/images/birthday_surprise.jpg'
   },
   {
     id: 'gift-cards',
@@ -79,7 +81,8 @@ const features: Feature[] = [
     ),
     bgColor: 'bg-gradient-to-br from-olive-50 via-olive-100 to-olive-200',
     iconColor: 'text-yellow-600',
-    description: 'Perfect gifts for your loved ones - meal subscriptions they will absolutely love'
+    description: 'Perfect gifts for your loved ones - meal subscriptions they will absolutely love',
+    image: '/images/gift_card.jpg'
   },
   {
     id: 'festival-special',
@@ -97,7 +100,8 @@ const features: Feature[] = [
     ),
     bgColor: 'bg-gradient-to-br from-purple-50 via-purple-100 to-indigo-50',
     iconColor: 'text-purple-600',
-    description: 'Celebrate festivals with traditional and special festive meals crafted with authentic flavors'
+    description: 'Celebrate festivals with traditional and special festive meals crafted with authentic flavors',
+    image: '/images/festival_special.jpg'
   },
   {
     id: 'joining-gift',
@@ -115,21 +119,34 @@ const features: Feature[] = [
     ),
     bgColor: 'bg-gradient-to-br from-blue-50 via-blue-100 to-cyan-50',
     iconColor: 'text-blue-600',
-    description: 'Welcome bonus and special offers for new Mealzee family members to start your journey'
+    description: 'Welcome bonus and special offers for new Mealzee family members to start your journey',
+    image: '/images/joining_gift.jpg'
+  },
+  {
+    id: 'refer-earn',
+    title: 'Refer & Earn',
+    subtitle: 'Share & Save',
+    icon: (
+      <div className="relative">
+        <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <Gift className="w-10 h-10 text-white" />
+        </div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
+          <Sparkles className="w-4 h-4 text-white" />
+        </div>
+      </div>
+    ),
+    bgColor: 'bg-gradient-to-br from-amber-50 via-amber-100 to-yellow-50',
+    iconColor: 'text-amber-600',
+    description: 'Invite friends and earn exclusive rewards and discounts on your meals',
+    image: '/images/refer_earn.jpg'
   }
 ];
 
 const FeaturesSection: React.FC = () => {
   const [vegMode, setVegMode] = useState(true);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [userInteracting, setUserInteracting] = useState(false);
+  const [flipMap, setFlipMap] = useState<Record<string, boolean>>({});
 
   // Mobile detection
   useEffect(() => {
@@ -143,185 +160,7 @@ const FeaturesSection: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Check scroll position for arrow visibility and current index
-  const checkScrollPosition = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      setCanScrollLeft(container.scrollLeft > 0);
-      setCanScrollRight(
-        container.scrollLeft < container.scrollWidth - container.clientWidth - 10
-      );
-
-      // Calculate current index for mobile
-      if (isMobile) {
-        const cardWidth = 320; // Width of each card + gap
-        const newIndex = Math.round(container.scrollLeft / cardWidth);
-        setCurrentIndex(newIndex);
-      }
-    }
-  }, [isMobile]);
-
-  // Manual scroll functions
-  const scrollLeft = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      if (isMobile) {
-        // Snap to previous card
-        const cardWidth = 320;
-        const newIndex = Math.max(0, currentIndex - 1);
-        container.scrollTo({ left: newIndex * cardWidth, behavior: 'smooth' });
-        setCurrentIndex(newIndex);
-      } else {
-        container.scrollBy({ left: -320, behavior: 'smooth' });
-      }
-    }
-  };
-
-  const scrollRight = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      if (isMobile) {
-        // Snap to next card
-        const cardWidth = 320;
-        const maxIndex = features.length - 1;
-        const newIndex = Math.min(maxIndex, currentIndex + 1);
-        container.scrollTo({ left: newIndex * cardWidth, behavior: 'smooth' });
-        setCurrentIndex(newIndex);
-      } else {
-        container.scrollBy({ left: 320, behavior: 'smooth' });
-      }
-    }
-  };
-
-  // Flick to specific card (for mobile)
-  const scrollToCard = (index: number) => {
-    const container = scrollContainerRef.current;
-    if (container && isMobile) {
-      const cardWidth = 320;
-      container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
-      setCurrentIndex(index);
-    }
-  };
-
-  // Touch event handlers for mobile flick
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isMobile) {
-      setTouchStart(e.targetTouches[0].clientX);
-      setUserInteracting(true);
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (isMobile) {
-      setTouchEnd(e.targetTouches[0].clientX);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (!isMobile || !touchStart || !touchEnd) {
-      setUserInteracting(false);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe && currentIndex < features.length - 1) {
-      scrollToCard(currentIndex + 1);
-    }
-    if (isRightSwipe && currentIndex > 0) {
-      scrollToCard(currentIndex - 1);
-    }
-
-    // Reset user interaction after a delay
-    setTimeout(() => setUserInteracting(false), 1000);
-  };
-
-  // Auto-scroll functionality for desktop
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || isMobile) return; // Use separate mobile auto-flick
-
-    let animationId: number;
-    let direction = 1; // 1 for right, -1 for left
-    const scrollSpeed = 1; // pixels per frame
-    const pauseDuration = 2000; // pause for 2 seconds at each end
-
-    const autoScroll = () => {
-      if (!isHovered && container) {
-        const currentScroll = container.scrollLeft;
-        const maxScroll = container.scrollWidth - container.clientWidth;
-
-        // Check if we've reached the end (right side)
-        if (currentScroll >= maxScroll - 5 && direction === 1) {
-          // Pause, then change direction to left
-          setTimeout(() => {
-            direction = -1;
-          }, pauseDuration);
-        }
-        // Check if we've reached the beginning (left side)
-        else if (currentScroll <= 5 && direction === -1) {
-          // Pause, then change direction to right
-          setTimeout(() => {
-            direction = 1;
-          }, pauseDuration);
-        }
-        // Continue scrolling in current direction
-        else {
-          container.scrollLeft = currentScroll + (scrollSpeed * direction);
-        }
-
-        checkScrollPosition();
-      }
-
-      animationId = requestAnimationFrame(autoScroll);
-    };
-
-    // Start auto-scroll after initial delay
-    const timeoutId = setTimeout(() => {
-      animationId = requestAnimationFrame(autoScroll);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-    };
-  }, [isHovered, checkScrollPosition, isMobile]);
-
-  // Auto-flick functionality for mobile
-  useEffect(() => {
-    if (!isMobile) return;
-
-    const autoFlickInterval = setInterval(() => {
-      if (!isHovered && !userInteracting) {
-        const nextIndex = currentIndex >= features.length - 1 ? 0 : currentIndex + 1;
-        const container = scrollContainerRef.current;
-        if (container) {
-          const cardWidth = 320;
-          container.scrollTo({ left: nextIndex * cardWidth, behavior: 'smooth' });
-          setCurrentIndex(nextIndex);
-        }
-      }
-    }, 3000); // Auto-flick every 3 seconds
-
-    return () => clearInterval(autoFlickInterval);
-  }, [isMobile, currentIndex, isHovered, userInteracting]);
-
-  // Add scroll event listener
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', checkScrollPosition);
-      checkScrollPosition();
-
-      return () => {
-        container.removeEventListener('scroll', checkScrollPosition);
-      };
-    }
-  }, [checkScrollPosition]);
+  // Removed old horizontal scroll logic for new static grid layout
 
   return (
     <section className="py-20 bg-gradient-to-br from-olive-100 to-olive-50 overflow-hidden">
@@ -346,145 +185,70 @@ const FeaturesSection: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Full Width Horizontal Auto-Scrollable Features */}
-      <div className="relative w-full overflow-hidden">
-        {/* Manual Scroll Arrows - Hidden on Mobile */}
-        {!isMobile && (
-          <>
-            <motion.button
-              onClick={scrollLeft}
-              className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-                canScrollLeft ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
-              }`}
-              whileHover={{ scale: canScrollLeft ? 1.1 : 1 }}
-              whileTap={{ scale: canScrollLeft ? 0.95 : 1 }}
-              disabled={!canScrollLeft}
-            >
-              <ChevronLeft className="w-6 h-6 text-olive-600" />
-            </motion.button>
+      {/* Features Grid - mobile-first 2x3 layout like reference */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {features.map((feature, index) => {
+            const key = `${feature.id}-${index}`;
+            const isFlipped = !!flipMap[key];
+            const toggle = () => setFlipMap((m) => ({ ...m, [key]: !m[key] }));
 
-            <motion.button
-              onClick={scrollRight}
-              className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-                canScrollRight ? 'opacity-100 hover:bg-white hover:scale-110' : 'opacity-50 cursor-not-allowed'
-              }`}
-              whileHover={{ scale: canScrollRight ? 1.1 : 1 }}
-              whileTap={{ scale: canScrollRight ? 0.95 : 1 }}
-              disabled={!canScrollRight}
-            >
-              <ChevronRight className="w-6 h-6 text-olive-600" />
-            </motion.button>
-          </>
-        )}
-
-        {/* Auto-Scrollable Container - Full Width */}
-        <div
-          ref={scrollContainerRef}
-          className={`flex gap-8 overflow-x-auto overflow-y-hidden scrollbar-hide auto-scroll-container pb-4 ${
-            isMobile ? 'snap-x snap-mandatory' : ''
-          }`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          style={{
-            scrollBehavior: 'smooth',
-            overflowY: 'hidden',
-            height: 'auto',
-            maxHeight: 'none',
-            paddingLeft: '2rem',
-            paddingRight: '2rem',
-            ...(isMobile && {
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch'
-            })
-          }}
-        >
-            {/* Show only single set for mobile, duplicate for desktop */}
-            {(isMobile ? features : [...features, ...features]).map((feature, index) => (
+            return (
               <motion.div
-                key={`${feature.id}-${index}`}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{
-                  duration: 0.6,
-                  delay: (index % features.length) * 0.1
-                }}
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: (index % 6) * 0.05 }}
                 viewport={{ once: true }}
-                whileHover={{
-                  y: -8,
-                  scale: 1.02,
-                  transition: { duration: 0.3, type: "spring", stiffness: 300 }
-                }}
-                className={`flex-shrink-0 w-80 group cursor-pointer ${
-                  isMobile ? 'snap-center' : ''
-                }`}
-                onClick={() => isMobile && scrollToCard(index)}
+                className="w-full"
               >
-                <motion.div
-                  className={`${feature.bgColor} rounded-3xl p-8 h-full shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/20 relative overflow-hidden`}
-                  whileHover={{
-                    boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
-                    transition: { duration: 0.3 }
-                  }}
-                >
-                  {/* Icon Section */}
-                  <div className="flex justify-center mb-8">
-                    <motion.div
-                      whileHover={{
-                        scale: 1.1,
-                        transition: { duration: 0.3, type: "spring", stiffness: 400 }
-                      }}
-                      transition={{ type: "spring", stiffness: 300 }}
+                <div className="relative h-[220px] sm:h-[240px] md:h-[260px] lg:h-[240px] xl:h-[260px]" style={{ perspective: '1000px' }}>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={toggle}
+                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggle()}
+                    className="absolute inset-0 rounded-2xl"
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transform: `rotateY(${isFlipped ? 180 : 0}deg)`,
+                      transition: 'transform 550ms',
+                    }}
+                  >
+                    {/* Front - image + title, styled like reference */}
+                    <div
+                      className="absolute inset-0 rounded-2xl bg-white/90 backdrop-blur-[1px] border-2 border-green-800 shadow-[0_6px_0_#0f3e18] p-4 flex flex-col items-center"
+                      style={{ backfaceVisibility: 'hidden' }}
                     >
-                      {feature.icon}
-                    </motion.div>
-                  </div>
+                      <div className="w-full aspect-square rounded-xl bg-white flex items-center justify-center overflow-hidden">
+                        {feature.image ? (
+                          <img src={feature.image} alt={feature.title} className="max-h-[70%] max-w-[70%] object-contain" />
+                        ) : (
+                          <div className="text-4xl">🍽️</div>
+                        )}
+                      </div>
+                      <div className="mt-3">
+                        <p className="text-center text-[15px] md:text-base font-semibold text-green-900">{feature.title}</p>
+                      </div>
+                    </div>
 
-                  {/* Content Section */}
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold text-gray-900 mb-2">
-                      {feature.title}
-                    </h4>
-                    <p className="text-lg font-medium text-gray-600 mb-4">
-                      {feature.subtitle}
-                    </p>
-                    <p className="text-gray-700 leading-relaxed">
-                      {feature.description}
-                    </p>
+                    {/* Back - only text (no image) */}
+                    <div
+                      className="absolute inset-0 rounded-2xl bg-white/95 border-2 border-green-800 shadow-[0_6px_0_#0f3e18] p-4 flex flex-col justify-center"
+                      style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
+                    >
+                      <h4 className="text-center text-base md:text-lg font-bold text-green-900 mb-2">{feature.title}</h4>
+                      <p className="text-center text-sm md:text-base text-gray-700 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Hover Effect Indicator */}
-                  <div className="mt-6 flex justify-center">
-                    <div className="w-12 h-1 bg-gradient-to-r from-olive-400 to-olive-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                </motion.div>
+                </div>
               </motion.div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
-        {/* Mobile Indicators */}
-        {isMobile && (
-          <div className="flex justify-center mt-6 space-x-2">
-            {features.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  scrollToCard(index);
-                  setUserInteracting(true);
-                  setTimeout(() => setUserInteracting(false), 2000); // Pause auto-flick for 2 seconds
-                }}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? 'bg-olive-500 w-6'
-                    : 'bg-olive-200 hover:bg-olive-300'
-                }`}
-              />
-            ))}
-          </div>
-        )}
+      </div>
 
       {/* Bottom Call to Action */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">

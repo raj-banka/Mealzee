@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Utensils, CheckCircle, Star } from 'lucide-react';
 import { useApp, MealPlan } from '@/contexts/AppContext';
+import { Z_INDEX } from '@/lib/constants';
 
 interface MealPlanSelectionModalProps {
   isOpen: boolean;
@@ -82,15 +83,17 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 grid place-items-center p-4 bg-black/70 backdrop-blur-md"
+          style={{ zIndex: Z_INDEX.modalBackdrop }}
           onClick={handleClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="bg-gradient-to-br from-olive-50 to-white rounded-3xl p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+            initial={{ scale: 0.95, opacity: 0, y: 12 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 12 }}
+            transition={{ type: "spring", duration: 0.4 }}
+            className="bg-gradient-to-br from-olive-50 to-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-[95vw] md:max-w-4xl w-full shadow-xl ring-1 ring-black/5 max-h-[85vh] overflow-y-auto scrollbar-hide"
+            style={{ zIndex: Z_INDEX.modal }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -99,14 +102,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
                   Choose Your Meal Plan
                 </h2>
-                {state.selectedMealPlan ? (
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="w-2 h-2 bg-olive-500 rounded-full"></div>
-                    <p className="text-olive-600 font-medium">
-                      Currently selected: {state.selectedMealPlan.title}
-                    </p>
-                  </div>
-                ) : null}
+
                 <p className="text-gray-600">
                   {state.selectedMealPlan 
                     ? 'Click any plan below to change your selection'
@@ -144,13 +140,13 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                       <img
                         src="/pic.png"
                         alt="Delicious Meal"
-                        className="w-24 h-24"
+                        className="w-24 h-24 rounded-full object-cover"
                       />
                       {state.selectedMealPlan?.id === plan.id && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center"
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-olive-500 rounded-full flex items-center justify-center aspect-square"
                         >
                           <CheckCircle className="w-4 h-4 text-white fill-current" />
                         </motion.div>
@@ -198,7 +194,7 @@ const MealPlanSelectionModal: React.FC<MealPlanSelectionModalProps> = ({ isOpen,
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`w-full mt-4 py-3 rounded-2xl font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
+                    className={`w-full mt-4 py-3 rounded-full font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
                       state.selectedMealPlan?.id === plan.id
                         ? 'bg-olive-700 text-white shadow-lg'
                         : 'bg-olive-600 text-white hover:bg-olive-700'

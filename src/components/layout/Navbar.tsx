@@ -38,9 +38,9 @@ const Navbar: React.FC = () => {
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      initial={false}
+      animate={false}
+      transition={undefined as any}
       className={`fixed top-0 left-0 right-0 w-full shadow-lg border-b border-green-700/30 transition-all duration-300 ${
         isScrolled ? 'backdrop-blur-md bg-[#00430D]/95' : 'bg-[#00430D]'
       }`}
@@ -151,27 +151,7 @@ const Navbar: React.FC = () => {
               </div>
             )}
 
-            <div className="relative z-10" style={{ pointerEvents: 'auto' }}>
-              <Button
-                variant="primary"
-                size="sm"
-                className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 shadow-lg cursor-pointer"
-                onClick={() => {
-                  // If on home page, scroll to meal plans section
-                  if (pathname === '/') {
-                    const mealPlansSection = document.getElementById('meal-plans');
-                    if (mealPlansSection) {
-                      mealPlansSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  } else {
-                    // Navigate to home page and then scroll to meal plans
-                    router.push('/#meal-plans');
-                  }
-                }}
-              >
-                Order Now
-              </Button>
-            </div>
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -273,28 +253,7 @@ const Navbar: React.FC = () => {
                   </div>
                 )}
 
-                <div style={{ pointerEvents: 'auto' }}>
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 cursor-pointer"
-                    onClick={() => {
-                      setIsOpen(false);
-                      // If on home page, scroll to meal plans section
-                      if (pathname === '/') {
-                        const mealPlansSection = document.getElementById('meal-plans');
-                        if (mealPlansSection) {
-                          mealPlansSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      } else {
-                        // Navigate to home page and then scroll to meal plans
-                        router.push('/#meal-plans');
-                      }
-                    }}
-                  >
-                    Order Now
-                  </Button>
-                </div>
+
               </div>
             </motion.div>
           )}

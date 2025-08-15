@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useApp, MenuItem } from '@/contexts/AppContext';
 import { getCurrentLocation, reverseGeocode } from '@/lib/location';
+import { Z_INDEX } from '@/lib/constants';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -285,15 +286,16 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+          className="fixed inset-0 grid place-items-center p-4 bg-black/60 backdrop-blur-sm"
+          style={{ zIndex: Z_INDEX.modalBackdrop }}
           onClick={handleClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-sm sm:max-w-md w-full shadow-2xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto scrollbar-hide"
+            initial={{ scale: 0.95, opacity: 0, y: 12 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 12 }}
+            transition={{ type: "spring", duration: 0.4 }}
+            className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-sm sm:max-w-md w-full shadow-xl ring-1 ring-black/5 max-h-[75vh] sm:max-h-[70vh] overflow-y-auto mx-auto scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

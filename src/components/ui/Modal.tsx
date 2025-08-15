@@ -57,16 +57,16 @@ const Modal: React.FC<ModalProps> = ({
 
           {/* Modal */}
           <div
-            className="fixed inset-0 flex items-center justify-center p-4"
+            className="fixed inset-0 grid place-items-center p-4"
             style={{ zIndex: Z_INDEX.modal }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ type: 'spring', duration: 0.3 }}
               className={cn(
-                'bg-white rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden',
+                'bg-white rounded-2xl sm:rounded-3xl shadow-xl ring-1 ring-black/5 w-full max-h-[80vh] overflow-hidden',
                 sizeClasses[size]
               )}
               onClick={(e) => e.stopPropagation()}

@@ -71,7 +71,7 @@ export const SERVICE_AREA = {
 
 // Social Media Links
 export const SOCIAL_LINKS = {
-  facebook: 'https://facebook.com/mealzee',
+  facebook: 'https://www.facebook.com/share/1ChfCcF4PW/',
   instagram: 'https://www.instagram.com/mealzeeindia/',
   twitter: 'https://x.com/Mealzeeindia?t=zITsF0h84cXd6ph8GDw2Bg&s=08',
   whatsapp: `https://wa.me/${APP_CONFIG.whatsappNumber}`,
@@ -388,8 +388,8 @@ export const Z_INDEX = {
   dropdown: 1000,
   sticky: 1020,
   fixed: 1030,
-  modalBackdrop: 1040,
-  modal: 1050,
+  modalBackdrop: 10000,
+  modal: 10010,
   popover: 1060,
   tooltip: 1070,
   toast: 1080,

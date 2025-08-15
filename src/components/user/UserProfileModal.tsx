@@ -32,7 +32,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 grid place-items-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
           style={{
             position: 'fixed',
             top: 0,
@@ -48,12 +48,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md max-h-[85vh] sm:max-h-[80vh] overflow-hidden mx-auto flex flex-col"
+            className="bg-white rounded-2xl sm:rounded-3xl shadow-xl ring-1 ring-black/5 w-full max-w-sm sm:max-w-md max-h-[75vh] sm:max-h-[70vh] overflow-hidden mx-auto flex flex-col"
             style={{ position: 'relative' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Fixed */}
-            <div className="bg-gradient-to-r from-olive-500 to-olive-600 p-6 text-white relative flex-shrink-0">
+            <div className="bg-gradient-to-r from-olive-500 to-olive-600 p-5 text-white relative flex-shrink-0">
               <button
                 onClick={onClose}
                 className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
@@ -73,7 +73,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
             </div>
 
             {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 scrollbar-hide" style={{ maxHeight: 'calc(95vh - 120px)' }}>
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5 scrollbar-hide" style={{ maxHeight: 'calc(70vh - 96px)' }}>
               {/* User Information */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">

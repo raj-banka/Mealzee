@@ -11,18 +11,20 @@ interface MainLayoutProps {
   showFooter?: boolean;
   showOrderFlow?: boolean;
   className?: string;
+  hideNavbar?: boolean;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ 
   children, 
   showFooter = true, 
   showOrderFlow = true,
-  className = ''
+  className = '',
+  hideNavbar = false,
 }) => {
   return (
     <div className={`min-h-screen ${className}`}>
       {/* Fixed Navbar */}
-      <Navbar />
+      {!hideNavbar && <Navbar />}
       
       {/* Order Flow Indicator */}
       {showOrderFlow && <OrderFlowIndicator />}

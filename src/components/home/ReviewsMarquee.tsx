@@ -29,11 +29,11 @@ const reviews: Review[] = [
     rating: 5,
     comment: 'Mealzee has made my life so much easier. Healthy and delicious meals every day!',
     location: 'Sector 4/B',
-    avatar: '�‍💻'
+    avatar: '👩‍🔬'
   },
   {
     id: '3',
-    name: 'Anjali Patel',
+    name: 'nagma praveen',
     rating: 4,
     comment: 'Love the variety and the birthday surprise was such a sweet gesture!',
     location: 'Sector 4/C',
@@ -45,7 +45,7 @@ const reviews: Review[] = [
     rating: 5,
     comment: 'Best tiffin service in the city. Fresh food delivered on time, every time.',
     location: 'Sector 4/D',
-    avatar: '�‍🏭'
+    avatar: '👩‍🔬'
   },
   {
     id: '5',
@@ -57,11 +57,11 @@ const reviews: Review[] = [
   },
   {
     id: '6',
-    name: 'Asha Mehta',
+    name: 'Jasmine',
     rating: 4,
     comment: 'Great value for money and the food tastes just like home-cooked meals.',
     location: 'Sector 4/F',
-    avatar: '�‍🎨'
+    avatar: '👩‍🔬'
   },
   {
     id: '7',
@@ -77,7 +77,7 @@ const reviews: Review[] = [
     rating: 5,
     comment: 'Switched to Mealzee 6 months ago and never looked back. Excellent service!',
     location: 'Sector 4/B',
-    avatar: '�‍🚀'
+    avatar: '👩‍🔬'
   }
 ];
 
@@ -119,8 +119,8 @@ const ReviewsMarquee: React.FC = () => {
   const secondRowReviews = reviews.slice(4, 8);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-olive-50 to-olive-100 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="py-16 bg-gradient-to-br from-olive-50 to-olive-100 overflow-x-auto scrollbar-hide md:overflow-hidden">
+      <div className="w-full min-w-[360px] md:min-w-0 px-4 sm:px-6 lg:px-8 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -138,7 +138,7 @@ const ReviewsMarquee: React.FC = () => {
       </div>
 
       {/* First Row - Moving Right */}
-      <div className="relative mb-8">
+      <div className="relative mb-8 overflow-x-auto scrollbar-hide">
         <motion.div
           animate={{
             x: ['-100%', '0%']
@@ -158,7 +158,7 @@ const ReviewsMarquee: React.FC = () => {
       </div>
 
       {/* Second Row - Moving Left */}
-      <div className="relative">
+      <div className="relative overflow-x-auto scrollbar-hide">
         <motion.div
           animate={{
             x: ['0%', '-100%']
