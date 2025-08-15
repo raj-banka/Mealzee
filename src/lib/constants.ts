@@ -6,7 +6,7 @@ export const APP_CONFIG = {
   version: '1.0.0',
   supportEmail: 'mealzeeindia@gmail.com',
   supportPhone: '+91 9204 666 105',
-  whatsappNumber: '9204666105',
+  whatsappNumber: '919204666105',
   domain: 'Mealzee.in',
   serviceLocation: 'Sector 4, Bokaro Steel City, Jharkhand',
   maxDeliveryRadius: 15, // km

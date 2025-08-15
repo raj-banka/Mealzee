@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { MessageCircle } from 'lucide-react';
 import {
   Mail,
   Phone,
@@ -93,7 +94,7 @@ const Footer: React.FC = () => {
                     whileHover={{ scale: 1.1 }}
                     className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white hover:bg-gray-700 transition-colors"
                   >
-                    <span className="text-xs font-bold">W</span>
+                    <span className="text-xs font-bold"><MessageCircle/></span>
                   </motion.a>
                 </div>
               </motion.div>
