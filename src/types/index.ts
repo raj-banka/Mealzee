@@ -26,6 +26,24 @@ export interface Address {
   isDefault: boolean;
 }
 
+// Simplified address structure for Nominatim API
+export interface NominatimAddress {
+  display_name: string;
+  lat: string;
+  lon: string;
+  address: {
+    house_number?: string;
+    road?: string;
+    suburb?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+  };
+}
+
 // Tiffin Service Types
 export interface TiffinService {
   id: string;

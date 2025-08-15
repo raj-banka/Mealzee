@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
-import LocationInput from '@/components/location/LocationInput';
-import { LocationData, validateServiceArea, getCurrentLocation, reverseGeocode } from '@/lib/location';
+import AddressAutocomplete from '@/components/location/AddressAutocomplete';
 import { isValidReferralCode } from '@/utils/referral';
 import {
   sendWhatsAppOTP,
@@ -20,7 +19,7 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-type AuthStep = 'input' | 'location-check' | 'otp' | 'details' | 'success';
+type AuthStep = 'input' | 'otp' | 'details' | 'success';
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { login, dispatch, state } = useApp();
@@ -31,13 +30,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [userDetails, setUserDetails] = useState({
     fullName: '',
     address: '',
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined,
     dietaryPreference: 'vegetarian' as 'vegetarian' | 'non-vegetarian',
     dateOfBirth: ''
   });
   const [hasReferralCode, setHasReferralCode] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [referralName, setReferralName] = useState('');
-  const [locationData, setLocationData] = useState<LocationData | null>(null);
+  const [addressValidation, setAddressValidation] = useState({ isValid: false, message: '' });
   const [otp, setOtp] = useState(['', '', '', '']); // 4-digit WhatsApp OTP
   const [otpError, setOtpError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -87,45 +88,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }, 1000);
   };
 
-  const handleLocationCheck = useCallback(async () => {
-    try {
-      console.log('🔍 Checking location serviceability...');
-      const coordinates = await getCurrentLocation();
-      const locationData = await reverseGeocode(coordinates);
 
-      // Store location data for later use
-      setLocationData(locationData);
-
-      // Strict location validation - redirect if not serviceable
-      if (!locationData.isServiceable) {
-        console.log('❌ Location not serviceable, redirecting to not-available page');
-        dispatch({ type: 'CLOSE_AUTH_MODAL' });
-        router.push('/not-available');
-        resetModal();
-        return;
-      }
-
-      console.log('✅ Location is serviceable, proceeding to user details');
-      // Pre-fill address if location is serviceable
-      const addressString = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
-      setUserDetails(prev => ({ ...prev, address: addressString }));
-
-      // Go to details step after location verification
-      setAuthStep('details');
-    } catch (error) {
-      console.error('Location check failed:', error);
-      // If location check fails, still proceed to details step
-      // User can manually enter address and we'll validate it there
-      setAuthStep('details');
-    }
-  }, [dispatch, router, setLocationData, setUserDetails]);
-
-  // Handle location checking after OTP verification
-  useEffect(() => {
-    if (authStep === 'location-check') {
-      handleLocationCheck();
-    }
-  }, [authStep, handleLocationCheck]);
 
   // Phone number validation
   const validatePhoneNumber = (phone: string): boolean => {
@@ -198,32 +161,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
-    // Strict address validation
-    // If location data is available from OTP step, use it
-    // Otherwise validate the manually entered address
-    let isAddressServiceable = false;
-    if (locationData) {
-      // Location was already checked during OTP verification
-      isAddressServiceable = locationData.isServiceable;
-      console.log('📍 Using location data from OTP step, serviceable:', isAddressServiceable);
-    } else {
-      // Validate manually entered address
-      try {
-        const validation = await validateServiceArea(userDetails.address);
-        isAddressServiceable = validation.isValid;
-        console.log('📍 Address validation result:', validation.isValid, validation.message);
-
-        if (!validation.isValid) {
-          alert(validation.message);
-          setIsLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.error('Address validation error:', error);
-        isAddressServiceable = false;
-        isAddressServiceable = true;
-        console.log('🧪 TESTING MODE: Address validation failed but allowing for testing');
-      }
+    // Check if address was validated during input
+    if (!addressValidation.isValid) {
+      alert('Please enter a valid address in our service area.');
+      setIsLoading(false);
+      return;
     }
 
     // Login the user with collected data
@@ -231,6 +173,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       fullName: userDetails.fullName,
       phone: phoneNumber,
       address: userDetails.address,
+      latitude: userDetails.latitude,
+      longitude: userDetails.longitude,
       dietaryPreference: userDetails.dietaryPreference,
       dateOfBirth: userDetails.dateOfBirth,
       referralCode: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralCode : undefined,
@@ -240,18 +184,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(false);
     setAuthStep('success');
 
-    // Close auth modal and check location serviceability
+    // Close auth modal and continue with order flow
     setTimeout(() => {
       dispatch({ type: 'CLOSE_AUTH_MODAL' });
-
-      // Strict location serviceability check
-      if (!isAddressServiceable) {
-        console.log('❌ Address not serviceable, redirecting to not-available page');
-        // Redirect to not-available page if location is not serviceable
-        router.push('/not-available');
-        resetModal();
-        return;
-      }
 
       // Continue with the order flow based on current state
       if (state.orderFlow === 'auth') {
@@ -390,8 +325,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       const success = await verifyWhatsAppOTP(otpValue, phoneNumber);
       
       if (success) {
-        // Now check location after OTP verification
-        setAuthStep('location-check');
+        // Go directly to details step after OTP verification
+        setAuthStep('details');
       } else {
         setOtpError('Invalid OTP code. Please try again.');
         // Reset OTP inputs (4-digit)
@@ -450,7 +385,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setAuthStep('input');
     setPhoneNumber('');
     setPhoneError('');
-    setUserDetails({ fullName: '', address: '', dietaryPreference: 'vegetarian', dateOfBirth: '' });
+    setUserDetails({
+      fullName: '',
+      address: '',
+      latitude: undefined,
+      longitude: undefined,
+      dietaryPreference: 'vegetarian',
+      dateOfBirth: ''
+    });
     setHasReferralCode(false);
     setReferralCode('');
     setReferralName('');
@@ -496,7 +438,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                 {authStep === 'input' && 'Welcome to Mealzee'}
-                {authStep === 'location-check' && 'Checking Service Area'}
+
                 {authStep === 'otp' && 'Verify OTP'}
                 {authStep === 'details' && 'Complete Your Profile'}
                 {authStep === 'success' && 'Welcome!'}
@@ -685,35 +627,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </motion.div>
             )}
 
-            {/* Step 3: Location Check */}
-            {authStep === 'location-check' && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="text-center"
-              >
-                <div className="mb-6">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"
-                  />
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    Checking Service Area
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    Verifying if we deliver to your location...
-                    <br />
-                    <span className="text-xs text-gray-500 mt-1 block">
-                      We currently serve Sector 3, 4, and 5 in Bokaro Steel City
-                    </span>
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 4: User Details */}
+            {/* Step 3: User Details */}
             {authStep === 'details' && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -791,18 +705,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       <label className="block text-sm font-medium text-gray-700">
                         Delivery Address
                       </label>
-                      <LocationInput
+                      <AddressAutocomplete
                         value={userDetails.address}
-                        onChange={(address, locData) => {
-                          setUserDetails(prev => ({ ...prev, address }));
-                          if (locData) {
-                            setLocationData(locData);
-                          }
+                        onChange={(address, lat, lon) => {
+                          setUserDetails(prev => ({
+                            ...prev,
+                            address,
+                            latitude: lat,
+                            longitude: lon
+                          }));
                         }}
                         placeholder="Enter your complete delivery address"
                         className="border-2 border-gray-200 focus:border-green-500"
-                        showCurrentLocationButton={true}
-                        validateOnChange={true}
+                        showValidation={true}
+                        onValidationChange={(isValid, message) => {
+                          setAddressValidation({ isValid, message });
+                        }}
                       />
                     </div>
 

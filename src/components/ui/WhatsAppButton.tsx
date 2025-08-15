@@ -17,7 +17,12 @@ const WhatsAppButton: React.FC = () => {
         aria-label="Open BMI Calculator"
         className="w-14 h-14 bg-olive-500 hover:bg-olive-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors cursor-pointer"
       >
-        <MessageCircle className="w-6 h-6" />
+        {/* <MessageCircle className="w-6 h-6" /> */}
+         <img
+                    src="/images/plus_icon.png"
+                    alt="+"
+                    className="h-8 w-8"
+                  />
       </motion.button>
 
       {/* Pulse animation */}

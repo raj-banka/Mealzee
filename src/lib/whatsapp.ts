@@ -13,6 +13,9 @@ export interface OrderData {
   phone: string;
   email: string;
   address: string;
+  latitude?: number;
+  longitude?: number;
+  isTemporaryAddress?: boolean;
   planTitle: string;
   planDuration: string;
   planPrice: string;

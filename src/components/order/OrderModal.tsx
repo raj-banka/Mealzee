@@ -11,7 +11,7 @@ import {
   Utensils
 } from 'lucide-react';
 import { useApp, MenuItem } from '@/contexts/AppContext';
-import { getCurrentLocation, reverseGeocode } from '@/lib/location';
+import AddressAutocomplete from '@/components/location/AddressAutocomplete';
 import { Z_INDEX } from '@/lib/constants';
 
 interface OrderModalProps {
@@ -34,6 +34,9 @@ interface OrderDetails {
   phone: string;
   // email removed
   address: string;
+  latitude?: number;
+  longitude?: number;
+  isTemporaryAddress: boolean;
   preferences: string;
   startDate: string;
 }
@@ -46,11 +49,14 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     phone: state.user?.phone || '',
     // email removed
     address: state.user?.address || '',
+    latitude: state.user?.latitude,
+    longitude: state.user?.longitude,
+    isTemporaryAddress: false,
     preferences: '',
     startDate: ''
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [detectedLocation, setDetectedLocation] = useState<string>('');
+  const [addressValidation, setAddressValidation] = useState({ isValid: true, message: '' });
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -63,6 +69,9 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
         phone: state.user.phone,
         // email removed
         address: state.user.address,
+        latitude: state.user.latitude,
+        longitude: state.user.longitude,
+        isTemporaryAddress: false,
         preferences: '',
         startDate: tomorrow.toISOString().split('T')[0]
       });
@@ -83,58 +92,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     }));
   };
 
-  const getCurrentLocationHandler = async () => {
-    setIsLoading(true);
 
-    try {
-      // Get current coordinates using browser geolocation
-      const coordinates = await getCurrentLocation();
-
-      // Reverse geocode to get detailed address information
-      const locationData = await reverseGeocode(coordinates);
-
-      // Check if location is serviceable
-      if (!locationData.isServiceable) {
-        alert(`Sorry, we don't deliver to this area yet. We currently serve Bokaro Steel City, Jharkhand and surrounding areas within 15km radius.`);
-        setIsLoading(false);
-        return;
-      }
-
-      // Set the detected address
-      const formattedAddress = `${locationData.sector ? locationData.sector + ', ' : ''}${locationData.city}, ${locationData.state}${locationData.pincode ? ' - ' + locationData.pincode : ''}`;
-
-      setDetectedLocation(formattedAddress);
-      setOrderDetails(prev => ({
-        ...prev,
-        address: formattedAddress
-      }));
-
-      console.log('📍 Location detected for order:', locationData);
-    } catch (error) {
-      console.error('Error getting location:', error);
-
-      if (error instanceof GeolocationPositionError) {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            alert('Location access denied. Please enable location services and enter your address manually.');
-            break;
-          case error.POSITION_UNAVAILABLE:
-            alert('Location information is unavailable. Please enter your address manually.');
-            break;
-          case error.TIMEOUT:
-            alert('Location request timed out. Please enter your address manually.');
-            break;
-          default:
-            alert('Unable to get your location. Please enter your address manually.');
-            break;
-        }
-      } else {
-        alert('Unable to get your location. Please enter your address manually.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleUpdatePreferences = (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +103,12 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
   const [orderData, setOrderData] = useState<any>(null);
 
   const handleConfirmOrder = async () => {
+    // Validate address before proceeding
+    if (!addressValidation.isValid) {
+      alert('Please enter a valid delivery address in our service area.');
+      return;
+    }
+
     setIsLoading(true);
 
     // Generate order ID
@@ -163,6 +127,9 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       phone: orderDetails.phone,
       // email removed
       address: orderDetails.address,
+      latitude: orderDetails.latitude,
+      longitude: orderDetails.longitude,
+      isTemporaryAddress: orderDetails.isTemporaryAddress,
       planTitle: orderType === 'meal-plan' ? (selectedPlan?.title || '') : (selectedDish?.name || ''),
       planDuration: orderType === 'meal-plan' ? (selectedPlan?.duration || '') : 'Single Dish Order',
       planPrice: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice?.toString() || '') : ((selectedDish?.price || 0) * quantity).toString(),
@@ -206,6 +173,9 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
             customerPhone: orderPayload.phone, // Map phone to customerPhone for email service
             // customerEmail removed
             address: orderPayload.address,
+            latitude: orderPayload.latitude,
+            longitude: orderPayload.longitude,
+            isTemporaryAddress: orderPayload.isTemporaryAddress,
             orderType: orderPayload.orderType,
             startDate: orderPayload.startDate,
             preferences: orderPayload.preferences,
@@ -261,13 +231,13 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       customerName: state.user?.fullName || '',
       phone: state.user?.phone || '',
       // email removed
-      // email removed
-            // customerEmail removed
       address: state.user?.address || '',
+      latitude: state.user?.latitude,
+      longitude: state.user?.longitude,
+      isTemporaryAddress: false,
       preferences: '',
       startDate: ''
     });
-    setDetectedLocation('');
     setIsLoading(false);
     setQuantity(1);
   };
@@ -397,11 +367,37 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                       <Phone className="w-3 h-3 text-gray-600 flex-shrink-0" />
                       <span className="truncate">{orderDetails.phone}</span>
                     </div>
-                    <div className="flex items-start space-x-2">
-                      <MapPin className="w-3 h-3 text-gray-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs leading-tight">{orderDetails.address}</span>
-                    </div>
                   </div>
+                </div>
+
+                {/* Delivery Address */}
+                <div className="space-y-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">
+                    Delivery Address *
+                  </label>
+                  <AddressAutocomplete
+                    value={orderDetails.address}
+                    onChange={(address, lat, lon) => {
+                      setOrderDetails(prev => ({
+                        ...prev,
+                        address,
+                        latitude: lat,
+                        longitude: lon,
+                        isTemporaryAddress: address !== state.user?.address
+                      }));
+                    }}
+                    placeholder="Enter delivery address for this order"
+                    className="text-xs sm:text-sm"
+                    showValidation={true}
+                    onValidationChange={(isValid, message) => {
+                      setAddressValidation({ isValid, message });
+                    }}
+                  />
+                  {orderDetails.isTemporaryAddress && (
+                    <p className="text-xs text-blue-600">
+                      📍 Using different address for this order (won't update your profile)
+                    </p>
+                  )}
                 </div>
 
                 {/* Order Preferences */}

@@ -6,6 +6,9 @@ export interface OrderData {
   customerPhone: string;
   customerEmail?: string;
   address: string;
+  latitude?: number;
+  longitude?: number;
+  isTemporaryAddress?: boolean; // Flag to indicate if this is different from profile address
   mealPlan?: {
     title: string;
     duration: string;

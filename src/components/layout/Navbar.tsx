@@ -59,9 +59,9 @@ const Navbar: React.FC = () => {
           >
             {/* <div className="w-14 h-14 rounded-xl overflow-hidden shadow-lg bg-white p-1"> */}
               <img
-                src="/logo_resized_for_web-removebg-preview.png"
+                src="/mealzee_logo.png"
                 alt="Mealzee Logo"
-                className="w-30 h-18 object-contain"
+                className="w-35 h-25 object-contain"
               />
             {/* </div> */}
             {/* <div className="flex flex-col">

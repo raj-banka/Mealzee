@@ -44,7 +44,7 @@ const features: Feature[] = [
     bgColor: 'bg-gradient-to-br from-green-50 via-green-100 to-emerald-50',
     iconColor: 'text-green-600',
     description: 'Carefully crafted meals with fresh ingredients and balanced nutrition for your healthy lifestyle',
-    image: '/images/healthy_nutritious.jpg'
+    image: '/images/healthy_nutritious.png'
   },
   {
     id: 'birthday-surprise',
@@ -139,7 +139,7 @@ const features: Feature[] = [
     bgColor: 'bg-gradient-to-br from-amber-50 via-amber-100 to-yellow-50',
     iconColor: 'text-amber-600',
     description: 'Invite friends and earn exclusive rewards and discounts on your meals',
-    image: '/images/refer_earn.jpg'
+    image: '/images/refer_earn.png'
   }
 ];
 

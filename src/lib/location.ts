@@ -1,5 +1,3 @@
-'use client';
-
 import { SERVICE_AREA, APP_CONFIG } from './constants';
 
 export interface LocationCoordinates {
@@ -215,31 +213,10 @@ export function findNearestServiceSector(coordinates: LocationCoordinates): {
 
 /**
  * Get current location using browser geolocation API
+ * @deprecated This function is deprecated. Use address-based location instead.
  */
 export async function getCurrentLocation(): Promise<LocationCoordinates> {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by this browser'));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      },
-      (error) => {
-        reject(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000 // 5 minutes
-      }
-    );
-  });
+  throw new Error('GPS location is no longer supported. Please use address-based location.');
 }
 
 /**
@@ -432,22 +409,31 @@ export async function validateServiceArea(address: string): Promise<{ isValid: b
                        addressLower.includes('bsc') ||
                        addressLower.includes('bokaro steel city');
 
-      if (isAllowedSector && isBokaro) {
+      // Also check for correct pin codes
+      const hasCorrectPincode = /8270[345]/i.test(address);
+
+      if (isAllowedSector && (isBokaro || hasCorrectPincode)) {
         return {
           isValid: true,
-          message: 'Address appears to be in our service area. Location will be verified during delivery.',
+          message: '✅ Address appears to be in our service area (Sectors 3, 4, or 5 in Bokaro Steel City). Location will be verified during delivery.',
           suggestions: []
         };
-      } else if (isAllowedSector && !isBokaro) {
+      } else if (isAllowedSector && !isBokaro && !hasCorrectPincode) {
         return {
           isValid: false,
-          message: 'Please specify the complete address including Bokaro Steel City, Jharkhand.',
+          message: '❌ Please specify the complete address including Bokaro Steel City, Jharkhand and pin code (827003, 827004, or 827005).',
+          suggestions: []
+        };
+      } else if (isBokaro || hasCorrectPincode) {
+        return {
+          isValid: false,
+          message: '❌ We only deliver to Sectors 3, 4, and 5 in Bokaro Steel City. Please specify the correct sector.',
           suggestions: []
         };
       } else {
         return {
           isValid: false,
-          message: 'Sorry, we currently only deliver to areas within 2.5km radius of Sector 3, 4, and 5 in Bokaro Steel City.',
+          message: '❌ We only deliver to Sectors 3, 4, and 5 in Bokaro Steel City, Jharkhand (Pin codes: 827003, 827004, 827005).',
           suggestions: []
         };
       }
@@ -460,18 +446,26 @@ export async function validateServiceArea(address: string): Promise<{ isValid: b
     if (serviceInfo.isServiceable) {
       return {
         isValid: true,
-        message: `Great! We deliver to your area. You're ${serviceInfo.distanceToNearestService}km from ${serviceInfo.nearestServiceSector}.`,
+        message: `✅ Perfect! We deliver to your area. You're ${serviceInfo.distanceToNearestService}km from ${serviceInfo.nearestServiceSector}.`,
         suggestions: geocodeResults.filter(result => result.isServiceable)
       };
     } else {
       // Find the closest service sector for better messaging
-      const closestSector = serviceInfo.allDistances.reduce((closest, current) => 
+      const closestSector = serviceInfo.allDistances.reduce((closest, current) =>
         current.distance < closest.distance ? current : closest
       );
-      
+
+      let message = `❌ Sorry, this location is ${closestSector.distance}km from ${closestSector.sector}. `;
+
+      if (closestSector.distance <= 5) {
+        message += `We deliver within 2.5km radius of Sectors 3, 4, and 5 in Bokaro Steel City, Jharkhand (Pin codes: 827003, 827004, 827005). Please check if you have the correct sector address.`;
+      } else {
+        message += `We only deliver to Sectors 3, 4, and 5 in Bokaro Steel City, Jharkhand (Pin codes: 827003, 827004, 827005).`;
+      }
+
       return {
         isValid: false,
-        message: `Sorry, this location is ${closestSector.distance}km from ${closestSector.sector}. We deliver within 2.5km radius of Sectors 3, 4, and 5 in Bokaro Steel City.`,
+        message,
         suggestions: geocodeResults.filter(result => result.isServiceable)
       };
     }

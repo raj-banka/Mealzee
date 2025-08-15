@@ -13,7 +13,7 @@ import {
   ChevronDown 
 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
-import { useLocation } from '@/hooks/useLocation';
+import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
@@ -21,9 +21,10 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const { getItemCount } = useCart();
-  const { currentLocation } = useLocation();
+  const { state } = useApp();
 
   const cartItemCount = getItemCount();
+  const userAddress = state.user?.address;
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -65,7 +66,7 @@ const Header: React.FC = () => {
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">Deliver to</p>
                 <p className="text-xs text-gray-500 truncate max-w-32">
-                  {currentLocation?.address || 'Choose location'}
+                  {userAddress || 'Choose location'}
                 </p>
               </div>
               <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -161,7 +162,7 @@ const Header: React.FC = () => {
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">Deliver to</p>
                 <p className="text-xs text-gray-500">
-                  {currentLocation?.address || 'Choose location'}
+                  {userAddress || 'Choose location'}
                 </p>
               </div>
             </button>

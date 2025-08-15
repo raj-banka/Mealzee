@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Calendar, MapPin, Phone, Cake } from 'lucide-react';
+import { X, User, Calendar, MapPin, Phone, Cake, Edit2, Save } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
+import AddressAutocomplete from '@/components/location/AddressAutocomplete';
 import { Z_INDEX } from '@/lib/constants';
 
 
@@ -15,11 +16,53 @@ interface UserProfileModalProps {
 }
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
-  const { state, logout } = useApp();
+  const { state, logout, login } = useApp();
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [editedAddress, setEditedAddress] = useState('');
+  const [editedLatitude, setEditedLatitude] = useState<number | undefined>();
+  const [editedLongitude, setEditedLongitude] = useState<number | undefined>();
+  const [addressValidation, setAddressValidation] = useState({ isValid: true, message: '' });
 
   const handleLogout = () => {
     logout();
     onClose();
+  };
+
+  const handleEditAddress = () => {
+    setEditedAddress(state.user?.address || '');
+    setEditedLatitude(state.user?.latitude);
+    setEditedLongitude(state.user?.longitude);
+    setIsEditingAddress(true);
+  };
+
+  const handleSaveAddress = () => {
+    if (!addressValidation.isValid) {
+      alert('Please enter a valid address in our service area.');
+      return;
+    }
+
+    if (state.user) {
+      // Update user data with new address
+      login({
+        fullName: state.user.fullName,
+        phone: state.user.phone,
+        address: editedAddress,
+        latitude: editedLatitude,
+        longitude: editedLongitude,
+        dietaryPreference: state.user.dietaryPreference,
+        dateOfBirth: state.user.dateOfBirth,
+        referralCode: state.user.referralCode,
+        referralName: state.user.referralName,
+      });
+    }
+    setIsEditingAddress(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingAddress(false);
+    setEditedAddress('');
+    setEditedLatitude(undefined);
+    setEditedLongitude(undefined);
   };
 
   if (!state.user) return null;
@@ -92,12 +135,58 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                  <MapPin className="w-5 h-5 text-gray-600" />
-                  <div>
-                    <p className="text-sm text-gray-500">Address</p>
-                    <p className="font-medium">{state.user.address}</p>
+                <div className="p-3 bg-gray-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="w-5 h-5 text-gray-600" />
+                      <p className="text-sm text-gray-500">Address</p>
+                    </div>
+                    {!isEditingAddress && (
+                      <button
+                        onClick={handleEditAddress}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4 text-gray-500" />
+                      </button>
+                    )}
                   </div>
+
+                  {isEditingAddress ? (
+                    <div className="space-y-3">
+                      <AddressAutocomplete
+                        value={editedAddress}
+                        onChange={(address, lat, lon) => {
+                          setEditedAddress(address);
+                          setEditedLatitude(lat);
+                          setEditedLongitude(lon);
+                        }}
+                        placeholder="Enter your new address"
+                        className="text-sm"
+                        showValidation={true}
+                        onValidationChange={(isValid, message) => {
+                          setAddressValidation({ isValid, message });
+                        }}
+                      />
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={handleSaveAddress}
+                          className="flex items-center space-x-1 px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+                        >
+                          <Save className="w-3 h-3" />
+                          <span>Save</span>
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="flex items-center space-x-1 px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                          <span>Cancel</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-medium text-sm">{state.user.address}</p>
+                  )}
                 </div>
               </div>
 
