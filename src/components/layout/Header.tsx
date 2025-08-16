@@ -15,16 +15,43 @@ import {
 import { useCart } from '@/hooks/useCart';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
+import LocationPicker from '@/components/ui/LocationPicker';
 import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const { getItemCount } = useCart();
-  const { state } = useApp();
+  const { state, login } = useApp();
 
   const cartItemCount = getItemCount();
   const userAddress = state.user?.address;
+
+  // Handle location selection
+  const handleLocationSelect = (location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    landmark?: string;
+    sector?: string;
+    city?: string;
+    pincode?: string;
+  }) => {
+    if (state.user) {
+      // Update user data with new location
+      login({
+        fullName: state.user.fullName,
+        phone: state.user.phone,
+        address: location.address,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        dietaryPreference: state.user.dietaryPreference,
+        dateOfBirth: state.user.dateOfBirth,
+        referralCode: state.user.referralCode,
+        referralName: state.user.referralName,
+      });
+    }
+  };
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -193,6 +220,17 @@ const Header: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Location Picker Modal */}
+      <LocationPicker
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onLocationSelect={handleLocationSelect}
+        initialLocation={state.user?.latitude && state.user?.longitude ? {
+          latitude: state.user.latitude,
+          longitude: state.user.longitude
+        } : undefined}
+      />
     </header>
   );
 };

@@ -6,7 +6,7 @@ import { X, User, Calendar, MapPin, Phone, Cake, Edit2, Save } from 'lucide-reac
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
-import AddressAutocomplete from '@/components/location/AddressAutocomplete';
+import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { Z_INDEX } from '@/lib/constants';
 
 
@@ -19,9 +19,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
   const { state, logout, login } = useApp();
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editedAddress, setEditedAddress] = useState('');
-  const [editedLatitude, setEditedLatitude] = useState<number | undefined>();
-  const [editedLongitude, setEditedLongitude] = useState<number | undefined>();
-  const [addressValidation, setAddressValidation] = useState({ isValid: true, message: '' });
+  const [editedLocation, setEditedLocation] = useState<{
+    latitude?: number;
+    longitude?: number;
+  }>({});
 
   const handleLogout = () => {
     logout();
@@ -30,25 +31,27 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
 
   const handleEditAddress = () => {
     setEditedAddress(state.user?.address || '');
-    setEditedLatitude(state.user?.latitude);
-    setEditedLongitude(state.user?.longitude);
+    setEditedLocation({
+      latitude: state.user?.latitude,
+      longitude: state.user?.longitude
+    });
     setIsEditingAddress(true);
   };
 
   const handleSaveAddress = () => {
-    if (!addressValidation.isValid) {
-      alert('Please enter a valid address in our service area.');
+    if (!editedAddress.trim()) {
+      alert('Please enter your delivery address.');
       return;
     }
 
     if (state.user) {
-      // Update user data with new address
+      // Update user data with new address and location
       login({
         fullName: state.user.fullName,
         phone: state.user.phone,
         address: editedAddress,
-        latitude: editedLatitude,
-        longitude: editedLongitude,
+        latitude: editedLocation.latitude,
+        longitude: editedLocation.longitude,
         dietaryPreference: state.user.dietaryPreference,
         dateOfBirth: state.user.dateOfBirth,
         referralCode: state.user.referralCode,
@@ -61,8 +64,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
   const handleCancelEdit = () => {
     setIsEditingAddress(false);
     setEditedAddress('');
-    setEditedLatitude(undefined);
-    setEditedLongitude(undefined);
+    setEditedLocation({});
   };
 
   if (!state.user) return null;
@@ -153,19 +155,26 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
 
                   {isEditingAddress ? (
                     <div className="space-y-3">
-                      <AddressAutocomplete
+                      <SimpleAddressInput
                         value={editedAddress}
-                        onChange={(address, lat, lon) => {
+                        onChange={(address) => {
                           setEditedAddress(address);
-                          setEditedLatitude(lat);
-                          setEditedLongitude(lon);
+                        }}
+                        onLocationChange={(location) => {
+                          setEditedAddress(location.address);
+                          setEditedLocation({
+                            latitude: location.latitude,
+                            longitude: location.longitude
+                          });
                         }}
                         placeholder="Enter your new address"
                         className="text-sm"
-                        showValidation={true}
-                        onValidationChange={(isValid, message) => {
-                          setAddressValidation({ isValid, message });
-                        }}
+                        label=""
+                        required={true}
+                        initialLocation={editedLocation.latitude && editedLocation.longitude ? {
+                          latitude: editedLocation.latitude,
+                          longitude: editedLocation.longitude
+                        } : undefined}
                       />
                       <div className="flex space-x-2">
                         <button

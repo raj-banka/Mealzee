@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
-import AddressAutocomplete from '@/components/location/AddressAutocomplete';
+import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { isValidReferralCode } from '@/utils/referral';
 import {
   sendWhatsAppOTP,
@@ -38,7 +38,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [hasReferralCode, setHasReferralCode] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [referralName, setReferralName] = useState('');
-  const [addressValidation, setAddressValidation] = useState({ isValid: false, message: '' });
+
   const [otp, setOtp] = useState(['', '', '', '']); // 4-digit WhatsApp OTP
   const [otpError, setOtpError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -161,9 +161,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
 
-    // Check if address was validated during input
-    if (!addressValidation.isValid) {
-      alert('Please enter a valid address in our service area.');
+    // Check if address is provided
+    if (!userDetails.address.trim()) {
+      alert('Please enter your delivery address.');
       setIsLoading(false);
       return;
     }
@@ -702,25 +702,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Delivery Address
-                      </label>
-                      <AddressAutocomplete
+                      <SimpleAddressInput
                         value={userDetails.address}
-                        onChange={(address, lat, lon) => {
+                        onChange={(address) => {
                           setUserDetails(prev => ({
                             ...prev,
-                            address,
-                            latitude: lat,
-                            longitude: lon
+                            address
+                          }));
+                        }}
+                        onLocationChange={(location) => {
+                          setUserDetails(prev => ({
+                            ...prev,
+                            address: location.address,
+                            latitude: location.latitude,
+                            longitude: location.longitude
                           }));
                         }}
                         placeholder="Enter your complete delivery address"
                         className="border-2 border-gray-200 focus:border-green-500"
-                        showValidation={true}
-                        onValidationChange={(isValid, message) => {
-                          setAddressValidation({ isValid, message });
-                        }}
+                        label="Delivery Address"
+                        required={true}
+                        initialLocation={userDetails.latitude && userDetails.longitude ? {
+                          latitude: userDetails.latitude,
+                          longitude: userDetails.longitude
+                        } : undefined}
                       />
                     </div>
 

@@ -11,7 +11,7 @@ import {
   Utensils
 } from 'lucide-react';
 import { useApp, MenuItem } from '@/contexts/AppContext';
-import AddressAutocomplete from '@/components/location/AddressAutocomplete';
+import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { Z_INDEX } from '@/lib/constants';
 
 interface OrderModalProps {
@@ -32,7 +32,6 @@ interface OrderModalProps {
 interface OrderDetails {
   customerName: string;
   phone: string;
-  // email removed
   address: string;
   latitude?: number;
   longitude?: number;
@@ -56,7 +55,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     startDate: ''
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [addressValidation, setAddressValidation] = useState({ isValid: true, message: '' });
+
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -69,8 +68,6 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
         phone: state.user.phone,
         // email removed
         address: state.user.address,
-        latitude: state.user.latitude,
-        longitude: state.user.longitude,
         isTemporaryAddress: false,
         preferences: '',
         startDate: tomorrow.toISOString().split('T')[0]
@@ -103,9 +100,9 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
   const [orderData, setOrderData] = useState<any>(null);
 
   const handleConfirmOrder = async () => {
-    // Validate address before proceeding
-    if (!addressValidation.isValid) {
-      alert('Please enter a valid delivery address in our service area.');
+    // Validate that address is provided
+    if (!orderDetails.address.trim()) {
+      alert('Please enter your delivery address.');
       return;
     }
 
@@ -372,26 +369,32 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
                 {/* Delivery Address */}
                 <div className="space-y-2">
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700">
-                    Delivery Address *
-                  </label>
-                  <AddressAutocomplete
+                  <SimpleAddressInput
                     value={orderDetails.address}
-                    onChange={(address, lat, lon) => {
+                    onChange={(address) => {
                       setOrderDetails(prev => ({
                         ...prev,
                         address,
-                        latitude: lat,
-                        longitude: lon,
                         isTemporaryAddress: address !== state.user?.address
                       }));
                     }}
-                    placeholder="Enter delivery address for this order"
-                    className="text-xs sm:text-sm"
-                    showValidation={true}
-                    onValidationChange={(isValid, message) => {
-                      setAddressValidation({ isValid, message });
+                    onLocationChange={(location) => {
+                      setOrderDetails(prev => ({
+                        ...prev,
+                        address: location.address,
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                        isTemporaryAddress: location.address !== state.user?.address
+                      }));
                     }}
+                    placeholder="Enter your complete delivery address"
+                    className="text-xs sm:text-sm"
+                    label="Delivery Address"
+                    required={true}
+                    initialLocation={orderDetails.latitude && orderDetails.longitude ? {
+                      latitude: orderDetails.latitude,
+                      longitude: orderDetails.longitude
+                    } : undefined}
                   />
                   {orderDetails.isTemporaryAddress && (
                     <p className="text-xs text-blue-600">

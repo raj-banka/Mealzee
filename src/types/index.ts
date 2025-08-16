@@ -19,29 +19,7 @@ export interface Address {
   state: string;
   zipCode: string;
   country: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
   isDefault: boolean;
-}
-
-// Simplified address structure for Nominatim API
-export interface NominatimAddress {
-  display_name: string;
-  lat: string;
-  lon: string;
-  address: {
-    house_number?: string;
-    road?: string;
-    suburb?: string;
-    city?: string;
-    town?: string;
-    village?: string;
-    state?: string;
-    postcode?: string;
-    country?: string;
-  };
 }
 
 // Tiffin Service Types
@@ -61,11 +39,9 @@ export interface TiffinService {
   isOpen: boolean;
   address: string;
   serviceArea: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-  maxDeliveryRadius: number; // in km
+  coordinates?: { lat: number; lng: number };
+  maxDeliveryRadius?: number;
+
   dailyMenus: DailyMenu[];
   features: string[];
   subscriptionPlans: SubscriptionPlan[];
@@ -302,32 +278,7 @@ export interface SearchResult {
   hasMore: boolean;
 }
 
-// Location Types
-export interface LocationData {
-  address: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-  city: string;
-  state: string;
-  country: string;
-  pincode?: string;
-  sector?: string;
-  landmark?: string;
-  isServiceable: boolean;
-}
 
-export interface ServiceAreaInfo {
-  isServiceable: boolean;
-  nearestServiceSector: string | null;
-  distanceToNearestService: number;
-  allDistances: Array<{
-    sector: string;
-    distance: number;
-    withinRadius: boolean;
-  }>;
-}
 
 // API Response Types
 export interface ApiResponse<T> {
