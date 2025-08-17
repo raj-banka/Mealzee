@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, ArrowRight, Check, User, Calendar } from 'lucide-react';
+import { X, Phone, ArrowRight, Check, User, Calendar, MapPin, ChevronDown } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useRouter } from 'next/navigation';
-import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { isValidReferralCode } from '@/utils/referral';
 import {
   sendWhatsAppOTP,
@@ -13,6 +12,7 @@ import {
   cleanupAuth
 } from '@/lib/auth';
 import { Z_INDEX } from '@/lib/constants';
+import { getSectorsForCity } from '@/utils/serviceArea';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,14 +30,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [userDetails, setUserDetails] = useState({
     fullName: '',
     address: '',
-    latitude: undefined as number | undefined,
-    longitude: undefined as number | undefined,
+    sector: '',
     dietaryPreference: 'vegetarian' as 'vegetarian' | 'non-vegetarian',
     dateOfBirth: ''
   });
   const [hasReferralCode, setHasReferralCode] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [referralName, setReferralName] = useState('');
+  const [showSectorDropdown, setShowSectorDropdown] = useState(false);
 
   const [otp, setOtp] = useState(['', '', '', '']); // 4-digit WhatsApp OTP
   const [otpError, setOtpError] = useState('');
@@ -65,6 +65,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const [resendCooldown, setResendCooldown] = useState(0);
   const resendTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+
 
   // Helper function to start the resend timer
   const startResendTimer = () => {
@@ -157,7 +159,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userDetails.fullName.trim() || !userDetails.address.trim()) return;
+    if (!userDetails.fullName.trim() || !userDetails.address.trim() || !userDetails.sector.trim()) return;
 
     setIsLoading(true);
 
@@ -168,13 +170,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
+    // Create complete address by appending sector to the address
+    const completeAddress = `${userDetails.address.trim()}, ${userDetails.sector}, Bokaro Steel City`;
+
     // Login the user with collected data
     login({
       fullName: userDetails.fullName,
       phone: phoneNumber,
-      address: userDetails.address,
-      latitude: userDetails.latitude,
-      longitude: userDetails.longitude,
+      address: completeAddress,
+      sector: userDetails.sector,
       dietaryPreference: userDetails.dietaryPreference,
       dateOfBirth: userDetails.dateOfBirth,
       referralCode: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralCode : undefined,
@@ -388,8 +392,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setUserDetails({
       fullName: '',
       address: '',
-      latitude: undefined,
-      longitude: undefined,
+      sector: '',
       dietaryPreference: 'vegetarian',
       dateOfBirth: ''
     });
@@ -634,10 +637,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
-                  Please provide your details to complete registration
-                </p>
-
                 <form onSubmit={handleDetailsSubmit}>
                   <div className="space-y-3 sm:space-y-4">
                     <div className="relative">
@@ -701,32 +700,59 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     </div>
 
+                    {/* Address Input */}
                     <div className="space-y-2">
-                      <SimpleAddressInput
-                        value={userDetails.address}
-                        onChange={(address) => {
-                          setUserDetails(prev => ({
-                            ...prev,
-                            address
-                          }));
-                        }}
-                        onLocationChange={(location) => {
-                          setUserDetails(prev => ({
-                            ...prev,
-                            address: location.address,
-                            latitude: location.latitude,
-                            longitude: location.longitude
-                          }));
-                        }}
-                        placeholder="Enter your complete delivery address"
-                        className="border-2 border-gray-200 focus:border-green-500"
-                        label="Delivery Address"
-                        required={true}
-                        initialLocation={userDetails.latitude && userDetails.longitude ? {
-                          latitude: userDetails.latitude,
-                          longitude: userDetails.longitude
-                        } : undefined}
-                      />
+                      <label className="block text-sm font-medium text-gray-700">
+                        Delivery Address <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <textarea
+                          value={userDetails.address}
+                          onChange={(e) => setUserDetails(prev => ({ ...prev, address: e.target.value }))}
+                          placeholder="Enter your hostel name or complete address in Bokaro"
+                          rows={3}
+                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base resize-none"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Sector Selection */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Sector <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowSectorDropdown(!showSectorDropdown)}
+                          className="w-full px-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base text-left flex items-center justify-between"
+                        >
+                          <span className={userDetails.sector ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+                            {userDetails.sector || 'Choose your sector'}
+                          </span>
+                          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showSectorDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showSectorDropdown && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                            {getSectorsForCity('Bokaro Steel City').map((sector) => (
+                              <button
+                                key={sector}
+                                type="button"
+                                onClick={() => {
+                                  setUserDetails(prev => ({ ...prev, sector }));
+                                  setShowSectorDropdown(false);
+                                }}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-sm border-b border-gray-100 last:border-b-0"
+                              >
+                                {sector}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Referral Code Section */}
@@ -792,11 +818,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                   <motion.button
                     type="submit"
-                    disabled={!userDetails.fullName.trim() || !userDetails.address.trim() || !userDetails.dateOfBirth.trim() || isLoading}
+                    disabled={!userDetails.fullName.trim() || !userDetails.address.trim() || !userDetails.sector.trim() || !userDetails.dateOfBirth.trim() || isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 mt-4 sm:mt-6 text-sm sm:text-base ${
-                      userDetails.fullName.trim() && userDetails.address.trim() && userDetails.dateOfBirth.trim() && !isLoading
+                      userDetails.fullName.trim() && userDetails.address.trim() && userDetails.sector.trim() && userDetails.dateOfBirth.trim() && !isLoading
                         ? 'bg-green-600 text-white hover:bg-green-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}

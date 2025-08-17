@@ -15,7 +15,7 @@ import {
 import { useCart } from '@/hooks/useCart';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
-import LocationPicker from '@/components/ui/LocationPicker';
+// Removed LocationPicker import as we no longer use GPS/map functionality
 import { cn } from '@/lib/utils';
 
 const Header: React.FC = () => {
@@ -27,24 +27,20 @@ const Header: React.FC = () => {
   const cartItemCount = getItemCount();
   const userAddress = state.user?.address;
 
-  // Handle location selection
-  const handleLocationSelect = (location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-    landmark?: string;
-    sector?: string;
-    city?: string;
-    pincode?: string;
+  // Handle address update (removed location coordinates)
+  const handleAddressUpdate = (addressData: {
+    fullAddress: string;
+    city: string;
+    sector: string;
   }) => {
     if (state.user) {
-      // Update user data with new location
+      // Update user data with new address
       login({
         fullName: state.user.fullName,
         phone: state.user.phone,
-        address: location.address,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        address: addressData.fullAddress,
+        sector: addressData.sector,
+        city: addressData.city,
         dietaryPreference: state.user.dietaryPreference,
         dateOfBirth: state.user.dateOfBirth,
         referralCode: state.user.referralCode,
@@ -221,16 +217,7 @@ const Header: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Location Picker Modal */}
-      <LocationPicker
-        isOpen={isLocationModalOpen}
-        onClose={() => setIsLocationModalOpen(false)}
-        onLocationSelect={handleLocationSelect}
-        initialLocation={state.user?.latitude && state.user?.longitude ? {
-          latitude: state.user.latitude,
-          longitude: state.user.longitude
-        } : undefined}
-      />
+      {/* Location functionality removed - address is now manually entered during registration */}
     </header>
   );
 };

@@ -8,11 +8,12 @@ import {
   User,
   Phone,
   CheckCircle,
-  Utensils
+  Utensils,
+  Download
 } from 'lucide-react';
 import { useApp, MenuItem } from '@/contexts/AppContext';
-import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { Z_INDEX } from '@/lib/constants';
+import { generateInvoicePDF, generateInvoiceData } from '@/utils/invoiceGenerator';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -33,8 +34,8 @@ interface OrderDetails {
   customerName: string;
   phone: string;
   address: string;
-  latitude?: number;
-  longitude?: number;
+  city?: string;
+  sector?: string;
   isTemporaryAddress: boolean;
   preferences: string;
   startDate: string;
@@ -48,8 +49,8 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
     phone: state.user?.phone || '',
     // email removed
     address: state.user?.address || '',
-    latitude: state.user?.latitude,
-    longitude: state.user?.longitude,
+    city: state.user?.city,
+    sector: state.user?.sector,
     isTemporaryAddress: false,
     preferences: '',
     startDate: ''
@@ -91,11 +92,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
 
 
-  const handleUpdatePreferences = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Since user details are already populated from context, just proceed to confirmation
-    setStep('confirm');
-  };
+
 
   const [orderData, setOrderData] = useState<any>(null);
 
@@ -124,8 +121,8 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       phone: orderDetails.phone,
       // email removed
       address: orderDetails.address,
-      latitude: orderDetails.latitude,
-      longitude: orderDetails.longitude,
+      city: orderDetails.city,
+      sector: orderDetails.sector,
       isTemporaryAddress: orderDetails.isTemporaryAddress,
       planTitle: orderType === 'meal-plan' ? (selectedPlan?.title || '') : (selectedDish?.name || ''),
       planDuration: orderType === 'meal-plan' ? (selectedPlan?.duration || '') : 'Single Dish Order',
@@ -170,8 +167,8 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
             customerPhone: orderPayload.phone, // Map phone to customerPhone for email service
             // customerEmail removed
             address: orderPayload.address,
-            latitude: orderPayload.latitude,
-            longitude: orderPayload.longitude,
+            city: orderPayload.city,
+            sector: orderPayload.sector,
             isTemporaryAddress: orderPayload.isTemporaryAddress,
             orderType: orderPayload.orderType,
             startDate: orderPayload.startDate,
@@ -229,14 +226,27 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       phone: state.user?.phone || '',
       // email removed
       address: state.user?.address || '',
-      latitude: state.user?.latitude,
-      longitude: state.user?.longitude,
+      city: state.user?.city,
+      sector: state.user?.sector,
       isTemporaryAddress: false,
       preferences: '',
       startDate: ''
     });
     setIsLoading(false);
     setQuantity(1);
+  };
+
+  const handleDownloadInvoice = () => {
+    if (!orderData) return;
+
+    try {
+      const invoiceData = generateInvoiceData(orderData, orderDetails, orderType);
+      generateInvoicePDF(invoiceData);
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+      // Show user-friendly error message
+      alert('Unable to generate invoice. Please try again or contact support.');
+    }
   };
 
   const handleClose = () => {
@@ -369,33 +379,27 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
                 {/* Delivery Address */}
                 <div className="space-y-2">
-                  <SimpleAddressInput
-                    value={orderDetails.address}
-                    onChange={(address) => {
-                      setOrderDetails(prev => ({
-                        ...prev,
-                        address,
-                        isTemporaryAddress: address !== state.user?.address
-                      }));
-                    }}
-                    onLocationChange={(location) => {
-                      setOrderDetails(prev => ({
-                        ...prev,
-                        address: location.address,
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                        isTemporaryAddress: location.address !== state.user?.address
-                      }));
-                    }}
-                    placeholder="Enter your complete delivery address"
-                    className="text-xs sm:text-sm"
-                    label="Delivery Address"
-                    required={true}
-                    initialLocation={orderDetails.latitude && orderDetails.longitude ? {
-                      latitude: orderDetails.latitude,
-                      longitude: orderDetails.longitude
-                    } : undefined}
-                  />
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">
+                    Delivery Address *
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <textarea
+                      value={orderDetails.address}
+                      onChange={(e) => {
+                        const address = e.target.value;
+                        setOrderDetails(prev => ({
+                          ...prev,
+                          address,
+                          isTemporaryAddress: address !== state.user?.address
+                        }));
+                      }}
+                      placeholder="Enter your hostel name or complete address in Bokaro"
+                      rows={3}
+                      className="w-full pl-10 pr-3 py-2 sm:py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors text-xs sm:text-sm resize-none"
+                      required
+                    />
+                  </div>
                   {orderDetails.isTemporaryAddress && (
                     <p className="text-xs text-blue-600">
                       📍 Using different address for this order (won't update your profile)
@@ -559,6 +563,17 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                     📞 <strong>Need help?</strong> Call us at +91 9204666105 for any queries.
                   </p>
                 </div>
+
+                {/* Invoice Download Button */}
+                <motion.button
+                  onClick={handleDownloadInvoice}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base flex items-center justify-center space-x-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download Invoice</span>
+                </motion.button>
 
                 <motion.button
                   onClick={() => {

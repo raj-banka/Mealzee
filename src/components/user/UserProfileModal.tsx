@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Calendar, MapPin, Phone, Cake, Edit2, Save } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
-import SimpleAddressInput from '@/components/ui/SimpleAddressInput';
 import { Z_INDEX } from '@/lib/constants';
 
 
@@ -19,10 +18,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
   const { state, logout, login } = useApp();
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editedAddress, setEditedAddress] = useState('');
-  const [editedLocation, setEditedLocation] = useState<{
-    latitude?: number;
-    longitude?: number;
+  const [editedAddressData, setEditedAddressData] = useState<{
+    sector?: string;
   }>({});
+
+
 
   const handleLogout = () => {
     logout();
@@ -31,9 +31,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
 
   const handleEditAddress = () => {
     setEditedAddress(state.user?.address || '');
-    setEditedLocation({
-      latitude: state.user?.latitude,
-      longitude: state.user?.longitude
+    setEditedAddressData({
+      sector: state.user?.sector
     });
     setIsEditingAddress(true);
   };
@@ -45,13 +44,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
     }
 
     if (state.user) {
-      // Update user data with new address and location
+      // Update user data with new address
       login({
         fullName: state.user.fullName,
         phone: state.user.phone,
         address: editedAddress,
-        latitude: editedLocation.latitude,
-        longitude: editedLocation.longitude,
+        sector: editedAddressData.sector,
         dietaryPreference: state.user.dietaryPreference,
         dateOfBirth: state.user.dateOfBirth,
         referralCode: state.user.referralCode,
@@ -64,7 +62,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
   const handleCancelEdit = () => {
     setIsEditingAddress(false);
     setEditedAddress('');
-    setEditedLocation({});
+    setEditedAddressData({});
   };
 
   if (!state.user) return null;
@@ -155,27 +153,17 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
 
                   {isEditingAddress ? (
                     <div className="space-y-3">
-                      <SimpleAddressInput
-                        value={editedAddress}
-                        onChange={(address) => {
-                          setEditedAddress(address);
-                        }}
-                        onLocationChange={(location) => {
-                          setEditedAddress(location.address);
-                          setEditedLocation({
-                            latitude: location.latitude,
-                            longitude: location.longitude
-                          });
-                        }}
-                        placeholder="Enter your new address"
-                        className="text-sm"
-                        label=""
-                        required={true}
-                        initialLocation={editedLocation.latitude && editedLocation.longitude ? {
-                          latitude: editedLocation.latitude,
-                          longitude: editedLocation.longitude
-                        } : undefined}
-                      />
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <textarea
+                          value={editedAddress}
+                          onChange={(e) => setEditedAddress(e.target.value)}
+                          placeholder="Enter your new address"
+                          rows={3}
+                          className="w-full pl-10 pr-3 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors text-sm resize-none"
+                          required
+                        />
+                      </div>
                       <div className="flex space-x-2">
                         <button
                           onClick={handleSaveAddress}

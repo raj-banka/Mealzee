@@ -9,8 +9,8 @@ export interface User {
   email?: string;
   phone: string;
   address: string;
-  latitude?: number;
-  longitude?: number;
+  sector?: string;
+  city?: string;
   dietaryPreference: 'vegetarian' | 'non-vegetarian';
   dateOfBirth: string; // Format: YYYY-MM-DD
   isAuthenticated: boolean;
