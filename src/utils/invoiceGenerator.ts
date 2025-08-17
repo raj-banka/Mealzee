@@ -138,20 +138,16 @@ export const generateInvoicePDF = (invoiceData: InvoiceData): void => {
   doc.text('For any queries, contact us at +91 9204666105', 20, yPos + 7);
   doc.text('This is a computer-generated invoice.', 20, yPos + 14);
 
-  // Generate PDF as blob and create download link 
-  const pdfBlob = doc.output('blob');
-  const url = URL.createObjectURL(pdfBlob);
+  // Generate PDF as data URL and create download link (same approach as download menu)
+  const pdfDataUri = doc.output('datauristring');
 
-  // Create temporary download link
+  // Create temporary download link (exact same pattern as handleDownloadMenu)
   const link = document.createElement('a');
-  link.href = url;
+  link.href = pdfDataUri;
   link.download = `Mealzee_Invoice_${invoiceData.orderId}.pdf`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-
-  // Clean up the URL object
-  URL.revokeObjectURL(url);
 };
 
 export const generateInvoiceData = (orderData: any, orderDetails: any, orderType: string): InvoiceData => {
