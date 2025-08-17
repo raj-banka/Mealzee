@@ -138,7 +138,7 @@ export const generateInvoicePDF = (invoiceData: InvoiceData): void => {
   doc.text('For any queries, contact us at +91 9204666105', 20, yPos + 7);
   doc.text('This is a computer-generated invoice.', 20, yPos + 14);
 
-  // Generate PDF as blob and create download link (same approach as download menu)
+  // Generate PDF as blob and create download link 
   const pdfBlob = doc.output('blob');
   const url = URL.createObjectURL(pdfBlob);
 
