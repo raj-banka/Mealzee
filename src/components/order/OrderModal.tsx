@@ -565,7 +565,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                 </div>
 
                 {/* Invoice Download Button */}
-                <motion.button
+                {/* <motion.button
                   onClick={handleDownloadInvoice}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -573,7 +573,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
                 >
                   <Download className="w-4 h-4" />
                   <span>Download Invoice</span>
-                </motion.button>
+                </motion.button> */}
 
                 <motion.button
                   onClick={() => {

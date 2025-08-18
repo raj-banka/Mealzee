@@ -10,6 +10,7 @@ export const SERVICE_AREAS: ServiceArea[] = [
   {
     city: 'Bokaro Steel City',
     sectors: [
+      'sec-4',
       'Sec-4/A',
       'Sec-4/B', 
       'Sec-4/C',
