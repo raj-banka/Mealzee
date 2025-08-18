@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import MultiFunctionalButton from "@/components/ui/MultiFunctionalButton";
 import { AppProvider } from "@/contexts/AppContext";
 import StructuredData from "@/components/seo/StructuredData";
 
@@ -155,7 +155,7 @@ export default function RootLayout({
           <div className="min-h-screen bg-olive-50">
             {children}
           </div>
-          <WhatsAppButton />
+          <MultiFunctionalButton />
         </AppProvider>
       </body>
     </html>
