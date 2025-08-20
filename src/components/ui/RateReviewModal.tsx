@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Star, Send, Heart, ThumbsUp, MessageCircle } from "lucide-react";
+import { useApp } from "@/contexts/AppContext";
 
 interface RateReviewModalProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface RateReviewModalProps {
 }
 
 const RateReviewModal: React.FC<RateReviewModalProps> = ({ open, onClose }) => {
+  const { state } = useApp();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState("");
@@ -22,19 +24,49 @@ const RateReviewModal: React.FC<RateReviewModalProps> = ({ open, onClose }) => {
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setSubmitted(true);
-    setIsSubmitting(false);
-    
-    // Auto close after success
-    setTimeout(() => {
-      onClose();
-      setSubmitted(false);
-      setRating(0);
-      setReview("");
-    }, 2000);
+    try {
+      // Prepare review data
+      const reviewData = {
+        customerName: state.user?.fullName || 'Anonymous User',
+        customerPhone: state.user?.phone || undefined,
+        customerEmail: state.user?.email || undefined,
+        rating,
+        review: review.trim()
+      };
+
+      // Submit review to API
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+
+      const result = await response.json();
+      console.log('Review submitted successfully:', result);
+      
+      setSubmitted(true);
+      setIsSubmitting(false);
+      
+      // Auto close after success
+      setTimeout(() => {
+        onClose();
+        setSubmitted(false);
+        setRating(0);
+        setReview("");
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      setIsSubmitting(false);
+      // You could add error state handling here if needed
+      alert('Failed to submit review. Please try again.');
+    }
   };
 
   const handleClose = () => {

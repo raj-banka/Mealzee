@@ -173,7 +173,7 @@ const MultiFunctionalButton: React.FC = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={func.action}
                     className={`
-                      w-12 h-12 sm:w-14 sm:h-14 rounded-full ${func.gradient}
+                      w-10 h-10 sm:w-12 sm:h-12 rounded-full ${func.gradient}
                       text-white shadow-lg flex items-center justify-center
                       transition-all duration-200 group relative border-2 border-white/40
                       hover:border-white/70 hover:shadow-xl

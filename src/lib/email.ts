@@ -48,6 +48,16 @@ export interface ContactData {
   timestamp: string;
 }
 
+export interface ReviewData {
+  customerName: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  rating: number;
+  review: string;
+  reviewId: string;
+  timestamp: string;
+}
+
 // Create email transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
@@ -387,6 +397,167 @@ Thank you!
     return true;
   } catch (error) {
     console.error('❌ Failed to send contact notification email:', error);
+    return false;
+  }
+};
+
+// Generate review email HTML template
+const generateReviewEmailHTML = (reviewData: ReviewData): string => {
+  const {
+    customerName,
+    customerPhone,
+    customerEmail,
+    rating,
+    review,
+    reviewId,
+    timestamp
+  } = reviewData;
+
+  const getRatingStars = (rating: number) => {
+    return '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
+  };
+
+  const getRatingText = (rating: number) => {
+    switch (rating) {
+      case 1: return 'Poor';
+      case 2: return 'Fair';
+      case 3: return 'Good';
+      case 4: return 'Very Good';
+      case 5: return 'Excellent';
+      default: return 'Unknown';
+    }
+  };
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>New Customer Review - Mealzee</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; margin: 0; padding: 10px; }
+        .container { max-width: 650px; margin: 0 auto; }
+        .header { background: #00430D; color: white; padding: 15px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 22px; }
+        .header p { margin: 8px 0 0 0; font-size: 16px; font-weight: 500; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
+        .section { background: white; padding: 15px; margin: 12px 0; border-radius: 6px; border-left: 4px solid #00430D; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h3 { margin: 0 0 12px 0; font-size: 16px; color: #00430D; font-weight: 600; }
+        .section p { margin: 6px 0; font-size: 14px; }
+        .data-row { color: #555; display: flex; align-items: flex-start; }
+        .data-row strong { color: #00430D; font-weight: 600; margin-right: 8px; min-width: 130px; flex-shrink: 0; }
+        .data-row .value { flex: 1; word-wrap: break-word; line-height: 1.4; }
+        .rating-section { background: ${rating >= 4 ? '#d4edda' : rating >= 3 ? '#fff3cd' : '#f8d7da'}; padding: 15px; border-radius: 6px; text-align: center; margin: 15px 0; }
+        .rating-stars { font-size: 24px; margin: 10px 0; }
+        .rating-text { font-size: 18px; font-weight: bold; color: ${rating >= 4 ? '#155724' : rating >= 3 ? '#856404' : '#721c24'}; }
+        .review-content { background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 3px solid #007bff; margin: 10px 0; font-style: italic; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+        .priority { background: ${rating <= 2 ? '#f8d7da' : '#d1ecf1'}; border-left: 4px solid ${rating <= 2 ? '#dc3545' : '#17a2b8'}; padding: 10px; border-radius: 4px; margin: 10px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>⭐ New Customer Review #${reviewId}</h1>
+          <p>${new Date(timestamp).toLocaleString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          })}</p>
+        </div>
+
+        <div class="content">
+          <div class="priority">
+            <strong>${rating <= 2 ? '🚨 Low Rating Alert:' : '💬 New Review:'}</strong> 
+            ${rating <= 2 ? 'Customer gave a low rating - Please follow up immediately!' : 'New customer feedback received'}
+          </div>
+
+          <div class="rating-section">
+            <div class="rating-stars">${getRatingStars(rating)}</div>
+            <div class="rating-text">${rating}/5 - ${getRatingText(rating)}</div>
+          </div>
+
+          <div class="section">
+            <h3>👤 Customer Details</h3>
+            <p><span class="data-row"><strong>Name:</strong> <span class="value">${customerName}</span></span></p>
+            ${customerPhone ? `<p><span class="data-row"><strong>Phone:</strong> <span class="value">${customerPhone}</span></span></p>` : ''}
+            ${customerEmail ? `<p><span class="data-row"><strong>Email:</strong> <span class="value">${customerEmail}</span></span></p>` : ''}
+          </div>
+
+          ${review ? `
+          <div class="section">
+            <h3>💬 Customer Review</h3>
+            <div class="review-content">
+              "${review}"
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="section">
+            <h3>📊 Review Details</h3>
+            <p><span class="data-row"><strong>Review ID:</strong> <span class="value">#${reviewId}</span></span></p>
+            <p><span class="data-row"><strong>Rating:</strong> <span class="value">${rating}/5 stars</span></span></p>
+            <p><span class="data-row"><strong>Submitted:</strong> <span class="value">${new Date(timestamp).toLocaleString('en-IN')}</span></span></p>
+          </div>
+
+          <div class="footer">
+            <p>Mealzee Review Management System | Auto-generated on ${new Date().toLocaleString('en-IN')}</p>
+            ${rating <= 2 ? '<p style="color: #dc3545; font-weight: bold;">⚠️ Please contact this customer within 24 hours to address their concerns</p>' : ''}
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Send review notification email to admin
+export const sendReviewNotificationEmail = async (reviewData: ReviewData): Promise<boolean> => {
+  try {
+    const transporter = createTransporter();
+    const adminEmail = process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com';
+    
+    const ratingEmoji = reviewData.rating >= 4 ? '🌟' : reviewData.rating >= 3 ? '⭐' : '⚠️';
+    const urgencyText = reviewData.rating <= 2 ? '🚨 URGENT - LOW RATING' : 'New Review';
+    
+    const mailOptions = {
+      from: process.env.MAIL_FROM,
+      to: adminEmail,
+      subject: `${ratingEmoji} ${urgencyText}: Customer Review #${reviewData.reviewId} - ${reviewData.rating}/5 Stars`,
+      html: generateReviewEmailHTML(reviewData),
+      text: `
+*New Customer Review from Mealzee Website*
+
+*Customer Details:*
+Name: ${reviewData.customerName}
+${reviewData.customerPhone ? `Phone: ${reviewData.customerPhone}` : ''}
+${reviewData.customerEmail ? `Email: ${reviewData.customerEmail}` : ''}
+
+*Review Details:*
+Rating: ${reviewData.rating}/5 stars (${reviewData.rating >= 4 ? 'Excellent' : reviewData.rating >= 3 ? 'Good' : reviewData.rating >= 2 ? 'Fair' : 'Poor'})
+Review ID: #${reviewData.reviewId}
+Submitted: ${new Date(reviewData.timestamp).toLocaleString('en-IN')}
+
+${reviewData.review ? `*Customer Review:*
+"${reviewData.review}"` : '*No written review provided*'}
+
+${reviewData.rating <= 2 ? `
+⚠️ LOW RATING ALERT ⚠️
+This customer gave a low rating. Please contact them within 24 hours to address their concerns and improve their experience.
+` : ''}
+
+Thank you!
+      `
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log('✅ Review notification email sent successfully:', result.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to send review notification email:', error);
     return false;
   }
 };
