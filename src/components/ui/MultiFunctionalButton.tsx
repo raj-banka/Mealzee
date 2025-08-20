@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calculator, User, Calendar, X, Sparkles } from "lucide-react";
+import { Plus, Calculator, User, Calendar, X, Sparkles, Star } from "lucide-react";
+import { useApp } from "@/contexts/AppContext";
 import BMIModal from "@/components/ui/BMIModal";
 import UserProfileModal from "@/components/user/UserProfileModal";
 import TodaysMenuModal from "@/components/ui/TodaysMenuModal";
+import RateReviewModal from "@/components/ui/RateReviewModal";
 
 interface FunctionButton {
   id: string;
@@ -17,17 +19,19 @@ interface FunctionButton {
 }
 
 const MultiFunctionalButton: React.FC = () => {
+  const { isLoggedIn, dispatch } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [isBmiOpen, setIsBmiOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRateReviewOpen, setIsRateReviewOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   // Enhanced function buttons with mixed theme colors
   const functions: FunctionButton[] = [
     {
       id: "bmi",
-      icon: <Calculator className="w-4 h-4 sm:w-5 sm:h-5" />,
+      icon: <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />,
       label: "BMI Calculator",
       gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
       shadowColor: "shadow-blue-500/30",
@@ -38,24 +42,45 @@ const MultiFunctionalButton: React.FC = () => {
     },
     {
       id: "profile",
-      icon: <User className="w-4 h-4 sm:w-5 sm:h-5" />,
+      icon: <User className="w-5 h-5 sm:w-6 sm:h-6" />,
       label: "User Profile",
       gradient: "bg-gradient-to-br from-purple-500 to-purple-600",
       shadowColor: "shadow-purple-500/30",
       action: () => {
-        setIsProfileOpen(true);
-        setIsOpen(false);
+        if (isLoggedIn()) {
+          setIsProfileOpen(true);
+          setIsOpen(false);
+        } else {
+          dispatch({ type: 'OPEN_AUTH_MODAL' });
+          setIsOpen(false);
+        }
       }
     },
     {
       id: "menu",
-      icon: <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />,
+      icon: <Calendar className="w-5 h-5 sm:w-6 sm:h-6" />,
       label: "Today's Menu",
       gradient: "bg-gradient-to-br from-green-500 to-green-600",
       shadowColor: "shadow-green-500/30",
       action: () => {
         setIsMenuOpen(true);
         setIsOpen(false);
+      }
+    },
+    {
+      id: "rate-review",
+      icon: <Star className="w-5 h-5 sm:w-6 sm:h-6" />,
+      label: "Rate & Review",
+      gradient: "bg-gradient-to-br from-orange-500 to-orange-600",
+      shadowColor: "shadow-orange-500/30",
+      action: () => {
+        if (isLoggedIn()) {
+          setIsRateReviewOpen(true);
+          setIsOpen(false);
+        } else {
+          dispatch({ type: 'OPEN_AUTH_MODAL' });
+          setIsOpen(false);
+        }
       }
     }
   ];
@@ -123,7 +148,7 @@ const MultiFunctionalButton: React.FC = () => {
         <motion.div
           className="relative flex items-center"
           animate={{
-            width: isOpen ? "auto" : "56px"
+            width: isOpen ? "auto" : "64px"
           }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
@@ -135,7 +160,7 @@ const MultiFunctionalButton: React.FC = () => {
                 animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.15 }}
-                className="flex items-center gap-2 bg-black/20 backdrop-blur-sm rounded-full p-2 mr-2 shadow-xl border border-white/20"
+                className="flex items-center gap-4 sm:gap-5 bg-black/20 backdrop-blur-sm rounded-full p-4 mr-4 shadow-xl border border-white/20"
               >
                 {functions.map((func, index) => (
                   <motion.button
@@ -148,7 +173,7 @@ const MultiFunctionalButton: React.FC = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={func.action}
                     className={`
-                      w-10 h-10 sm:w-11 sm:h-11 rounded-full ${func.gradient}
+                      w-12 h-12 sm:w-14 sm:h-14 rounded-full ${func.gradient}
                       text-white shadow-lg flex items-center justify-center
                       transition-all duration-200 group relative border-2 border-white/40
                       hover:border-white/70 hover:shadow-xl
@@ -183,7 +208,7 @@ const MultiFunctionalButton: React.FC = () => {
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             className={`
-              w-13 h-13 sm:w-14 sm:h-14 rounded-full
+              w-16 h-16 sm:w-18 sm:h-18 rounded-full
               bg-gradient-to-br from-olive-500 to-olive-600
               hover:from-olive-400 hover:to-olive-500
               text-white shadow-xl flex items-center justify-center
@@ -219,7 +244,7 @@ const MultiFunctionalButton: React.FC = () => {
                 stiffness: 200
               }}
             >
-              <Plus className="w-5 h-5 sm:w-6 sm:h-6 stroke-2 text-white" />
+              <Plus className="w-6 h-6 sm:w-7 sm:h-7 stroke-2 text-white" />
             </motion.div>
           </motion.button>
         </motion.div>
@@ -274,36 +299,14 @@ const MultiFunctionalButton: React.FC = () => {
           </>
         )}
 
-        {/* Enhanced background overlay with gradient when open */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-              animate={{
-                opacity: 1,
-                backdropFilter: "blur(8px)",
-                background: [
-                  "radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)",
-                  "radial-gradient(circle at center, rgba(139,154,70,0.1) 0%, rgba(0,0,0,0.4) 100%)"
-                ]
-              }}
-              exit={{
-                opacity: 0,
-                backdropFilter: "blur(0px)",
-                transition: { duration: 0.3 }
-              }}
-              className="fixed inset-0 -z-10"
-              onClick={() => setIsOpen(false)}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            />
-          )}
-        </AnimatePresence>
+
       </div>
 
       {/* Modals */}
       <BMIModal open={isBmiOpen} onClose={() => setIsBmiOpen(false)} />
       <UserProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
       <TodaysMenuModal open={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <RateReviewModal open={isRateReviewOpen} onClose={() => setIsRateReviewOpen(false)} />
     </>
   );
 };

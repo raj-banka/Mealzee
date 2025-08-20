@@ -47,14 +47,14 @@ const BMIModal: React.FC<BMIModalProps> = ({ open, onClose }) => {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
+          className="fixed inset-0 z-[10020] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop */}
+          {/* Backdrop with blur */}
           <div
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
           />
 
