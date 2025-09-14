@@ -203,7 +203,7 @@ const AppContext = createContext<{
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
   // Helper functions
-  login: (userData: Omit<User, 'id' | 'isAuthenticated'>) => void;
+  login: (userData: Omit<User, 'id' | 'isAuthenticated'>) => Promise<void>;
   logout: () => void;
   selectMealPlan: (plan: MealPlan) => void;
   clearSelectedMealPlan: () => void;
@@ -262,13 +262,71 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [state.selectedMealPlan]);
 
   // Helper functions
-  const login = (userData: Omit<User, 'id' | 'isAuthenticated'>) => {
-    const user: User = {
+  const login = async (userData: Omit<User, 'id' | 'isAuthenticated'>) => {
+    // Create a local temporary user so UI can proceed immediately
+    const tempUser: User = {
       ...userData,
-      id: Date.now().toString(), // Simple ID generation
+      id: Date.now().toString(), // temporary local id
       isAuthenticated: true,
     };
-    dispatch({ type: 'SET_USER', payload: user });
+    dispatch({ type: 'SET_USER', payload: tempUser });
+
+    // Attempt to reconcile with backend user record so we store the real DB id
+    try {
+      // Try to fetch existing user by phone
+      const phone = encodeURIComponent(userData.phone);
+      const res = await fetch(`/api/user/profile?phone=${phone}`);
+      let serverUser: any = null;
+
+      if (res.ok) {
+        const data = await res.json();
+        serverUser = data.user || null;
+      }
+
+      if (!serverUser) {
+        // Create a user on the backend if not present. Send any available profile fields.
+        const createRes = await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: userData.phone,
+            profile: {
+              name: userData.fullName || null,
+              dob: userData.dateOfBirth || null,
+              referredByCode: userData.referralCode || undefined,
+            }
+          })
+        });
+
+        if (createRes.ok) {
+          const created = await createRes.json();
+          serverUser = created.user || null;
+        }
+      }
+
+      if (serverUser) {
+        // Map server shape to our User type, while preserving local details when missing on server
+        const mergedUser: User = {
+          id: serverUser.id,
+          fullName: userData.fullName || serverUser.name || '',
+          email: serverUser.email || userData.email,
+          phone: serverUser.phone || userData.phone,
+          address: userData.address || serverUser.address || '',
+          sector: userData.sector || serverUser.sector || undefined,
+          city: serverUser.city || userData.city,
+          dietaryPreference: userData.dietaryPreference || 'vegetarian',
+          dateOfBirth: userData.dateOfBirth || (serverUser.dob ? String(serverUser.dob).split('T')[0] : ''),
+          isAuthenticated: true,
+          referralCode: serverUser.referralCode || userData.referralCode,
+          referralName: userData.referralName || undefined,
+        };
+
+        dispatch({ type: 'SET_USER', payload: mergedUser });
+      }
+    } catch (err) {
+      console.warn('Failed to reconcile user with backend, continuing with local user:', err);
+      // Keep the temporary local user so UI isn't blocked
+    }
   };
 
   const logout = () => {

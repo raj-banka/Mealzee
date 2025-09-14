@@ -23,18 +23,18 @@ export async function POST(request: NextRequest) {
       console.log('✅ WhatsApp OTP sent successfully for:', phone);
       return NextResponse.json({
         success: true,
-        message: 'OTP sent successfully via WhatsApp'
+        message: 'OTP sent successfully'
       });
     } else {
-      console.log('❌ WhatsApp OTP sending failed:', result.error);
+      console.log('❌OTP sending failed:', result.error);
       return NextResponse.json(
-        { success: false, error: result.error || 'Failed to send WhatsApp OTP' },
+        { success: false, error: result.error || 'Failed to send OTP' },
         { status: 500 }
       );
     }
 
   } catch (error) {
-    console.error('❌ Error in whatsapp-otp/send API:', error);
+    console.error('❌ Error in otp/send API:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error: ' + (error as Error).message },
       { status: 500 }

@@ -150,3 +150,48 @@ export function cleanupAuth(): void {
   // No cleanup needed for SMS-based authentication
   console.log('🧹 SMS auth cleanup completed');
 }
+
+/**
+ * Backwards-compatible SMS OTP wrapper.
+ * Many UI components import `sendSMSOTP`/`verifySMSOTP` — delegate to WhatsApp functions.
+ */
+export async function sendSMSOTP(phoneNumber: string): Promise<{ success: boolean; message?: string; error?: string }> {
+  // Normalize common local 10-digit numbers to E.164 (+91)
+  let normalized = phoneNumber;
+  try {
+    const cleaned = String(phoneNumber).replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      normalized = `+91${cleaned}`;
+    } else if (cleaned.length > 10 && String(phoneNumber).startsWith('+')) {
+      normalized = `+${cleaned}`;
+    } else if (cleaned.length > 10 && !String(phoneNumber).startsWith('+')) {
+      normalized = `+${cleaned}`;
+    }
+  } catch (e) {
+    // fallback to original
+    normalized = phoneNumber;
+  }
+
+  console.log('sendSMSOTP: normalized phone ->', normalized);
+  return await sendWhatsAppOTP(normalized);
+}
+
+export async function verifySMSOTP(otp: string, phoneNumber: string): Promise<boolean> {
+  // Normalize phone similarly to sending
+  let normalized = phoneNumber;
+  try {
+    const cleaned = String(phoneNumber).replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      normalized = `+91${cleaned}`;
+    } else if (cleaned.length > 10 && String(phoneNumber).startsWith('+')) {
+      normalized = `+${cleaned}`;
+    } else if (cleaned.length > 10 && !String(phoneNumber).startsWith('+')) {
+      normalized = `+${cleaned}`;
+    }
+  } catch (e) {
+    normalized = phoneNumber;
+  }
+
+  console.log('verifySMSOTP: normalized phone ->', normalized);
+  return await verifyWhatsAppOTP(otp, normalized);
+}
