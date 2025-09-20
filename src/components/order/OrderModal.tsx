@@ -97,6 +97,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
   const [orderData, setOrderData] = useState<any>(null);
 
   const handleConfirmOrder = async () => {
+    console.log('🟢 handleConfirmOrder invoked', { isLoading, orderType, startDate: orderDetails.startDate });
     // Validate that address is provided
     if (!orderDetails.address.trim()) {
       alert('Please enter your delivery address.');
@@ -152,6 +153,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
     // Persist non-temporary address to user profile if different
     try {
+      console.log('ℹ️ Attempting to persist address if needed', { isTemporary: orderDetails.isTemporaryAddress, hasStateUser: !!state.user });
       if (!orderDetails.isTemporaryAddress && state.user && orderDetails.address && orderDetails.address !== state.user.address) {
         // Update backend profile with new address
         const saveResp = await fetch('/api/user/profile', {
@@ -165,6 +167,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
         // If saved successfully, fetch the canonical server user and update local app state
         if (saveResp.ok) {
+        console.log('✅ Profile save successful, fetching canonical server profile');
           try {
             const phoneEnc = encodeURIComponent(state.user.phone);
             const profResp = await fetch(`/api/user/profile?phone=${phoneEnc}`);
@@ -172,6 +175,7 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
               const profJson = await profResp.json();
               const serverUser = profJson.user;
               if (serverUser) {
+             console.log('✅ Server user fetched', { serverUserId: serverUser.id });
                 const serverAddress = Array.isArray(serverUser.addresses) && serverUser.addresses.length > 0 ? serverUser.addresses[0] : (serverUser.address || '');
                 const mergedUser = {
                   id: serverUser.id,
@@ -201,6 +205,20 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
 
     // Send order to backend to persist
     try {
+      const payloadPreview = {
+        userId: state.user?.id,
+        phone: orderDetails.phone,
+        customerName: orderDetails.customerName,
+        items: orderType === 'meal-plan' ? [{ plan: selectedPlan, qty: 1 }] : [{ dish: selectedDish, qty: quantity }],
+        status: 'pending',
+        deliveryAddress: { address: orderPayload.address, city: orderPayload.city, sector: orderPayload.sector },
+        subtotal: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
+        total: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
+        paymentMethod: 'cash-on-delivery',
+        specialInstructions: orderPayload.preferences,
+      };
+      console.log('➡️ Sending order to /api/orders with payload:', payloadPreview);
+
       const userId = state.user?.id;
       const createResp = await fetch('/api/orders', {
         method: 'POST',
@@ -222,14 +240,21 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
           specialInstructions: orderPayload.preferences,
         })
       });
+      console.log('⬅️ /api/orders response status:', createResp.status, 'ok:', createResp.ok);
+      let respBody = null;
+      try {
+        respBody = await createResp.json();
+      } catch (e) {
+        console.warn('Failed to parse /api/orders response as JSON', e);
+      }
+      console.log('⬅️ /api/orders response body:', respBody);
 
       if (createResp.ok) {
-        const json = await createResp.json();
-        const savedOrder = json.order;
+        const savedOrder = respBody?.order;
         // Store server order id locally so success UI can show it
-  setOrderData((prev: any) => ({ ...(prev || {}), savedOrderId: savedOrder?.id }));
+        setOrderData((prev: any) => ({ ...(prev || {}), savedOrderId: savedOrder?.id }));
       } else {
-        console.warn('Order API returned non-OK response');
+        console.warn('Order API returned non-OK response', respBody);
       }
     } catch (err) {
       console.warn('Failed to persist order to backend:', err);
