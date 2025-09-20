@@ -62,6 +62,15 @@ interface DbShape {
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'db.json');
 
+// Running on serverless platforms (like Vercel) with a file-backed DB
+// is unsupported because the filesystem is ephemeral or read-only.
+const IS_VERCEL = !!process.env.VERCEL;
+function ensureServerDbAllowed() {
+  if (IS_VERCEL && !process.env.DATABASE_URL) {
+    throw new Error('Serverless environment detected (VERCEL). Please set DATABASE_URL to use a hosted database. File-based DB is not supported on Vercel.');
+  }
+}
+
 async function ensureDb() {
   try {
     await fs.mkdir(DB_DIR, { recursive: true });
@@ -77,6 +86,9 @@ async function ensureDb() {
 }
 
 async function readDb(): Promise<DbShape> {
+  // If running on Vercel without DATABASE_URL, fail fast
+  ensureServerDbAllowed();
+
   // If DATABASE_URL is set, read via Prisma
   if (process.env.DATABASE_URL) {
     const prisma = await getPrisma();
@@ -100,6 +112,9 @@ async function readDb(): Promise<DbShape> {
 }
 
 async function writeDb(db: DbShape) {
+  // If running on Vercel without DATABASE_URL, fail fast
+  ensureServerDbAllowed();
+
   // If DATABASE_URL is set, write via Prisma
   if (process.env.DATABASE_URL) {
     const prisma = await getPrisma();
