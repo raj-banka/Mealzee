@@ -3,8 +3,8 @@
  */
 
 // Constants for Message Central API from environment variables
-const CUSTOMER_ID = process.env.MESSAGECENTRAL_CLIENT_ID || 'C-04D759A264204D4';
-const AUTH_TOKEN = process.env.MESSAGECENTRAL_TOKEN || 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDLTA0RDc1OUEyNjQyMDRENCIsImlhdCI6MTc1NDY3NTA5OCwiZXhwIjoxOTEyMzU1MDk4fQ.yzjMLm3A2UKZkPhLaUAlsURgSGnzM7XPAh0c6zg5NWRN3Ze6-EHF-TTbEP4ekFVK6dUyZH_okJMHX52mVXuwow';
+const CUSTOMER_ID = process.env.MESSAGECENTRAL_CLIENT_ID;
+const AUTH_TOKEN = process.env.MESSAGECENTRAL_TOKEN;
 const BASE_URL = process.env.MESSAGECENTRAL_BASE_URL || 'https://cpaas.messagecentral.com/verification/v3/send';
 const VALIDATE_URL = process.env.MESSAGECENTRAL_VALIDATE_URL || 'https://cpaas.messagecentral.com/verification/v3/validateOtp';
 
@@ -16,6 +16,10 @@ const VALIDATE_URL = process.env.MESSAGECENTRAL_VALIDATE_URL || 'https://cpaas.m
  */
 export async function sendWhatsAppOTP(phoneNumber: string, countryCode: string = '91'): Promise<{ success: boolean; verificationId?: string; error?: string }> {
   try {
+    if (!CUSTOMER_ID || !AUTH_TOKEN) {
+      console.error('Message Central credentials missing: set MESSAGECENTRAL_CLIENT_ID and MESSAGECENTRAL_TOKEN');
+      return { success: false, error: 'Message Central credentials not configured' };
+    }
     // Remove any non-numeric characters from phone number
     const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
     
@@ -26,10 +30,7 @@ export async function sendWhatsAppOTP(phoneNumber: string, countryCode: string =
     
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'authToken': AUTH_TOKEN,
-        'Content-Type': 'application/json'
-      }
+      headers: ( { 'authToken': AUTH_TOKEN as string, 'Content-Type': 'application/json' } as Record<string,string> )
     });
     
     const data = await response.json();
@@ -170,11 +171,14 @@ export async function verifyWhatsAppOTP(
     console.log(`  - Verification ID: ${verificationId}`);
     console.log(`  - OTP Code: ${cleanOtpCode}`);
 
+    if (!CUSTOMER_ID || !AUTH_TOKEN) {
+      console.error('Message Central credentials missing: set MESSAGECENTRAL_CLIENT_ID and MESSAGECENTRAL_TOKEN');
+      return { success: false, error: 'Message Central credentials not configured' };
+    }
+
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'authToken': AUTH_TOKEN
-      }
+      headers: ( { 'authToken': AUTH_TOKEN as string } as Record<string,string> )
     });
 
     const data = await response.json();
