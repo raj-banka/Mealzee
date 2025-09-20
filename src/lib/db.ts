@@ -234,6 +234,17 @@ export async function getUserByPhone(phone: string): Promise<UserRecord | null> 
   return user;
 }
 
+export async function getUserById(userId: string): Promise<UserRecord | null> {
+  if (process.env.DATABASE_URL) {
+    const prisma = await getPrisma();
+    if (!prisma) throw new Error('Prisma client not available');
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    return user as UserRecord | null;
+  }
+  const db = await readDb();
+  return db.users.find((u) => u.id === userId) || null;
+}
+
 export async function createUser(phone: string, profile: Partial<UserRecord> = {}): Promise<UserRecord> {
   const cleanPhone = phone.replace(/\D/g, '');
   if (process.env.DATABASE_URL) {

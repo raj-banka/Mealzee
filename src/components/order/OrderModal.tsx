@@ -207,6 +207,8 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: userId,
+          phone: orderDetails.phone,
+          customerName: orderDetails.customerName,
           items: orderType === 'meal-plan' ? [{ plan: selectedPlan, qty: 1 }] : [{ dish: selectedDish, qty: quantity }],
           status: 'pending',
           deliveryAddress: {
