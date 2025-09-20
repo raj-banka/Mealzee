@@ -92,8 +92,40 @@ export async function POST(request: NextRequest) {
         const mailCopy = JSON.parse(JSON.stringify(mailData));
         console.log('📧 Preparing to send email for order (from persisted order):', { orderId: mailCopy.orderId, customerName: mailCopy.customerName, totalAmount: mailCopy.totalAmount, timestamp: mailCopy.timestamp });
 
-        const emailSent = await sendOrderNotificationEmail(mailCopy as any);
-        console.log('📧 sendOrderNotificationEmail result:', emailSent);
+        // Retry send up to 3 times with small backoff
+        let emailSent = false;
+        let attempts = 0;
+        let lastErr: any = null;
+        while (!emailSent && attempts < 3) {
+          attempts++;
+          try {
+            emailSent = await sendOrderNotificationEmail(mailCopy as any);
+            console.log(`📧 Attempt ${attempts} sendOrderNotificationEmail result:`, emailSent);
+            if (!emailSent) {
+              lastErr = 'sendOrderNotificationEmail returned false';
+            }
+          } catch (err) {
+            lastErr = err;
+            console.error(`❌ Attempt ${attempts} to send email failed:`, err);
+          }
+          if (!emailSent) await new Promise(r => setTimeout(r, 800 * attempts));
+        }
+
+        // Persist email job result locally for later inspection/retry
+        try {
+          const { pushEmailJob } = await import('@/lib/emailQueue');
+          await pushEmailJob({
+            orderId: mailCopy.orderId,
+            customerName: mailCopy.customerName,
+            totalAmount: mailCopy.totalAmount,
+            attempts,
+            success: emailSent,
+            error: emailSent ? null : String(lastErr),
+            timestamp: new Date().toISOString()
+          });
+        } catch (err) {
+          console.warn('⚠️ Failed to persist email job result:', err);
+        }
       } catch (err) {
         console.error('❌ Failed to send admin notification after order creation:', err);
       }
