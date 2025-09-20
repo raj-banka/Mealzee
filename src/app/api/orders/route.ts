@@ -59,32 +59,40 @@ export async function POST(request: NextRequest) {
     // Attempt to notify admin by email (best-effort, do not block response on failure)
     (async () => {
       try {
+        // Prefer data from the persisted `order` to avoid sending stale request payloads
+        const items = Array.isArray(order.items) ? order.items : (order.items ? JSON.parse(JSON.stringify(order.items)) : []);
+        const first = items && items.length > 0 ? items[0] : null;
+
         const mailData = {
           orderId: order.id,
-          customerName: (body.customerName as string) || 'Customer',
-          customerPhone: (body.phone as string) || '',
+          customerName: (order as any).customerName || (body.customerName as string) || 'Customer',
+          customerPhone: (order as any).customerPhone || (body.phone as string) || '',
           address: order.deliveryAddress?.address || body.deliveryAddress?.address || '',
-          orderType: body.orderType || 'unknown',
-          timestamp: new Date().toISOString(),
+          orderType: (order as any).orderType || body.orderType || 'unknown',
+          timestamp: order.createdAt || new Date().toISOString(),
           totalAmount: order.total ?? body.total ?? 0,
-          preferences: body.specialInstructions || body.preferences || '',
-          dob: body.dob || '',
-          dietaryPreference: body.dietaryPreference || 'vegetarian',
-          mealPlan: body.items && body.items[0] && body.items[0].plan ? {
-            title: body.items[0].plan.title,
-            duration: body.items[0].plan.duration,
-            price: body.items[0].plan.discountedPrice || body.items[0].plan.price || 0,
+          preferences: order.specialInstructions ?? body.specialInstructions ?? body.preferences ?? '',
+          dob: (order as any).dob || body.dob || '',
+          dietaryPreference: (order as any).dietaryPreference || body.dietaryPreference || 'vegetarian',
+          mealPlan: first && first.plan ? {
+            title: first.plan.title,
+            duration: first.plan.duration,
+            price: first.plan.discountedPrice ?? first.plan.price ?? 0,
           } : undefined,
-          dish: body.items && body.items[0] && body.items[0].dish ? {
-            name: body.items[0].dish.name,
-            price: body.items[0].dish.price,
-            quantity: body.items[0].qty || body.items[0].dish.quantity || 1,
-            description: body.items[0].dish.description,
-            isVeg: body.items[0].dish.isVeg,
+          dish: first && first.dish ? {
+            name: first.dish.name,
+            price: first.dish.price,
+            quantity: first.qty ?? first.dish.quantity ?? 1,
+            description: first.dish.description,
+            isVeg: first.dish.isVeg,
           } : undefined,
         };
 
-        const emailSent = await sendOrderNotificationEmail(mailData as any);
+        // Deep-clone and log to avoid mutation/race conditions
+        const mailCopy = JSON.parse(JSON.stringify(mailData));
+        console.log('📧 Preparing to send email for order (from persisted order):', { orderId: mailCopy.orderId, customerName: mailCopy.customerName, totalAmount: mailCopy.totalAmount, timestamp: mailCopy.timestamp });
+
+        const emailSent = await sendOrderNotificationEmail(mailCopy as any);
         console.log('📧 sendOrderNotificationEmail result:', emailSent);
       } catch (err) {
         console.error('❌ Failed to send admin notification after order creation:', err);
