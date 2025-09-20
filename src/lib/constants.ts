@@ -93,7 +93,7 @@ export const MEAL_CATEGORIES = [
 export const NAV_LINKS = [
   { id: 'home', name: 'Home', href: '/' },
   { id: 'menu', name: 'Menu', href: '/menu' },
-  { id: 'orders', name: 'Orders', href: '/orders' },
+  { id: 'orders', name: 'My Orders', href: '/orders' },
   { id: 'about', name: 'About', href: '/about' },
   { id: 'contact', name: 'Contact', href: '/contact' },
 ] as const;

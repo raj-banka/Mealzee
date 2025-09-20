@@ -1,13 +1,18 @@
 // User Types
 export interface User {
   id: string;
-  email: string;
-  name: string;
   phone?: string;
+  name?: string | null;
+  email?: string | null;
   avatar?: string;
-  addresses: Address[];
-  createdAt: Date;
-  updatedAt: Date;
+  addresses?: Address[];
+  referralCode?: string;
+  referredByCode?: string | null;
+  referralName?: string | null;
+  dietaryPreference?: string | null;
+  sector?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface Address {

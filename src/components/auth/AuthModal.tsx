@@ -250,6 +250,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             name: userDetails.fullName || null,
             dob: userDetails.dateOfBirth || null,
             referredByCode: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralCode : undefined,
+            referralName: hasReferralCode && referralName ? referralName : undefined,
+            address: completeAddress,
+            sector: userDetails.sector || undefined,
+            dietaryPreference: userDetails.dietaryPreference || undefined,
           }
         })
       });
@@ -425,6 +429,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   name: userDetails.fullName || null,
                   dob: userDetails.dateOfBirth || null,
                   referredByCode: hasReferralCode && referralCode && isValidReferralCode(referralCode) ? referralCode : undefined,
+                  referralName: hasReferralCode && referralName ? referralName : undefined,
+                  address: `${userDetails.address.trim()}, ${userDetails.sector}, Bokaro Steel City`,
+                  sector: userDetails.sector || undefined,
+                  dietaryPreference: userDetails.dietaryPreference || undefined,
                 }
               })
             });
@@ -465,12 +473,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             resetModal();
           }, 1200);
         } else {
-          // Sign In: directly log in the user (no details form)
-          const minimalAddress = 'Address not provided';
+          // Sign In: log in and let backend reconciliation populate profile
           await login({
-            fullName: 'Guest',
+            fullName: '',
             phone: phoneNumber,
-            address: minimalAddress,
+            address: '',
             dietaryPreference: 'vegetarian',
             dateOfBirth: '',
           });
@@ -615,26 +622,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   >
                     {/* SIGN UP (front) */}
                     <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>
-                      <div className="rounded-2xl lg:rounded-3xl border border-emerald-200/70 bg-white/95 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-md shadow-emerald-500/10 h-full flex flex-col">
+                      <div className="rounded-2xl lg:rounded-3xl border border-olive-200/70 bg-white/95 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-md shadow-olive-500/10 h-full flex flex-col">
                         <div className="text-center mb-3 lg:mb-4">
                           <h3 className="text-lg lg:text-xl font-semibold text-gray-800">Hello welcome to Mealzee</h3>
                           <p className="text-xs lg:text-sm text-gray-500">Create your account to get started</p>
                         </div>
                         <div className="space-y-2 lg:space-y-3 flex-1 overflow-y-auto pr-2 sm:pr-3 scrollbar-hide overscroll-contain pb-2 pl-2">
-                          <input type="text" placeholder="Full Name" value={userDetails.fullName} onChange={(e) => setUserDetails(prev => ({ ...prev, fullName: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 mt-2 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/50" />
+                          <input type="text" placeholder="Full Name" value={userDetails.fullName} onChange={(e) => setUserDetails(prev => ({ ...prev, fullName: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 mt-2 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-olive-400/50" />
                           <div className="flex gap-2 lg:gap-3">
                             <span className="inline-flex items-center px-3 lg:px-4 rounded-xl bg-gray-100 text-gray-600 text-sm lg:text-base border border-gray-200">+91</span>
                             <div className="relative flex-1">
                               <Phone size={16} className="absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                              <input value={phoneNumber} onChange={handlePhoneChange} placeholder="Phone Number" inputMode="numeric" maxLength={10} className="w-full rounded-xl border border-emerald-300 pl-9 lg:pl-12 pr-3 lg:pr-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/60" />
+                              <input value={phoneNumber} onChange={handlePhoneChange} placeholder="Phone Number" inputMode="numeric" maxLength={10} className="w-full rounded-xl border border-olive-300 pl-9 lg:pl-12 pr-3 lg:pr-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-olive-400/60" />
                             </div>
                           </div>
                           {phoneError && <p className="text-xs lg:text-sm text-red-600">{phoneError}</p>}
                           <div>
                             <label className="block text-[11px] lg:text-xs text-gray-500 mb-1">Date of Birth</label>
-                            <input type="date" value={userDetails.dateOfBirth} max={new Date().toISOString().split('T')[0]} onChange={(e) => setUserDetails(prev => ({ ...prev, dateOfBirth: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/50" />
+                            <input type="date" value={userDetails.dateOfBirth} max={new Date().toISOString().split('T')[0]} onChange={(e) => setUserDetails(prev => ({ ...prev, dateOfBirth: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-olive-400/50" />
                           </div>
-                          <textarea placeholder="Address" rows={2} value={userDetails.address} onChange={(e) => setUserDetails(prev => ({ ...prev, address: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/50" />
+                          <textarea placeholder="Address" rows={2} value={userDetails.address} onChange={(e) => setUserDetails(prev => ({ ...prev, address: e.target.value }))} className="w-full rounded-xl border border-gray-300 px-3 lg:px-4 py-2 lg:py-3 text-sm lg:text-base focus:outline-none focus:ring-4 focus:ring-olive-400/50" />
 
                     
 
@@ -646,7 +653,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 <button
                                   type="button"
                                   onClick={() => setShowSectorDropdown(!showSectorDropdown)}
-                                  className="w-full px-3 lg:px-4 py-2 lg:py-2.5 border border-emerald-300 rounded-xl text-sm lg:text-base text-left flex items-center justify-between hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300/50 transition-colors"
+                                  className="w-full px-3 lg:px-4 py-2 lg:py-2.5 border border-olive-300 rounded-xl text-sm lg:text-base text-left flex items-center justify-between hover:border-olive-400 focus:outline-none focus:ring-2 focus:ring-olive-300/50 transition-colors"
                                 >
                                   <span className={userDetails.sector ? 'text-gray-900 font-medium' : 'text-gray-500'}>
                                     {userDetails.sector || 'Choose'}
@@ -654,7 +661,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                   <ChevronDown className={`w-4 h-4 lg:w-5 lg:h-5 text-gray-400 transition-transform ${showSectorDropdown ? 'rotate-180' : ''}`} />
                                 </button>
                                 {showSectorDropdown && (
-                                  <div className="absolute z-50 w-full mt-1 bg-white border border-emerald-200/70 rounded-xl lg:rounded-2xl shadow-lg shadow-emerald-500/10 max-h-48 lg:max-h-56 overflow-y-auto scrollbar-hide top-full">
+                                  <div className="absolute z-50 w-full mt-1 bg-white border border-olive-200/70 rounded-xl lg:rounded-2xl shadow-lg shadow-olive-500/10 max-h-48 lg:max-h-56 overflow-y-auto scrollbar-hide top-full">
                                     {getSectorsForCity('Bokaro Steel City').map((sector) => (
                                       <button
                                         key={sector}
@@ -680,7 +687,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 <button
                                   type="button"
                                   onClick={() => setShowDietaryDropdown(!showDietaryDropdown)}
-                                  className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-emerald-300 rounded-xl text-sm lg:text-base text-left flex items-center justify-between hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300/50 transition-colors"
+                                  className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-olive-300 rounded-xl text-sm lg:text-base text-left flex items-center justify-between hover:border-olive-400 focus:outline-none focus:ring-2 focus:ring-olive-300/50 transition-colors"
                                 >
                                   <span className={'text-gray-900 font-medium'}>
                                     {userDetails.dietaryPreference === 'vegetarian' ? 'Vegetarian' : 'Non-Vegetarian'}
@@ -688,7 +695,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                   <ChevronDown className={`w-4 h-4 lg:w-5 lg:h-5 text-gray-400 transition-transform ${showDietaryDropdown ? 'rotate-180' : ''}`} />
                                 </button>
                                 {showDietaryDropdown && (
-                                  <div className="absolute z-50 w-full mt-1 bg-white border border-emerald-200/70 rounded-xl lg:rounded-2xl shadow-lg shadow-emerald-500/10 max-h-48 lg:max-h-56 xl:max-h-64 2xl:max-h-72 overflow-y-auto top-full">
+                                  <div className="absolute z-50 w-full mt-1 bg-white border border-olive-200/70 rounded-xl lg:rounded-2xl shadow-lg shadow-olive-500/10 max-h-48 lg:max-h-56 xl:max-h-64 2xl:max-h-72 overflow-y-auto top-full">
                                     {['vegetarian','non-vegetarian'].map((opt) => (
                                       <button
                                         key={opt}
@@ -713,7 +720,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 id="signupHasReferralCode"
                                 checked={hasReferralCode}
                                 onChange={(e) => setHasReferralCode(e.target.checked)}
-                                className="w-4 h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 text-green-600 border-gray-300 rounded"
+                                className="w-4 h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 text-olive-600 border-gray-300 rounded"
                               />
                               <label htmlFor="signupHasReferralCode" className="text-xs lg:text-sm xl:text-base 2xl:text-lg text-gray-700">Have any referral code?</label>
                             </div>
@@ -726,7 +733,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                                   className={`w-full px-3 lg:px-4 xl:px-5 2xl:px-6 py-2 lg:py-3 xl:py-4 2xl:py-5 border rounded-xl text-sm lg:text-base xl:text-lg 2xl:text-xl focus:outline-none ${
                                     referralCode && isValidReferralCode(referralCode)
-                                      ? 'border-green-500 bg-green-50'
+                                      ? 'border-olive-500 bg-olive-50'
                                       : referralCode && !isValidReferralCode(referralCode)
                                       ? 'border-red-500 bg-red-50'
                                       : 'border-gray-300'
@@ -749,19 +756,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                          
                           {signupError && <p className="text-xs lg:text-sm xl:text-base 2xl:text-lg text-red-600">{signupError}</p>}
                         </div>
-                        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={async (e) => { e.preventDefault(); setSignupError(''); if (!userDetails.fullName.trim()) { setSignupError('Please enter your full name'); return; } if (!validatePhoneNumber(phoneNumber)) return; if (!userDetails.dateOfBirth) { setSignupError('Please select your date of birth'); return; } if (!userDetails.sector.trim()) { setSignupError('Please select your sector'); return; } if (!userDetails.address.trim()) { setSignupError('Please enter your address'); return; }  await handleContactSubmit(e as any); }} disabled={isLoading} className="mt-3 lg:mt-4 xl:mt-5 2xl:mt-6 w-full rounded-xl py-3 lg:py-4 xl:py-5 2xl:py-6 text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-60 shadow-lg">
+                        <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={async (e) => { e.preventDefault(); setSignupError(''); if (!userDetails.fullName.trim()) { setSignupError('Please enter your full name'); return; } if (!validatePhoneNumber(phoneNumber)) return; if (!userDetails.dateOfBirth) { setSignupError('Please select your date of birth'); return; } if (!userDetails.sector.trim()) { setSignupError('Please select your sector'); return; } if (!userDetails.address.trim()) { setSignupError('Please enter your address'); return; }  await handleContactSubmit(e as any); }} disabled={isLoading} className="mt-3 lg:mt-4 xl:mt-5 2xl:mt-6 w-full rounded-xl py-3 lg:py-4 xl:py-5 2xl:py-6 text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-white bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 disabled:opacity-60 shadow-lg">
                           {isLoading ? 'Sending OTP...' : 'Create Account'}
                         </motion.button>
                         <div className="mt-3 lg:mt-4 xl:mt-5 2xl:mt-6 text-center text-xs lg:text-sm xl:text-base 2xl:text-lg text-gray-600">
                           Already have an account?{' '}
-                          <button onClick={() => setAuthMode('signin')} className="text-emerald-600 hover:underline font-medium">Sign In</button>
+                          <button onClick={() => setAuthMode('signin')} className="text-olive-600 hover:underline font-medium">Sign In</button>
                         </div>
                       </div>
                     </div>
 
                     {/* SIGN IN (back) */}
                     <div className="absolute inset-0" style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}>
-                      <div className="rounded-2xl lg:rounded-3xl border border-emerald-200/70 bg-white/95 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-md shadow-emerald-500/10 h-full flex flex-col">
+                      <div className="rounded-2xl lg:rounded-3xl border border-olive-200/70 bg-white/95 backdrop-blur-sm p-4 sm:p-5 lg:p-6 shadow-md shadow-olive-500/10 h-full flex flex-col">
                         <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 lg:space-y-5">
                           {/* Center image - footer logo, appropriate size for desktop */}
                           <div className="relative h-10 w-36 sm:h-12 sm:w-44 lg:h-14 lg:w-52">
@@ -776,7 +783,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                           {/* Phone input */}
                           <div className="w-full max-w-xs lg:max-w-sm">
-                            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white p-1 shadow-sm">
+                            <div className="flex items-center gap-2 rounded-lg border border-olive-200 bg-white p-1 shadow-sm">
                               <span className="inline-flex h-9 lg:h-10 items-center px-2.5 lg:px-3 rounded-md bg-gray-50 text-gray-700 text-sm lg:text-base border-r border-gray-200">+91</span>
                               <div className="relative flex-1">
                                 <Phone size={14} className="absolute left-2.5 lg:left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -813,12 +820,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                             </div>
                           </div>
                         </div>
-                        <motion.button whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98, y: 0 }} onClick={(e) => handleContactSubmit(e as any)} disabled={isLoading || phoneNumber.trim().length !== 10} className="w-full flex items-center justify-center gap-2 rounded-lg py-2.5 lg:py-3 text-sm lg:text-base font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-60 shadow-lg shadow-emerald-600/20 transition-all">
+                        <motion.button whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98, y: 0 }} onClick={(e) => handleContactSubmit(e as any)} disabled={isLoading || phoneNumber.trim().length !== 10} className="w-full flex items-center justify-center gap-2 rounded-lg py-2.5 lg:py-3 text-sm lg:text-base font-medium text-white bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 disabled:opacity-60 shadow-lg shadow-olive-600/20 transition-all">
                           {isLoading ? 'Sending...' : (<><span>Continue</span> <ArrowRight size={16} className="lg:w-4 lg:h-4" /></>)}
                         </motion.button>
                         <div className="mt-3 lg:mt-4 text-center text-xs lg:text-sm text-gray-600">
                           Don’t have an account?{' '}
-                          <button onClick={() => setAuthMode('signup')} className="text-emerald-600 hover:underline font-medium">Create Account</button>
+                          <button onClick={() => setAuthMode('signup')} className="text-olive-600 hover:underline font-medium">Create Account</button>
                         </div>
                       </div>
                     </div>
@@ -868,7 +875,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                             className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-center text-lg sm:text-xl lg:text-2xl font-bold border-2 rounded-lg sm:rounded-xl lg:rounded-2xl focus:outline-none transition-colors ${
                               otpError
                                 ? 'border-red-500 focus:border-red-500'
-                                : 'border-gray-200 focus:border-green-500'
+                                : 'border-gray-200 focus:border-olive-500'
                             }`}
                           />
                         ))}
@@ -893,7 +900,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         whileTap={{ scale: 0.98 }}
                         className={`w-full py-3 sm:py-4 lg:py-5 rounded-xl sm:rounded-2xl lg:rounded-3xl font-semibold transition-all flex items-center justify-center space-x-2 lg:space-x-3 text-sm sm:text-base lg:text-lg ${
                           otp.join('').length === 4 && !isLoading
-                            ? 'bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-500/20'
+                            ? 'bg-olive-600 text-white hover:bg-olive-700 shadow-lg shadow-olive-500/20'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                       >
@@ -920,7 +927,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         className={`text-sm lg:text-base font-medium ${
                           resendCooldown > 0 || isLoading
                             ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-green-600 hover:text-green-700 cursor-pointer'
+                            : 'text-olive-600 hover:text-olive-700 cursor-pointer'
                         }`}
                       >
                         {resendCooldown > 0
@@ -932,7 +939,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                     <button
                       onClick={() => setAuthStep('input')}
-                      className="w-full mt-4 lg:mt-6 py-2 lg:py-3 text-green-600 hover:text-green-700 font-medium text-sm lg:text-base rounded-lg lg:rounded-xl hover:bg-green-50 transition-colors"
+                      className="w-full mt-4 lg:mt-6 py-2 lg:py-3 text-olive-600 hover:text-olive-700 font-medium text-sm lg:text-base rounded-lg lg:rounded-xl hover:bg-olive-50 transition-colors"
                     >
                       Back to phone number
                     </button>
@@ -959,7 +966,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         placeholder="Enter your full name"
                         value={userDetails.fullName}
                         onChange={(e) => setUserDetails(prev => ({ ...prev, fullName: e.target.value }))}
-                        className="w-full pl-12 lg:pl-14 xl:pl-16 2xl:pl-18 pr-4 lg:pr-5 xl:pr-6 2xl:pr-7 py-3 sm:py-4 lg:py-5 xl:py-6 2xl:py-7 border-2 border-gray-200 rounded-xl sm:rounded-2xl lg:rounded-3xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
+                        className="w-full pl-12 lg:pl-14 xl:pl-16 2xl:pl-18 pr-4 lg:pr-5 xl:pr-6 2xl:pr-7 py-3 sm:py-4 lg:py-5 xl:py-6 2xl:py-7 border-2 border-gray-200 rounded-xl sm:rounded-2xl lg:rounded-3xl focus:border-olive-500 focus:outline-none transition-colors text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl"
                         required
                       />
                     </div>
@@ -976,7 +983,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           onClick={() => setUserDetails(prev => ({ ...prev, dietaryPreference: 'vegetarian' }))}
                           className={`flex-1 py-2 sm:py-3 lg:py-4 xl:py-5 2xl:py-6 px-2 sm:px-4 lg:px-5 xl:px-6 2xl:px-7 rounded-lg sm:rounded-xl lg:rounded-2xl font-medium transition-all text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl ${
                             userDetails.dietaryPreference === 'vegetarian'
-                              ? 'bg-white text-green-600 shadow-sm'
+                              ? 'bg-white text-olive-600 shadow-sm'
                               : 'text-gray-600'
                           }`}
                         >
@@ -987,7 +994,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           onClick={() => setUserDetails(prev => ({ ...prev, dietaryPreference: 'non-vegetarian' }))}
                           className={`flex-1 py-2 sm:py-3 lg:py-4 xl:py-5 2xl:py-6 px-2 sm:px-4 lg:px-5 xl:px-6 2xl:px-7 rounded-lg sm:rounded-xl lg:rounded-2xl font-medium transition-all text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl ${
                             userDetails.dietaryPreference === 'non-vegetarian'
-                              ? 'bg-white text-green-600 shadow-sm'
+                              ? 'bg-white text-olive-600 shadow-sm'
                               : 'text-gray-600'
                           }`}
                         >
@@ -1006,7 +1013,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           type="date"
                           value={userDetails.dateOfBirth}
                           onChange={(e) => setUserDetails(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base"
+                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-olive-500 focus:outline-none transition-colors text-sm sm:text-base"
                           required
                           max={new Date().toISOString().split('T')[0]} // Prevent future dates
                         />
@@ -1025,7 +1032,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           onChange={(e) => setUserDetails(prev => ({ ...prev, address: e.target.value }))}
                           placeholder="Enter your hostel name or complete address in Bokaro"
                           rows={3}
-                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base resize-none"
+                          className="w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-olive-500 focus:outline-none transition-colors text-sm sm:text-base resize-none"
                           required
                         />
                       </div>
@@ -1040,7 +1047,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         <button
                           type="button"
                           onClick={() => setShowSectorDropdown(!showSectorDropdown)}
-                          className="w-full px-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-green-500 focus:outline-none transition-colors text-sm sm:text-base text-left flex items-center justify-between"
+                          className="w-full px-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:border-olive-500 focus:outline-none transition-colors text-sm sm:text-base text-left flex items-center justify-between"
                         >
                           <span className={userDetails.sector ? 'text-gray-900 font-medium' : 'text-gray-500'}>
                             {userDetails.sector || 'Choose your sector'}
@@ -1076,7 +1083,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                           id="hasReferralCode"
                           checked={hasReferralCode}
                           onChange={(e) => setHasReferralCode(e.target.checked)}
-                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          className="w-4 h-4 text-olive-600 border-gray-300 rounded focus:ring-olive-500"
                         />
                         <label htmlFor="hasReferralCode" className="text-sm font-medium text-gray-700">
                           Have any referral code?
@@ -1096,12 +1103,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                               placeholder="Enter referral code (e.g., MEAL123456)"
                               value={referralCode}
                               onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                              className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm ${
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm ${
                                 referralCode && isValidReferralCode(referralCode)
-                                  ? 'border-green-500 focus:border-green-600 bg-green-50'
+                                  ? 'border-olive-500 focus:border-olive-600 bg-olive-50'
                                   : referralCode && !isValidReferralCode(referralCode)
                                   ? 'border-red-500 focus:border-red-600 bg-red-50'
-                                  : 'border-gray-200 focus:border-green-500'
+                                  : 'border-gray-200 focus:border-olive-500'
                               }`}
                             />
                             {referralCode && !isValidReferralCode(referralCode) && (
@@ -1116,11 +1123,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                               placeholder="Referral name (optional)"
                               value={referralName}
                               onChange={(e) => setReferralName(e.target.value)}
-                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-sm"
+                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-olive-500 focus:outline-none transition-colors text-sm"
                             />
                           </div>
                           {referralCode && isValidReferralCode(referralCode) && (
-                            <div className="text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                            <div className="text-sm text-olive-600 bg-olive-50 px-3 py-2 rounded-lg">
                               ✅ Referral code {referralCode} will be applied to your order
                             </div>
                           )}
@@ -1136,7 +1143,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold transition-all flex items-center justify-center space-x-2 mt-4 sm:mt-6 text-sm sm:text-base ${
                       userDetails.fullName.trim() && userDetails.address.trim() && userDetails.sector.trim() && userDetails.dateOfBirth.trim() && !isLoading
-                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        ? 'bg-olive-600 text-white hover:bg-olive-700'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
@@ -1157,7 +1164,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                 <button
                   onClick={() => setAuthStep('otp')}
-                  className="w-full mt-4 text-green-600 hover:text-green-700 font-medium"
+                  className="w-full mt-4 text-olive-600 hover:text-olive-700 font-medium"
                 >
                   Back to OTP
                 </button>
@@ -1169,15 +1176,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.98, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="text-center px-6 py-8 bg-white/95 rounded-2xl border border-emerald-200/70 shadow-md shadow-emerald-500/10"
+                className="text-center px-6 py-8 bg-white/95 rounded-2xl border border-olive-200/70 shadow-md shadow-olive-500/10"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.1, type: "spring" }}
-                  className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                   className="w-16 h-16 bg-olive-100 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Check className="w-8 h-8 text-emerald-600" />
+                  <Check className="w-8 h-8 text-olive-600" />
                 </motion.div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-1">
                   {successMode === 'signup' ? 'Account Created!' : 'Welcome Back!'}

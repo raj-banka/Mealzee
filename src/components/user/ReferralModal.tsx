@@ -8,10 +8,12 @@ import Button from '@/components/ui/Button';
 import Portal from '@/components/ui/Portal';
 import { Z_INDEX } from '@/lib/constants';
 import {
+  getReferralData,
   getReferralStats,
   shareReferralViaWhatsApp,
   copyReferralMessage,
-  initializeReferralData
+  initializeReferralData,
+  saveReferralData
 } from '@/utils/referral';
 
 interface ReferralModalProps {
@@ -23,18 +25,54 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ isOpen, onClose }) => {
   const { state } = useApp();
   const [copiedReferral, setCopiedReferral] = React.useState(false);
 
-  // Get referral statistics - initialize if doesn't exist
+  const [serverReferralCode, setServerReferralCode] = React.useState<string | null>(null);
+  const [serverReferralCount, setServerReferralCount] = React.useState<number | null>(null);
+
+  // Fetch server profile to get canonical referral code and count
+  React.useEffect(() => {
+    if (!state.user) return;
+    const user = state.user;
+    let mounted = true;
+    (async () => {
+      try {
+        const phone = encodeURIComponent(user.phone);
+        const resp = await fetch(`/api/user/profile?phone=${phone}`);
+        if (!mounted) return;
+        if (resp.ok) {
+          const json = await resp.json();
+          const u = json.user;
+          if (u) {
+            if (u.referralCode) setServerReferralCode(u.referralCode);
+            if (typeof u.referralCount === 'number') setServerReferralCount(u.referralCount);
+          }
+        }
+      } catch (err) {
+        // ignore fetch errors and fall back to local data
+      }
+    })();
+    return () => { mounted = false; };
+  }, [state.user]);
+
+  // Derive referralStats from server values or fall back to local storage helper
   const referralStats = React.useMemo(() => {
     if (!state.user) return null;
-    
-    let stats = getReferralStats(state.user.id);
-    // If no referral data exists, initialize it
-    if (stats.totalReferrals === 0 && stats.totalEarnings === 0) {
-      initializeReferralData(state.user.id);
-      stats = getReferralStats(state.user.id);
-    }
-    return stats;
-  }, [state.user]);
+    const local = getReferralStats(state.user.id);
+    const code = state.user.referralCode || serverReferralCode || local.referralCode;
+    const totalReferrals = typeof state.user.referralCount === 'number' ? state.user.referralCount : (serverReferralCount ?? local.totalReferrals);
+    const confirmed = (local.totalEarnings || 0);
+    const pendingLocal = (local.pendingEarnings || 0);
+    // If pendingLocal is zero but we have referrals, infer pending as (referrals * 499) - confirmed
+    const inferredPending = Math.max(0, (totalReferrals || 0) * 499 - confirmed);
+    const displayedPending = pendingLocal || inferredPending;
+
+    return {
+      referralCode: code,
+      totalReferrals,
+      totalEarnings: confirmed,
+      pendingEarnings: displayedPending,
+      _rawPending: pendingLocal,
+    };
+  }, [state.user, serverReferralCode, serverReferralCount]);
 
   const handleCopyReferral = async () => {
     if (state.user && referralStats) {
@@ -123,6 +161,9 @@ const ReferralModal: React.FC<ReferralModalProps> = ({ isOpen, onClose }) => {
                     <p className="text-xs text-olive-600">Pending Earnings</p>
                     <p className="font-bold text-olive-800 text-lg">₹{referralStats?.pendingEarnings || 0}</p>
                     <p className="text-xs text-gray-500">Waiting for payment</p>
+                    {referralStats && referralStats._rawPending === 0 && referralStats.totalReferrals > 0 && (
+                      <p className="text-xs text-gray-400 mt-2">(Shown from referral count)</p>
+                    )}
                   </div>
                 </div>
                 

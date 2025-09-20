@@ -1,0 +1,353 @@
+{
+  "users": [
+    {
+      "id": "u_mfk8ebbsxdhy7l",
+      "phone": "9142801457",
+      "name": "Raj Banka",
+      "dob": "2025-09-11",
+      "referralCode": "MEAL955173",
+      "referredByCode": null,
+      "referralName": null,
+      "addresses": [
+        "Ritudih, sec-4, Bokaro Steel City"
+      ],
+      "dietaryPreference": "vegetarian",
+      "sector": "sec-4",
+      "referralCount": 1,
+      "referredUsers": [
+        "u_mfs762m0gxsl7n"
+      ],
+      "createdAt": "2025-09-14T21:52:53.463Z",
+      "updatedAt": "2025-09-20T11:40:38.711Z"
+    },
+    {
+      "id": "u_mfs762m0gxsl7n",
+      "phone": "6299367631",
+      "name": "jafir",
+      "dob": "2025-09-10",
+      "referralCode": "MEAL250426",
+      "referredByCode": "MEAL955173",
+      "referralName": "raj",
+      "addresses": [
+        "abc colony, sec-4, Bokaro Steel City"
+      ],
+      "dietaryPreference": "vegetarian",
+      "sector": "sec-4",
+      "referralCount": 0,
+      "referredUsers": [],
+      "createdAt": "2025-09-20T11:40:38.711Z",
+      "updatedAt": "2025-09-20T11:40:38.711Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "o_mfk8fh1hq26zln",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "dish": {
+            "id": "1",
+            "name": "Aloo Paratha & Tomato Ketchup",
+            "price": 40,
+            "time": "15 min",
+            "rating": 4.5,
+            "isVeg": true,
+            "type": "breakfast",
+            "description": "Fresh homemade 3-potato stuffed paratha with tangy tomato ketchup",
+            "spiceLevel": "mild",
+            "calories": 350,
+            "image": "/images/aalu paratha.jpg"
+          },
+          "name": "Aloo Paratha & Tomato Ketchup",
+          "price": 40,
+          "image": "/images/aalu paratha.jpg",
+          "qty": 3
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 120,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 120,
+      "specialInstructions": "",
+      "createdAt": "2025-09-14T21:53:47.525Z",
+      "updatedAt": "2025-09-14T21:53:47.525Z"
+    },
+    {
+      "id": "o_mfk8h5hyt3af5h",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "plan": {
+            "id": "breakfast-lunch-dinner",
+            "title": "Breakfast, Lunch & Dinner",
+            "duration": "1 Month",
+            "originalPrice": 3899,
+            "discountedPrice": 3399,
+            "discount": 12,
+            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=200&fit=crop&crop=center",
+            "description": "Complete meal solution for the entire day",
+            "features": [
+              "3 Meals Daily",
+              "Balanced Nutrition",
+              "Fresh Ingredients",
+              "Home Delivery"
+            ]
+          },
+          "name": "Breakfast, Lunch & Dinner",
+          "price": 3399,
+          "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=200&fit=crop&crop=center",
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 3399,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 3399,
+      "specialInstructions": "",
+      "createdAt": "2025-09-14T21:55:05.878Z",
+      "updatedAt": "2025-09-14T21:55:05.878Z"
+    },
+    {
+      "id": "o_mfs4denbi559ht",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "dish": {
+            "id": "1",
+            "name": "Aloo Paratha & Tomato Ketchup",
+            "price": 40,
+            "time": "15 min",
+            "rating": 4.5,
+            "isVeg": true,
+            "type": "breakfast",
+            "description": "Fresh homemade 3-potato stuffed paratha with tangy tomato ketchup",
+            "spiceLevel": "mild",
+            "calories": 350,
+            "image": "/images/aalu paratha.jpg"
+          },
+          "name": "Aloo Paratha & Tomato Ketchup",
+          "price": 40,
+          "image": "/images/aalu paratha.jpg",
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 40,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 40,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T10:22:22.054Z",
+      "updatedAt": "2025-09-20T10:22:22.054Z"
+    },
+    {
+      "id": "o_mfs4g222jauacm",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "dish": {
+            "id": "1",
+            "name": "Aloo Paratha & Tomato Ketchup",
+            "price": 40,
+            "time": "15 min",
+            "rating": 4.5,
+            "isVeg": true,
+            "type": "breakfast",
+            "description": "Fresh homemade 3-potato stuffed paratha with tangy tomato ketchup",
+            "spiceLevel": "mild",
+            "calories": 350,
+            "image": "/images/aalu paratha.jpg"
+          },
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 40,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 40,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T10:24:25.706Z",
+      "updatedAt": "2025-09-20T10:24:25.706Z"
+    },
+    {
+      "id": "o_mfs5wyzip3sjfn",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "dish": {
+            "id": "2",
+            "name": "Roti, Chawal, Dal, Sabji, Achar, Chutney",
+            "price": 70,
+            "time": "20 min",
+            "rating": 4.6,
+            "isVeg": true,
+            "type": "lunch",
+            "description": "Complete traditional meal with 2-roti, rice, dal, vegetable curry, pickle and chutney",
+            "spiceLevel": "medium",
+            "calories": 450,
+            "image": "/images/monday_lunch.jpg"
+          },
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 70,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 70,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T11:05:34.493Z",
+      "updatedAt": "2025-09-20T11:05:34.493Z"
+    },
+    {
+      "id": "o_mfs691als0usar",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "plan": {
+            "id": "breakfast-dinner",
+            "title": "Breakfast & Dinner",
+            "duration": "1 Month",
+            "originalPrice": 3499,
+            "discountedPrice": 2899,
+            "discount": 17,
+            "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop&crop=center",
+            "description": "Perfect for working professionals",
+            "features": [
+              "2 Meals Daily",
+              "Morning & Evening",
+              "Quick Service",
+              "Healthy Options"
+            ]
+          },
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 2899,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 2899,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T11:14:57.356Z",
+      "updatedAt": "2025-09-20T11:14:57.356Z"
+    },
+    {
+      "id": "o_mfs6t0m9lh035e",
+      "userId": "u_mfk8ebbsxdhy7l",
+      "items": [
+        {
+          "plan": {
+            "id": "breakfast-dinner",
+            "title": "Breakfast & Dinner",
+            "duration": "1 Month",
+            "originalPrice": 3499,
+            "discountedPrice": 2899,
+            "discount": 17,
+            "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop&crop=center",
+            "description": "Perfect for working professionals",
+            "features": [
+              "2 Meals Daily",
+              "Morning & Evening",
+              "Quick Service",
+              "Healthy Options"
+            ]
+          },
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "Ritudih, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 2899,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 2899,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T11:30:29.601Z",
+      "updatedAt": "2025-09-20T11:30:29.601Z"
+    },
+    {
+      "id": "o_mfs76la1wac4i4",
+      "userId": "u_mfs762m0gxsl7n",
+      "items": [
+        {
+          "plan": {
+            "id": "breakfast-lunch-dinner",
+            "title": "Breakfast, Lunch & Dinner",
+            "duration": "1 Month",
+            "originalPrice": 3899,
+            "discountedPrice": 3399,
+            "discount": 12,
+            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=200&fit=crop&crop=center",
+            "description": "Complete meal solution for the entire day",
+            "features": [
+              "3 Meals Daily",
+              "Balanced Nutrition",
+              "Fresh Ingredients",
+              "Home Delivery"
+            ]
+          },
+          "qty": 1
+        }
+      ],
+      "status": "pending",
+      "deliveryDate": null,
+      "deliverySlot": null,
+      "deliveryAddress": {
+        "address": "abc colony, sec-4, Bokaro Steel City"
+      },
+      "paymentMethod": "cash-on-delivery",
+      "subtotal": 3399,
+      "deliveryFee": 0,
+      "tax": 0,
+      "total": 3399,
+      "specialInstructions": "",
+      "createdAt": "2025-09-20T11:41:02.905Z",
+      "updatedAt": "2025-09-20T11:41:02.905Z"
+    }
+  ]
+}

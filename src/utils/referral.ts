@@ -13,14 +13,16 @@ export interface ReferralData {
  * Generate a unique referral code for a user
  */
 export const generateReferralCode = (userId: string): string => {
-  return `MEAL${userId.slice(-6).toUpperCase()}`;
+  // Generate numeric 6-digit suffix to match backend pattern MEAL######
+  const num = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+  return `MEAL${num}`;
 };
 
 /**
  * Validate referral code format
  */
 export const isValidReferralCode = (code: string): boolean => {
-  return /^MEAL[A-Z0-9]{6}$/.test(code);
+  return /^MEAL\d{6}$/.test(code);
 };
 
 /**

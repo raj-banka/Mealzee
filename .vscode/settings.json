@@ -1,0 +1,6 @@
+{
+  "json.schemaDownload.enable": false,
+  "files.exclude": {
+    "**/.env*": true
+  }
+}

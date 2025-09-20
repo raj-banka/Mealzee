@@ -205,6 +205,28 @@ yarn test
 2. Connect repository to Vercel
 3. Deploy automatically
 
+### Prisma & Vercel Postgres (Production)
+
+If you plan to deploy on Vercel and keep data persistent, use Vercel Postgres with Prisma:
+
+1. Create a Vercel Postgres database from the Vercel dashboard.
+2. In the Project Settings > Environment Variables, add `DATABASE_URL` with the provided connection string.
+3. Locally, copy `.env.example` to `.env` and set `DATABASE_URL`.
+4. Install dependencies and generate Prisma client:
+```
+npm install
+npx prisma generate
+```
+5. Run migrations locally (developer machine):
+```
+npx prisma migrate dev --name init
+```
+6. Deploy to Vercel. Vercel will use the `DATABASE_URL` at build/runtime.
+
+Notes:
+- The project falls back to the local `data/db.json` when `DATABASE_URL` is not set, so local dev without Postgres will continue to work.
+- For production, a managed Postgres is required because the serverless file system is ephemeral on Vercel.
+
 ### Manual Deployment
 ```bash
 npm run build

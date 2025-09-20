@@ -118,7 +118,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.filter(l => l.id !== 'orders' || isLoggedIn()).map((link) => (
               <motion.button
                 key={link.id}
                 onClick={(e) => {
@@ -136,6 +136,7 @@ const Navbar: React.FC = () => {
                 {link.name}
               </motion.button>
             ))}
+            {/* Orders link is provided via NAV_LINKS; explicit duplicate removed */}
           </div>
 
           {/* Desktop Actions */}
@@ -238,7 +239,7 @@ const Navbar: React.FC = () => {
                 )}
 
                 {/* Mobile Navigation Links */}
-                {NAV_LINKS.map((link) => (
+                {NAV_LINKS.filter(l => l.id !== 'orders' || isLoggedIn()).map((link) => (
                   <motion.button
                     key={link.id}
                     onClick={(e) => {
@@ -255,6 +256,7 @@ const Navbar: React.FC = () => {
                     {link.name}
                   </motion.button>
                 ))}
+                {/* Orders link is provided via NAV_LINKS; explicit duplicate removed */}
 
                 {/* Mobile Referral Button */}
                 <motion.button

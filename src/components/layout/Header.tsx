@@ -56,6 +56,7 @@ const Header: React.FC = () => {
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
+  const isLoggedIn = Boolean(state.user && state.user.phone);
 
   return (
     <header className="bg-olive-50 shadow-lg sticky top-0 z-40">
@@ -119,6 +120,7 @@ const Header: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+            {/* Orders link is rendered by NAV_LINKS in the main Navbar; removed duplicate from Header */}
           </nav>
 
           {/* Right Side Actions */}
@@ -147,7 +149,7 @@ const Header: React.FC = () => {
             <div className="relative">
               <Button variant="outline" size="sm">
                 <User className="w-4 h-4 mr-2" />
-                Sign In
+                {state.user?.fullName ? state.user.fullName : 'Sign In'}
               </Button>
             </div>
 
@@ -212,6 +214,7 @@ const Header: React.FC = () => {
                   {item.name}
                 </Link>
               ))}
+              {/* Orders link is rendered by NAV_LINKS in the main Navbar; removed duplicate from Header */}
             </nav>
           </div>
         </motion.div>

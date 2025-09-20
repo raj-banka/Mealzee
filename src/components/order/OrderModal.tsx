@@ -144,76 +144,97 @@ const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, selectedPlan, 
       dishQuantity: orderType === 'individual-dish' ? quantity : undefined
     };
 
-    // Store order data for display
+    // Store order data for immediate display
     setOrderData({
       ...orderPayload,
       timestamp: new Date().toLocaleString()
     });
 
-    // Simulate professional order processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Send order notification email to admin (silently in background)
+    // Persist non-temporary address to user profile if different
     try {
-      const emailResponse = await fetch('/api/send-email-notification', {
+      if (!orderDetails.isTemporaryAddress && state.user && orderDetails.address && orderDetails.address !== state.user.address) {
+        // Update backend profile with new address
+        const saveResp = await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: state.user.phone,
+            profile: { address: orderDetails.address }
+          })
+        });
+
+        // If saved successfully, fetch the canonical server user and update local app state
+        if (saveResp.ok) {
+          try {
+            const phoneEnc = encodeURIComponent(state.user.phone);
+            const profResp = await fetch(`/api/user/profile?phone=${phoneEnc}`);
+            if (profResp.ok) {
+              const profJson = await profResp.json();
+              const serverUser = profJson.user;
+              if (serverUser) {
+                const serverAddress = Array.isArray(serverUser.addresses) && serverUser.addresses.length > 0 ? serverUser.addresses[0] : (serverUser.address || '');
+                const mergedUser = {
+                  id: serverUser.id,
+                  fullName: state.user?.fullName || serverUser.name || '',
+                  email: serverUser.email || state.user?.email,
+                  phone: serverUser.phone || state.user?.phone,
+                  address: serverAddress || state.user?.address || '',
+                  sector: serverUser.sector || state.user?.sector,
+                  city: serverUser.city || state.user?.city,
+                  dietaryPreference: state.user?.dietaryPreference || 'vegetarian',
+                  dateOfBirth: state.user?.dateOfBirth || (serverUser.dob ? String(serverUser.dob).split('T')[0] : ''),
+                  isAuthenticated: true,
+                  referralCode: serverUser.referralCode || state.user?.referralCode,
+                  referralName: serverUser.referralName || state.user?.referralName || undefined,
+                } as any;
+                dispatch({ type: 'SET_USER', payload: mergedUser });
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to fetch server profile after save:', err);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to persist address to profile:', err);
+    }
+
+    // Send order to backend to persist
+    try {
+      const userId = state.user?.id;
+      const createResp = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderData: {
-            orderId: orderPayload.orderId,
-            customerName: orderPayload.customerName,
-            customerPhone: orderPayload.phone, // Map phone to customerPhone for email service
-            // customerEmail removed
+          userId: userId,
+          items: orderType === 'meal-plan' ? [{ plan: selectedPlan, qty: 1 }] : [{ dish: selectedDish, qty: quantity }],
+          status: 'pending',
+          deliveryAddress: {
             address: orderPayload.address,
             city: orderPayload.city,
             sector: orderPayload.sector,
-            isTemporaryAddress: orderPayload.isTemporaryAddress,
-            orderType: orderPayload.orderType,
-            startDate: orderPayload.startDate,
-            preferences: orderPayload.preferences,
-            timestamp: new Date().toISOString(),
-            totalAmount: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
-            // Additional fields for email template
-            dob: orderPayload.dob,
-            dietaryPreference: orderPayload.dietaryPreference,
-            referralCode: orderPayload.referralCode,
-            referralName: orderPayload.referralName,
-            // Email-specific data structure
-            mealPlan: orderType === 'meal-plan' ? {
-              title: selectedPlan?.title || '',
-              duration: selectedPlan?.duration || '',
-              price: selectedPlan?.discountedPrice || 0,
-              originalPrice: selectedPlan?.originalPrice
-            } : undefined,
-            dish: orderType === 'individual-dish' ? {
-              name: selectedDish?.name || '',
-              price: selectedDish?.price || 0,
-              quantity: quantity,
-              description: selectedDish?.description || '',
-              spiceLevel: selectedDish?.spiceLevel || '',
-              calories: selectedDish?.calories,
-              rating: selectedDish?.rating,
-              preparationTime: selectedDish?.time || '',
-              isVeg: selectedDish?.isVeg
-            } : undefined
-          }
-        }),
+          },
+          subtotal: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
+          total: orderType === 'meal-plan' ? (selectedPlan?.discountedPrice || 0) : ((selectedDish?.price || 0) * quantity),
+          paymentMethod: 'cash-on-delivery',
+          specialInstructions: orderPayload.preferences,
+        })
       });
 
-      const emailResult = await emailResponse.json();
-
-      if (emailResult.success) {
-        console.log('✅ Order notification email sent successfully to admin');
-        console.log('📧 Email sent to:', emailResult.adminEmail);
+      if (createResp.ok) {
+        const json = await createResp.json();
+        const savedOrder = json.order;
+        // Store server order id locally so success UI can show it
+  setOrderData((prev: any) => ({ ...(prev || {}), savedOrderId: savedOrder?.id }));
       } else {
-        console.warn('⚠️ Failed to send order notification email:', emailResult.error);
+        console.warn('Order API returned non-OK response');
       }
-    } catch (error) {
-      console.warn('⚠️ Email notification error:', error);
-      // Don't show error to user - fail silently for better UX
+    } catch (err) {
+      console.warn('Failed to persist order to backend:', err);
     }
+
+    // Simulate short processing delay for UX
+    await new Promise(resolve => setTimeout(resolve, 800));
 
     setIsLoading(false);
     setStep('success');

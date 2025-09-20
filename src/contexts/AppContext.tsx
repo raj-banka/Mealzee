@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Types
 export interface User {
@@ -16,6 +17,7 @@ export interface User {
   isAuthenticated: boolean;
   referralCode?: string;
   referralName?: string;
+  referralCount?: number;
 }
 
 export interface MealPlan {
@@ -217,6 +219,7 @@ const AppContext = createContext<{
 // Provider component
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const router = useRouter();
 
   // Load user data and selected meal plan from localStorage on mount
   useEffect(() => {
@@ -294,6 +297,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               name: userData.fullName || null,
               dob: userData.dateOfBirth || null,
               referredByCode: userData.referralCode || undefined,
+              referralName: userData.referralName || undefined,
+              address: userData.address || undefined,
+              sector: userData.sector || undefined,
+              dietaryPreference: userData.dietaryPreference || undefined,
             }
           })
         });
@@ -306,19 +313,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       if (serverUser) {
         // Map server shape to our User type, while preserving local details when missing on server
+        const serverAddress = Array.isArray(serverUser.addresses) && serverUser.addresses.length > 0
+          ? serverUser.addresses[0]
+          : (serverUser.address || '');
+
         const mergedUser: User = {
           id: serverUser.id,
           fullName: userData.fullName || serverUser.name || '',
           email: serverUser.email || userData.email,
           phone: serverUser.phone || userData.phone,
-          address: userData.address || serverUser.address || '',
+          address: userData.address || serverAddress || '',
           sector: userData.sector || serverUser.sector || undefined,
           city: serverUser.city || userData.city,
           dietaryPreference: userData.dietaryPreference || 'vegetarian',
           dateOfBirth: userData.dateOfBirth || (serverUser.dob ? String(serverUser.dob).split('T')[0] : ''),
           isAuthenticated: true,
           referralCode: serverUser.referralCode || userData.referralCode,
-          referralName: userData.referralName || undefined,
+          referralName: serverUser.referralName || userData.referralName || undefined,
+          referralCount: serverUser.referralCount ?? userData.referralCount ?? 0,
         };
 
         dispatch({ type: 'SET_USER', payload: mergedUser });
@@ -331,6 +343,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     dispatch({ type: 'LOGOUT_USER' });
+    try {
+      // Navigate back to home page after logout
+      router.push('/');
+    } catch (e) {
+      // fallback: no-op
+    }
   };
 
   const selectMealPlan = (plan: MealPlan) => {

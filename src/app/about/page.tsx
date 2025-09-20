@@ -99,14 +99,14 @@ const AboutPage: React.FC = () => {
                 <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
               </div>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                To revolutionize food delivery by creating seamless connections between 
-                restaurants and customers, ensuring everyone has access to delicious, 
-                fresh meals delivered with speed and care.
+                To revolutionize home-style food delivery by providing nutritious, 
+                homemade tiffin meals that promote health and well-being, ensuring everyone 
+                has access to delicious, fresh food delivered with care and consistency.
               </p>
               <p className="text-gray-600">
-                We believe that great food brings people together, and our platform 
-                makes it easier than ever to discover, order, and enjoy amazing meals 
-                from local restaurants.
+                We believe that wholesome, home-cooked food nourishes both body and soul, 
+                and our tiffin service makes it easier than ever to enjoy healthy, 
+                balanced meals prepared with love and attention to detail.
               </p>
             </motion.div>
 
