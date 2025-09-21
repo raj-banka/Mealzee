@@ -182,7 +182,7 @@ const WeeklyMenu: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -193,17 +193,10 @@ const WeeklyMenu: React.FC = () => {
                         <span className="text-sm text-gray-600">{item.time}</span>
                       </div>
                     </div>
-                    <div className="text-xl font-bold text-olive-600">₹{item.price}</div>
+                    {/* Price removed per request */}
                   </div>
                   
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="w-full bg-olive-500 hover:bg-olive-600 group-hover:scale-105 transition-transform"
-                    onClick={() => handleOrderItem(item)}
-                  >
-                    Order Now
-                  </Button>
+                  {/* Order button removed from preview card per request */}
                 </div>
               </motion.div>
             ))}

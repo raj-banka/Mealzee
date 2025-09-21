@@ -182,9 +182,8 @@ export default function MenuPage() {
                   </div>
 
                   <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-bold text-gray-900 text-lg leading-tight flex-1">{item.name}</h3>
-                      <div className="text-2xl font-bold text-olive-600 ml-3">₹{item.price}</div>
+                    <div className="mb-3">
+                      <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h3>
                     </div>
 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
@@ -207,14 +206,7 @@ export default function MenuPage() {
                       </div>
                     </div>
 
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-md hover:shadow-lg"
-                      onClick={() => handleOrderItem(item)}
-                    >
-                      Order now
-                    </Button>
+                    {/* Price & Order button removed from card per request */}
                   </div>
                 </motion.div>
               ))}
@@ -312,7 +304,7 @@ export default function MenuPage() {
                         {selectedImage.name}
                       </h2>
                       <div className="text-3xl font-bold text-olive-600 ml-4">
-                        ₹{selectedImage.price}
+                        {/* ₹{selectedImage.price} */}
                       </div>
                     </div>
 
@@ -355,7 +347,7 @@ export default function MenuPage() {
                     </div>
                   </div>
 
-                  <Button
+                  {/* <Button
                     variant="primary"
                     size="lg"
                     className="w-full bg-gradient-to-r from-olive-500 to-olive-600 hover:from-olive-600 hover:to-olive-700 text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
@@ -367,7 +359,7 @@ export default function MenuPage() {
                     }}
                   >
                     Order Now - ₹{selectedImage.price}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </motion.div>

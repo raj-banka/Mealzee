@@ -45,3 +45,5 @@ prisma/dev.db
 # Allow committing migrations (we manage them in source control)
 !prisma/migrations/
 node_modules/@prisma
+
+.vercel

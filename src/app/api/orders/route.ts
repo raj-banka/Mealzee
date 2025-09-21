@@ -56,83 +56,78 @@ export async function POST(request: NextRequest) {
 
     const order = await createOrder(body);
 
-    // Attempt to notify admin by email (best-effort, do not block response on failure)
-    (async () => {
-      try {
-        // Prefer data from the persisted `order` to avoid sending stale request payloads
-        const items = Array.isArray(order.items) ? order.items : (order.items ? JSON.parse(JSON.stringify(order.items)) : []);
-        const first = items && items.length > 0 ? items[0] : null;
+    // Attempt to notify admin by email synchronously to avoid serverless termination
+    try {
+      const items = Array.isArray(order.items) ? order.items : (order.items ? JSON.parse(JSON.stringify(order.items)) : []);
+      const first = items && items.length > 0 ? items[0] : null;
 
-        // Derive order type and main item data from persisted `order` structure
-        const derivedOrderType = first && first.plan ? 'meal-plan' : (first && first.dish ? 'individual-dish' : (order as any).orderType || body.orderType || 'unknown');
+      const derivedOrderType = first && first.plan ? 'meal-plan' : (first && first.dish ? 'individual-dish' : (order as any).orderType || body.orderType || 'unknown');
 
-        const mailData = {
-          orderId: order.id,
-          customerName: (order as any).customerName || (body.customerName as string) || user?.name || 'Customer',
-          customerPhone: (order as any).customerPhone || (body.phone as string) || user?.phone || '',
-          address: order.deliveryAddress?.address || body.deliveryAddress?.address || (user?.addresses && user.addresses[0]) || '',
-          orderType: derivedOrderType,
-          timestamp: order.createdAt || new Date().toISOString(),
-          totalAmount: order.total ?? body.total ?? 0,
-          preferences: order.specialInstructions ?? body.specialInstructions ?? body.preferences ?? user?.preferences ?? '',
-          dob: (order as any).dob || body.dob || user?.dob || '',
-          dietaryPreference: (order as any).dietaryPreference || body.dietaryPreference || user?.dietaryPreference || 'vegetarian',
-          mealPlan: first && first.plan ? {
-            title: first.plan.title,
-            duration: first.plan.duration,
-            price: first.plan.discountedPrice ?? first.plan.price ?? 0,
-          } : undefined,
-          dish: first && (first.dish || first.name || first.price) ? {
-            name: first.dish?.name || first.name,
-            price: first.dish?.price ?? first.price ?? 0,
-            quantity: first.qty ?? first.dish?.quantity ?? 1,
-            description: first.dish?.description || first.description || '',
-            isVeg: first.dish?.isVeg ?? first.isVeg,
-          } : undefined,
-        };
+      const mailData = {
+        orderId: order.id,
+        customerName: (order as any).customerName || (body.customerName as string) || user?.name || 'Customer',
+        customerPhone: (order as any).customerPhone || (body.phone as string) || user?.phone || '',
+        address: order.deliveryAddress?.address || body.deliveryAddress?.address || (user?.addresses && user.addresses[0]) || '',
+        orderType: derivedOrderType,
+        timestamp: order.createdAt || new Date().toISOString(),
+        totalAmount: order.total ?? body.total ?? 0,
+        preferences: order.specialInstructions ?? body.specialInstructions ?? body.preferences ?? user?.preferences ?? '',
+        dob: (order as any).dob || body.dob || user?.dob || '',
+        dietaryPreference: (order as any).dietaryPreference || body.dietaryPreference || user?.dietaryPreference || 'vegetarian',
+        mealPlan: first && first.plan ? {
+          title: first.plan.title,
+          duration: first.plan.duration,
+          price: first.plan.discountedPrice ?? first.plan.price ?? 0,
+        } : undefined,
+        dish: first && (first.dish || first.name || first.price) ? {
+          name: first.dish?.name || first.name,
+          price: first.dish?.price ?? first.price ?? 0,
+          quantity: first.qty ?? first.dish?.quantity ?? 1,
+          description: first.dish?.description || first.description || '',
+          isVeg: first.dish?.isVeg ?? first.isVeg,
+        } : undefined,
+      };
 
-        // Deep-clone and log to avoid mutation/race conditions
-        const mailCopy = JSON.parse(JSON.stringify(mailData));
-        console.log('📧 Preparing to send email for order (from persisted order):', { orderId: mailCopy.orderId, customerName: mailCopy.customerName, totalAmount: mailCopy.totalAmount, timestamp: mailCopy.timestamp });
+      const mailCopy = JSON.parse(JSON.stringify(mailData));
+      console.log('📧 Preparing to send email for order (from persisted order):', { orderId: mailCopy.orderId, customerName: mailCopy.customerName, totalAmount: mailCopy.totalAmount, timestamp: mailCopy.timestamp });
 
-        // Retry send up to 3 times with small backoff
-        let emailSent = false;
-        let attempts = 0;
-        let lastErr: any = null;
-        while (!emailSent && attempts < 3) {
-          attempts++;
-          try {
-            emailSent = await sendOrderNotificationEmail(mailCopy as any);
-            console.log(`📧 Attempt ${attempts} sendOrderNotificationEmail result:`, emailSent);
-            if (!emailSent) {
-              lastErr = 'sendOrderNotificationEmail returned false';
-            }
-          } catch (err) {
-            lastErr = err;
-            console.error(`❌ Attempt ${attempts} to send email failed:`, err);
-          }
-          if (!emailSent) await new Promise(r => setTimeout(r, 800 * attempts));
-        }
-
-        // Persist email job result locally for later inspection/retry
+      // Retry send up to 3 times with small backoff
+      let emailSent = false;
+      let attempts = 0;
+      let lastErr: any = null;
+      while (!emailSent && attempts < 3) {
+        attempts++;
         try {
-          const { pushEmailJob } = await import('@/lib/emailQueue');
-          await pushEmailJob({
-            orderId: mailCopy.orderId,
-            customerName: mailCopy.customerName,
-            totalAmount: mailCopy.totalAmount,
-            attempts,
-            success: emailSent,
-            error: emailSent ? null : String(lastErr),
-            timestamp: new Date().toISOString()
-          });
+          emailSent = await sendOrderNotificationEmail(mailCopy as any);
+          console.log(`📧 Attempt ${attempts} sendOrderNotificationEmail result:`, emailSent);
+          if (!emailSent) {
+            lastErr = 'sendOrderNotificationEmail returned false';
+          }
         } catch (err) {
-          console.warn('⚠️ Failed to persist email job result:', err);
+          lastErr = err;
+          console.error(`❌ Attempt ${attempts} to send email failed:`, err);
         }
-      } catch (err) {
-        console.error('❌ Failed to send admin notification after order creation:', err);
+        if (!emailSent) await new Promise(r => setTimeout(r, 800 * attempts));
       }
-    })();
+
+      // Persist email job result locally for later inspection/retry
+      try {
+        const { pushEmailJob } = await import('@/lib/emailQueue');
+        await pushEmailJob({
+          orderId: mailCopy.orderId,
+          customerName: mailCopy.customerName,
+          totalAmount: mailCopy.totalAmount,
+          attempts,
+          success: emailSent,
+          error: emailSent ? null : String(lastErr),
+          timestamp: new Date().toISOString()
+        });
+      } catch (err) {
+        console.warn('⚠️ Failed to persist email job result:', err);
+      }
+    } catch (err) {
+      console.error('❌ Failed to send admin notification after order creation:', err);
+    }
 
     return NextResponse.json({ success: true, order });
   } catch (err) {
