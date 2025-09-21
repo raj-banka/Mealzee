@@ -71,6 +71,24 @@ const createTransporter = () => {
   });
 };
 
+// Resolve a safe `from` address when MAIL_FROM is not provided
+const resolveMailFrom = () => {
+  if (process.env.MAIL_FROM) return process.env.MAIL_FROM;
+  if (process.env.MAIL_USER) return process.env.MAIL_USER;
+  const host = process.env.MAIL_HOST || 'localhost';
+  return `no-reply@${host}`;
+};
+
+// Resolve CC list from env (comma-separated) and return array or undefined
+const resolveAdminCc = (): string | undefined => {
+  const raw = process.env.ADMIN_CC || process.env.ADMIN_CCS;
+  if (!raw) return undefined;
+  // Normalize: remove extra spaces and empty entries
+  const parts = raw.split(',').map(p => p.trim()).filter(Boolean);
+  if (!parts.length) return undefined;
+  return parts.join(',');
+};
+
 // Generate order email HTML template
 const generateOrderEmailHTML = (orderData: OrderData): string => {
   const {
@@ -208,10 +226,21 @@ export const sendOrderNotificationEmail = async (orderData: OrderData): Promise<
   try {
     const transporter = createTransporter();
     const adminEmail = process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com';
+    const mailFrom = resolveMailFrom();
     
+    // Verify transporter connectivity early for better diagnostics
+    try {
+      const ok = await transporter.verify();
+      console.log('📬 transporter.verify() result:', ok);
+    } catch (vErr) {
+      console.warn('⚠️ transporter.verify() failed:', vErr && (vErr as Error).message || vErr);
+    }
+
+    const adminCc = resolveAdminCc();
     const mailOptions = {
-      from: process.env.MAIL_FROM,
+      from: mailFrom,
       to: adminEmail,
+      cc: adminCc,
       subject: `🚨 URGENT: New Mealzee Order #${orderData.orderId} - ₹${orderData.totalAmount} - Call Customer Now!`,
       html: generateOrderEmailHTML(orderData),
       text: `
@@ -265,11 +294,12 @@ Thank you!
       `
     };
 
+    console.log('📧 mailOptions preview:', { to: mailOptions.to, cc: mailOptions.cc, from: mailOptions.from, subject: mailOptions.subject });
     const result = await transporter.sendMail(mailOptions);
-    console.log('✅ Order notification email sent successfully:', result.messageId);
+    console.log('✅ Order notification email sent successfully:', result && (result as any).messageId);
     return true;
   } catch (error) {
-    console.error('❌ Failed to send order notification email:', error);
+    console.error('❌ Failed to send order notification email:', error && (error as Error).message, error);
     return false;
   }
 };
@@ -365,9 +395,17 @@ export const sendContactNotificationEmail = async (contactData: ContactData): Pr
   try {
     const transporter = createTransporter();
     const adminEmail = process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com';
+    const mailFrom = resolveMailFrom();
+
+    try {
+      const ok = await transporter.verify();
+      console.log('📬 transporter.verify() result (contact):', ok);
+    } catch (vErr) {
+      console.warn('⚠️ transporter.verify() failed (contact):', vErr && (vErr as Error).message || vErr);
+    }
 
     const mailOptions = {
-      from: process.env.MAIL_FROM,
+      from: mailFrom,
       to: adminEmail,
       subject: `📞 New Contact Message #${contactData.referenceId} - ${contactData.subject} - Please Respond!`,
       html: generateContactEmailHTML(contactData),
@@ -393,10 +431,10 @@ Thank you!
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log('✅ Contact notification email sent successfully:', result.messageId);
+    console.log('✅ Contact notification email sent successfully:', result && (result as any).messageId);
     return true;
   } catch (error) {
-    console.error('❌ Failed to send contact notification email:', error);
+    console.error('❌ Failed to send contact notification email:', error && (error as Error).message, error);
     return false;
   }
 };
@@ -519,12 +557,19 @@ export const sendReviewNotificationEmail = async (reviewData: ReviewData): Promi
   try {
     const transporter = createTransporter();
     const adminEmail = process.env.ADMIN_EMAIL || 'mealzeeindia@gmail.com';
-    
+    const mailFrom = resolveMailFrom();
+
+    try {
+      const ok = await transporter.verify();
+      console.log('📬 transporter.verify() result (review):', ok);
+    } catch (vErr) {
+      console.warn('⚠️ transporter.verify() failed (review):', vErr && (vErr as Error).message || vErr);
+    }
     const ratingEmoji = reviewData.rating >= 4 ? '🌟' : reviewData.rating >= 3 ? '⭐' : '⚠️';
     const urgencyText = reviewData.rating <= 2 ? '🚨 URGENT - LOW RATING' : 'New Review';
     
     const mailOptions = {
-      from: process.env.MAIL_FROM,
+      from: mailFrom,
       to: adminEmail,
       subject: `${ratingEmoji} ${urgencyText}: Customer Review #${reviewData.reviewId} - ${reviewData.rating}/5 Stars`,
       html: generateReviewEmailHTML(reviewData),
@@ -554,10 +599,10 @@ Thank you!
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log('✅ Review notification email sent successfully:', result.messageId);
+    console.log('✅ Review notification email sent successfully:', result && (result as any).messageId);
     return true;
   } catch (error) {
-    console.error('❌ Failed to send review notification email:', error);
+    console.error('❌ Failed to send review notification email:', error && (error as Error).message, error);
     return false;
   }
 };

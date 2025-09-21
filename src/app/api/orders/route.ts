@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
     console.log('📦 /api/orders POST received with body:', JSON.stringify(body));
     if (!body.userId) return NextResponse.json({ success: false, error: 'userId required' }, { status: 400 });
 
-    // Verify user exists when using Prisma to avoid foreign key errors
+    // Verify user exists and keep it for later fallbacks when building email data
+    let user: any = null;
     try {
       const db = await import('@/lib/db');
       const { getUserById, createUser } = db;
-      let user = null;
       if (body.userId) user = await getUserById(body.userId);
 
       // If user does not exist but phone is provided, create a minimal user record
@@ -63,28 +63,31 @@ export async function POST(request: NextRequest) {
         const items = Array.isArray(order.items) ? order.items : (order.items ? JSON.parse(JSON.stringify(order.items)) : []);
         const first = items && items.length > 0 ? items[0] : null;
 
+        // Derive order type and main item data from persisted `order` structure
+        const derivedOrderType = first && first.plan ? 'meal-plan' : (first && first.dish ? 'individual-dish' : (order as any).orderType || body.orderType || 'unknown');
+
         const mailData = {
           orderId: order.id,
-          customerName: (order as any).customerName || (body.customerName as string) || 'Customer',
-          customerPhone: (order as any).customerPhone || (body.phone as string) || '',
-          address: order.deliveryAddress?.address || body.deliveryAddress?.address || '',
-          orderType: (order as any).orderType || body.orderType || 'unknown',
+          customerName: (order as any).customerName || (body.customerName as string) || user?.name || 'Customer',
+          customerPhone: (order as any).customerPhone || (body.phone as string) || user?.phone || '',
+          address: order.deliveryAddress?.address || body.deliveryAddress?.address || (user?.addresses && user.addresses[0]) || '',
+          orderType: derivedOrderType,
           timestamp: order.createdAt || new Date().toISOString(),
           totalAmount: order.total ?? body.total ?? 0,
-          preferences: order.specialInstructions ?? body.specialInstructions ?? body.preferences ?? '',
-          dob: (order as any).dob || body.dob || '',
-          dietaryPreference: (order as any).dietaryPreference || body.dietaryPreference || 'vegetarian',
+          preferences: order.specialInstructions ?? body.specialInstructions ?? body.preferences ?? user?.preferences ?? '',
+          dob: (order as any).dob || body.dob || user?.dob || '',
+          dietaryPreference: (order as any).dietaryPreference || body.dietaryPreference || user?.dietaryPreference || 'vegetarian',
           mealPlan: first && first.plan ? {
             title: first.plan.title,
             duration: first.plan.duration,
             price: first.plan.discountedPrice ?? first.plan.price ?? 0,
           } : undefined,
-          dish: first && first.dish ? {
-            name: first.dish.name,
-            price: first.dish.price,
-            quantity: first.qty ?? first.dish.quantity ?? 1,
-            description: first.dish.description,
-            isVeg: first.dish.isVeg,
+          dish: first && (first.dish || first.name || first.price) ? {
+            name: first.dish?.name || first.name,
+            price: first.dish?.price ?? first.price ?? 0,
+            quantity: first.qty ?? first.dish?.quantity ?? 1,
+            description: first.dish?.description || first.description || '',
+            isVeg: first.dish?.isVeg ?? first.isVeg,
           } : undefined,
         };
 
